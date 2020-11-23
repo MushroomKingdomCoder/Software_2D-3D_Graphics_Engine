@@ -74,7 +74,7 @@ public:
 		);
 	}
 
-	static Matrix2D Translation(const type x, const type y)
+	static Matrix3D Translation(const type x, const type y)
 	{
 		return Matrix3D(
 			type(1),	type(0),	x,
