@@ -10,7 +10,6 @@ class PulsatingStar
 private:
 	PolyLine Star = PolyLine();
 	float Radius;
-	float Rotation = 0.0f;
 private:
 	float EnlargenedScale = 1.0f;
 	Color PulsingColor = Colors::Yellow;
@@ -39,7 +38,6 @@ public:
 	{
 		cScale += float(time * blinkSpeed);
 		CurColor = PulsingColor[Color((int)cScale % 256, (int)cScale % 256, (int)cScale % 256)];
-		
 		
 		if (isGrowing) {
 			Star.ScaleBy(1.0f + (time * GrowthSpeed));

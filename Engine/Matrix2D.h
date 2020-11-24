@@ -42,10 +42,10 @@ public:
 
 	static Matrix2D Scale(const type& scl)
 	{
-		return Matrix2D(
+		return Matrix2D{
 			scl,		type(0),
-			type(0),	scl 
-		);
+			type(0),	scl
+		};
 	}
 
 	static Matrix2D Identity()
@@ -55,20 +55,20 @@ public:
 
 	static Matrix2D FlipY()
 	{
-		return Matrix2D(
+		return Matrix2D{
 			type(1),	type(0),
 			type(0),	type(-1)
-		);
+		};
 	}
 
 	static Matrix2D Rotation(const type& radians)
 	{
 		const auto cosR = type(cos(radians));
 		const auto sinR = type(sin(radians));
-		return Matrix2D(
+		return Matrix2D{
 			cosR,	-sinR,
 			sinR,	cosR
-		);
+		};
 	}
 };
 

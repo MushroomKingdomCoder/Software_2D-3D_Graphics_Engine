@@ -13,20 +13,17 @@ void ScreenBuffer::DrawLine(fVector2D p0, fVector2D p1, Color c)
 
 void ScreenBuffer::DrawPolyLine(PolyLine poly, Color c)
 {
-	auto& polyline = poly.GetRendered();
+	auto polyline = poly.GetRendered();
 	if (fRect(polyline).OverlappedWith(camera.GetViewable())) {
 		//Post-Render to Visible Screen from Camera
-		const fVector2D offset = fVector2D(Graphics::ScreenRect().GetCenter());
-		const float cosR = cos(-camera.TiltAngle());
-		const float sinR = sin(-camera.TiltAngle());
-		fVector2D cam_pos = camera.Position();
-		float zoom = camera.ZoomFactor();
+		fMatrix3D Transformation =
+			fMatrix3D::Translation(Graphics::ScreenRect().GetCenter()) *
+			fMatrix3D::FlipY() *
+			fMatrix3D::Scale(camera.ZoomFactor()) *
+			fMatrix3D::Rotation(-camera.TiltAngle()) *
+			fMatrix3D::Translation(-camera.Position());
 		for (auto& v : polyline) {
-			v -= cam_pos;
-			v.Rotate(cosR, sinR);
-			v *= zoom;
-			v.Y *= -1.0f;
-			v += offset;
+			v = Transformation * v;
 		}
 		gfx.DrawPolyLine(polyline, c);
 	}

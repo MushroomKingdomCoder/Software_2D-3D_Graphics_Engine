@@ -181,18 +181,28 @@ public:
 		X = Y; Y = -X;
 	}
 
-	type& operator [](const int i)
+	const type& operator [](int i) const
 	{
+		i = i % 2;
 		if (i == 0) {
 			return X;
 		}
 		else if (i == 1) {
 			return Y;
 		}
-		else {
-			//Invalid Index!
-			return (type)i;
+		return X;
+	}
+
+	type& operator [](int i)
+	{
+		i = i % 2;
+		if (i == 0) {
+			return X;
 		}
+		else if (i == 1) {
+			return Y;
+		}
+		return X;
 	}
 };
 

@@ -5,7 +5,7 @@
 
 PolyLine::PolyLine(std::vector<fVector2D> verticies, fVector2D pos)
 	:
-	Model(std::move(verticies)),
+	Model(verticies),
 	Pos(pos)
 {}
 
@@ -27,30 +27,29 @@ void PolyLine::SetPos(fVector2D pos)
 std::vector<fVector2D> PolyLine::GetRendered()
 {
 	auto poly = Model;
-	const float cosR = cos(Rotation);
-	const float sinR = sin(Rotation);
+	Transformation =
+		fMatrix3D::Translation(Pos) *
+		fMatrix3D::Scale(Scale) * 
+		fMatrix3D::Rotation(Rotation) * 
+		fMatrix3D::Identity();
 	for (auto& v : poly) {
-		v.Rotate(cosR, sinR);
-		v *= Scale;
-		v += Pos;
+		v = Transformation * v;
 	}
 	return poly;
 }
-
-float PolyLine::GetScale() const
-{
-	return Scale;
-}
-
 void PolyLine::ScaleBy(const float scale)
 {
 	Scale *= scale;
 }
 
-void PolyLine::Transform(const float scale)
+void PolyLine::SetScale(float scl)
 {
-	Scale *= scale;
-	Pos *= scale;
+	Scale = scl;
+}
+
+float PolyLine::GetScale() const
+{
+	return Scale;
 }
 
 const std::vector<fVector2D>& PolyLine::GetModel() const
@@ -66,17 +65,16 @@ fRect PolyLine::GetRect() const
 void PolyLine::Rotate(const float radians)
 {
 	Rotation += radians;
-	while (Rotation > M_PI) {
-		Rotation -= 2 * M_PI;
-	}
 }
 
-void PolyLine::SetRotation(float radians)
+void PolyLine::SetRotation(const float radians)
 {
-	while (radians > M_PI) {
-		radians -= 2.0f * M_PI;
-	}
 	Rotation = radians;
+}
+
+float PolyLine::GetRotation() const
+{
+	return Rotation;
 }
 
 PolyLine PolyLine::MakeSquare(float size, fVector2D pos)

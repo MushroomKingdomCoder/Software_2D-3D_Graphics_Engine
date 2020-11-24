@@ -32,8 +32,9 @@ public:
 		Z(type(1))
 	{}
 
-	type& operator [](const int i)
+	const type& operator [](int i) const
 	{
+		i = i % 3;
 		if (i == 0) {
 			return X;
 		}
@@ -43,9 +44,25 @@ public:
 		else if (i == 2) {
 			return Z;
 		}
-		else {
-			//Invalid Index!
-			return (type)i;
+		return X;
+	}
+
+	type& operator [](int i)
+	{
+		i = i % 3;
+		if (i == 0) {
+			return X;
 		}
+		else if (i == 1) {
+			return Y;
+		}
+		else if (i == 2) {
+			return Z;
+		}
+		return X;
 	}
 };
+
+using fVector3D = Vector3D<float>;
+using dVector3D = Vector3D<double>;
+using iVector3D = Vector3D<int>;
