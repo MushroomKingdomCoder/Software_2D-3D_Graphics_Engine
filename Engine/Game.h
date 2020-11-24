@@ -63,11 +63,11 @@ private:
 	/********************************/
 	/*  User Variables              */
 	/********************************/
-	static constexpr int nStars = 500000;
-	static constexpr long long int xMin = -800000000;
-	static constexpr long long int xMax = 800000000;
-	static constexpr long long int yMin = -600000000;
-	static constexpr long long int yMax = 600000000;
+	static constexpr int nStars = 10000;
+	static constexpr long long int xMin = -60000;
+	static constexpr long long int xMax = 60000;
+	static constexpr long long int yMin = -45000;
+	static constexpr long long int yMax = 45000;
 	static constexpr int minFlares = 4;
 	static constexpr int maxFlares = 9;
 	static constexpr float minRadius = 10.0f;

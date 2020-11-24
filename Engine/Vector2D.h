@@ -181,6 +181,17 @@ public:
 		X = Y; Y = -X;
 	}
 
+	bool operator ==(const Vector2D& vec2) const
+	{
+		return (X == vec2.X && Y == vec2.Y);
+	}
+
+	bool operator !=(const Vector2D& vec2) const
+	{
+		return !(*this == vec2);
+	}
+
+public:
 	const type& operator [](int i) const
 	{
 		i = i % 2;
@@ -192,7 +203,6 @@ public:
 		}
 		return X;
 	}
-
 	type& operator [](int i)
 	{
 		i = i % 2;
