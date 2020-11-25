@@ -27,7 +27,7 @@
 #include "Character.h"
 #include "TextFont.h"
 #include "Rect.h"
-#include "Vector2D.h"
+#include "Vector.h"
 #include "Timer.h"
 #include "SpriteEffects.h"
 #include "PulsatingStar.h"
@@ -73,7 +73,7 @@ private:
 	static constexpr float minRadius = 10.0f;
 	static constexpr float maxRadius = 150.0f;
 	static constexpr float minScale = 1.25f;
-	static constexpr float maxScale = 5.0f;
+	static constexpr float maxScale = 10.0f;
 	static constexpr unsigned char minColor = 0;
 	static constexpr unsigned char maxColor = 255;
 	static constexpr int minBlinkSpd = 64;

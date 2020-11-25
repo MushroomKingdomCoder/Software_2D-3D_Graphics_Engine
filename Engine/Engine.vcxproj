@@ -149,8 +149,7 @@
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="MainWindow.h" />
-    <ClInclude Include="Matrix2D.h" />
-    <ClInclude Include="Matrix3D.h" />
+    <ClInclude Include="Matrix.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="PolyLine.h" />
     <ClInclude Include="PulsatingStar.h" />
@@ -163,8 +162,7 @@
     <ClInclude Include="SpriteEffects.h" />
     <ClInclude Include="TextFont.h" />
     <ClInclude Include="Timer.h" />
-    <ClInclude Include="Vector2D.h" />
-    <ClInclude Include="Vector3D.h" />
+    <ClInclude Include="Vector.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />

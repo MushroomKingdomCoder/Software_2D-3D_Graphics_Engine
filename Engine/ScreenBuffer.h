@@ -1,6 +1,7 @@
 #pragma once
 #include "Graphics.h"
 #include "PolyLine.h"
+#include "Matrix.h"
 #include "Camera.h"
 
 class ScreenBuffer

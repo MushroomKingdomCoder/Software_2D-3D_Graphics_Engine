@@ -1,7 +1,7 @@
 #pragma once
 #include "Sprite.h"
 #include "CRect.h"
-#include "Vector2D.h"
+#include "Vector.h"
 #include "Colors.h"
 #include "Graphics.h"
 #include "SpriteEffects.h"

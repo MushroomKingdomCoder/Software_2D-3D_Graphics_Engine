@@ -1,8 +1,6 @@
 #pragma once
 #include "Graphics.h"
-#include "Vector2D.h"
-#include "Matrix3D.h"
-#include "Vector3D.h"
+#include "Vector.h"
 #include "Rect.h"
 #define _USE_MATH_DEFINES
 #include <math.h>

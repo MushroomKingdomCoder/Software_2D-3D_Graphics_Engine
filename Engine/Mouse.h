@@ -19,7 +19,7 @@
  *	along with The Chili DirectX Framework.  If not, see <http://www.gnu.org/licenses/>.  *
  ******************************************************************************************/
 #pragma once
-#include "Vector2D.h"
+#include "Vector.h"
 #include <queue>
 
 class Mouse
