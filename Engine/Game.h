@@ -36,6 +36,7 @@
 #include "PolyLine.h"
 #include "Prism.h"
 #include "Camera.h"
+#include "Math.h"
 #include <random>
 
 class Game
@@ -62,10 +63,14 @@ private:
 	fVector2D MousePos;
 	fVector2D MousePos_Old;
 	static constexpr int panSpd = 60;
-	static constexpr float spinSpd = M_PI / 16.0f;
+	static constexpr float spinSpd = M_PI;
 	/********************************/
 	/*  User Variables              */
 	/********************************/
 	NDCBuffer ndc;
 	Prism Cube = Prism::MakeCube(1.0f);
+	static constexpr float d_rot = M_PI;
+	float x_rot = 0.0f;
+	float y_rot = 0.0f;
+	float z_rot = 0.0f;
 };

@@ -32,9 +32,9 @@ public:
 		Matrix2D r_mtx;
 		for (int lrow = 0; lrow < 2; ++lrow) {
 			for (int rcol = 0; rcol < 2; ++rcol) {
-				r_mtx[lrow][rcol] = type(0);
+				r_mtx.Cell[lrow][rcol] = type(0);
 				for (int i = 0; i < 2; ++i) {
-					r_mtx[lrow][rcol] += Cell[lrow][i] * mtx.Cell[i][rcol];
+					r_mtx.Cell[lrow][rcol] += Cell[lrow][i] * mtx.Cell[i][rcol];
 				}
 			}
 		}
@@ -205,9 +205,9 @@ public:
 		Matrix3D r_mtx;
 		for (int lrow = 0; lrow < 3; ++lrow) {
 			for (int rcol = 0; rcol < 3; ++rcol) {
-				r_mtx[lrow][rcol] = type(0);
+				r_mtx.Cell[lrow][rcol] = type(0);
 				for (int i = 0; i < 3; ++i) {
-					r_mtx[lrow][rcol] += Cell[lrow][i] * mtx.Cell[i][rcol];
+					r_mtx.Cell[lrow][rcol] += Cell[lrow][i] * mtx.Cell[i][rcol];
 				}
 			}
 		}
@@ -235,6 +235,36 @@ public:
 			scl_x,		type(0),	type(0),
 			type(0),	scl_y,		type(0),
 			type(0),	type(0),	scl_z
+		};
+	}
+	static Matrix3D RotationX(const float radians)
+	{
+		const float cosR = cos(radians);
+		const float sinR = sin(radians);
+		return Matrix3D{
+			type(1),	type(0),	type(0),
+			type(0),	cosR,		-sinR,
+			type(0),	sinR,		cosR
+		};
+	}
+	static Matrix3D RotationY(const float radians)
+	{
+		const float cosR = cos(radians);
+		const float sinR = sin(radians);
+		return Matrix3D{
+			cosR,		type(0),	sinR,
+			type(0),	type(1),	type(0),
+			-sinR,		type(0),	cosR
+		};
+	}
+	static Matrix3D RotationZ(const float radians)
+	{
+		const float cosR = cos(radians);
+		const float sinR = sin(radians);
+		return Matrix3D{
+			cosR,		-sinR,		type(0),
+			sinR,		cosR,		type(0),
+			type(0),	type(0),	type(1)
 		};
 	}
 };

@@ -22,7 +22,6 @@
 #include "Game.h"
 #include <vector>
 #include <algorithm>
-#define _USE_MATH_DEFINES
 
 Game::Game(MainWindow& wnd)
 	:
@@ -47,18 +46,42 @@ void Game::Go()
 void Game::UpdateModel()
 {
 	const float time = Clock.GetEllapsed();
-	UpdateCamera(time);
+	if (wnd.kbd.KeyIsPressed('Q')) {
+		x_rot += angle_wrap(d_rot * time);
+	}
+	if (wnd.kbd.KeyIsPressed('W')) {
+		y_rot += angle_wrap(d_rot * time);
+	}
+	if (wnd.kbd.KeyIsPressed('E')) {
+		z_rot += angle_wrap(d_rot * time);
+	}
+	if (wnd.kbd.KeyIsPressed('A')) {
+		x_rot -= angle_wrap(d_rot * time);
+	}
+	if (wnd.kbd.KeyIsPressed('S')) {
+		y_rot -= angle_wrap(d_rot * time);
+	}
+	if (wnd.kbd.KeyIsPressed('D')) {
+		z_rot -= angle_wrap(d_rot * time);
+	}
+	//UpdateCamera(time);
 }
 
 void Game::ComposeFrame()
 {
 	auto cube_vib = Cube.GetVIB();
+	const fMatrix3D Rotation =
+		fMatrix3D::RotationX(x_rot) *
+		fMatrix3D::RotationY(y_rot) *
+		fMatrix3D::RotationZ(z_rot) * 
+		fMatrix3D::Identity();
 	for (auto& v : cube_vib.Points) {
+		v = Rotation * v;
 		v += {0, 0, 1};
 		ndc.Transform(v);
 	}
 	for (const auto& l : cube_vib.Lines) {
-		gfx.DrawLine(fVector2D(cube_vib.Points[l.first]), fVector2D(cube_vib.Points[l.second]), Colors::White);
+		gfx.DrawLine(cube_vib.Points[l.first], cube_vib.Points[l.second], Colors::White);
 	}
 }
 
