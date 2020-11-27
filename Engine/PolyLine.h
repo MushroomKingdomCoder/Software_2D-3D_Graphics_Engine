@@ -13,7 +13,7 @@ private:
 	fVector2D Pos = { 0,0 };
 	float Scale = 1.0f;
 	float Rotation = 0.0f;
-	fMatrix3D Transformation = fMatrix3D::Identity();
+	fMatrix2Dplus Transformation = fMatrix2Dplus::Identity();
 
 public:
 	PolyLine() = default;

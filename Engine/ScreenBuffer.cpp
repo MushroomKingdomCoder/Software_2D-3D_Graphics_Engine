@@ -16,12 +16,12 @@ void ScreenBuffer::DrawPolyLine(PolyLine poly, Color c)
 	auto polyline = poly.GetRendered();
 	if (fRect(polyline).OverlappedWith(camera.GetViewable())) {
 		//Post-Render to Visible Screen from Camera
-		fMatrix3D Transformation =
-			fMatrix3D::Translation(Graphics::ScreenRect().GetCenter()) *
-			fMatrix3D::FlipY() *
-			fMatrix3D::Scale(camera.ZoomFactor()) *
-			fMatrix3D::Rotation(-camera.TiltAngle()) *
-			fMatrix3D::Translation(-camera.Position());
+		fMatrix2Dplus Transformation =
+			fMatrix2Dplus::Translation(Graphics::ScreenRect().GetCenter()) *
+			fMatrix2Dplus::FlipY() *
+			fMatrix2Dplus::Scale(camera.ZoomFactor()) *
+			fMatrix2Dplus::Rotation(-camera.TiltAngle()) *
+			fMatrix2Dplus::Translation(-camera.Position());
 		for (auto& v : polyline) {
 			v = Transformation * v;
 		}

@@ -30,9 +30,11 @@
 #include "Vector.h"
 #include "Timer.h"
 #include "SpriteEffects.h"
-#include "PulsatingStar.h"
+#include "VertexIndexBuffer.h"
 #include "ScreenBuffer.h"
+#include "NDCBuffer.h"
 #include "PolyLine.h"
+#include "Prism.h"
 #include "Camera.h"
 #include <random>
 
@@ -47,7 +49,6 @@ private:
 	void ComposeFrame();
 	void UpdateModel();
 	void UpdateCamera(const float time);
-	void GenerateNewStar();
 	/********************************/
 	/*  User Functions              */
 	/********************************/
@@ -60,49 +61,11 @@ private:
 	ScreenBuffer Screen;
 	fVector2D MousePos;
 	fVector2D MousePos_Old;
+	static constexpr int panSpd = 60;
+	static constexpr float spinSpd = M_PI / 16.0f;
 	/********************************/
 	/*  User Variables              */
 	/********************************/
-	static constexpr int nStars = 10000;
-	static constexpr long long int xMin = -60000;
-	static constexpr long long int xMax = 60000;
-	static constexpr long long int yMin = -45000;
-	static constexpr long long int yMax = 45000;
-	static constexpr int minFlares = 4;
-	static constexpr int maxFlares = 9;
-	static constexpr float minRadius = 10.0f;
-	static constexpr float maxRadius = 150.0f;
-	static constexpr float minScale = 1.25f;
-	static constexpr float maxScale = 10.0f;
-	static constexpr unsigned char minColor = 0;
-	static constexpr unsigned char maxColor = 255;
-	static constexpr int minBlinkSpd = 64;
-	static constexpr int maxBlinkSpd = 512;
-	static constexpr float minGrowthSpd = 1.0f;
-	static constexpr float maxGrowthSpd = 3.0f;
-	static constexpr float minSpinSpd = -M_PI / 4.0f;
-	static constexpr float maxSpinSpd = M_PI / 4.0f;
-
-	std::random_device rd;
-	std::mt19937 rng;
-	std::uniform_int_distribution<int> XPOS{ xMin,xMax };
-	std::uniform_int_distribution<int> YPOS{ yMin,yMax };
-	std::uniform_int_distribution<int> FLR{ minFlares,maxFlares };
-	std::uniform_real_distribution<float> RAD{ minRadius,maxRadius };
-	std::uniform_real_distribution<float> SCL{ minScale,maxScale };
-	std::uniform_int_distribution<int> COL{ minColor,maxColor };
-	std::uniform_int_distribution<int> BSPD{ minBlinkSpd,maxBlinkSpd };
-	std::uniform_real_distribution<float> GSPD{ minGrowthSpd,maxGrowthSpd };
-	std::uniform_real_distribution<float> SSPD{ minSpinSpd,maxSpinSpd };
-
-	std::vector<PulsatingStar> Stars;
-	fVector2D pos;
-	float i_rad;
-	float o_rad;
-	float scale;
-	fRect newbie;
-
-	//Camera
-	static constexpr int panSpd = 60;
-	static constexpr float spinSpd = M_PI / 16.0f;
+	NDCBuffer ndc;
+	Prism Cube = Prism::MakeCube(1.0f);
 };

@@ -28,21 +28,11 @@ Game::Game(MainWindow& wnd)
 	:
 	wnd(wnd),
 	gfx(wnd),
-	rng(rd()),
 	camera(),
 	Screen(gfx, camera),
 	MousePos(wnd.mouse.GetPos()),
 	MousePos_Old(MousePos)
 {
-	Stars.reserve(nStars);
-	for (int i = 0; i < nStars; ++i) {
-		GenerateNewStar();
-		while (std::any_of(Stars.begin(), Stars.end(), [&](const PulsatingStar& star) { return star.GetMaxRect().OverlappedWith(newbie); })) {
-			GenerateNewStar();
-		}
-		Stars.emplace_back(PulsatingStar(FLR(rng), i_rad, o_rad, pos, scale, Color(COL(rng), COL(rng), COL(rng)), BSPD(rng), GSPD(rng), SSPD(rng)));
-	}
-
 	Clock.Start();
 }
 
@@ -57,19 +47,23 @@ void Game::Go()
 void Game::UpdateModel()
 {
 	const float time = Clock.GetEllapsed();
-	for (auto& star : Stars) {
-		star.Pulse(time);
-	}
-
 	UpdateCamera(time);
 }
 
 void Game::ComposeFrame()
 {
-	for (auto& star : Stars) {
-		star.Draw(Screen);
+	auto cube_vib = Cube.GetVIB();
+	for (auto& v : cube_vib.Points) {
+		v += {0, 0, 1};
+		ndc.Transform(v);
+	}
+	for (const auto& l : cube_vib.Lines) {
+		gfx.DrawLine(fVector2D(cube_vib.Points[l.first]), fVector2D(cube_vib.Points[l.second]), Colors::White);
 	}
 }
+
+
+
 
 void Game::UpdateCamera(const float time)
 {
@@ -99,17 +93,5 @@ void Game::UpdateCamera(const float time)
 	if (wnd.kbd.KeyIsPressed('E')) {
 		camera.Tilt(float(-M_PI * time * spinSpd));
 	}
-}
-
-void Game::GenerateNewStar()
-{
-	pos = fVector2D(float(XPOS(rng)), float(YPOS(rng)));
-	scale = SCL(rng);
-	while (i_rad > (o_rad - 30.0f)) {
-		i_rad = RAD(rng);
-		o_rad = RAD(rng);
-	}
-	const float maxln = o_rad * scale;
-	newbie = fRect(fVector2D(pos.X - maxln, pos.Y + maxln), maxln);
 }
 

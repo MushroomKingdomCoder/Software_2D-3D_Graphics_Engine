@@ -28,10 +28,10 @@ std::vector<fVector2D> PolyLine::GetRendered()
 {
 	auto poly = Model;
 	Transformation =
-		fMatrix3D::Translation(Pos) *
-		fMatrix3D::Scale(Scale) * 
-		fMatrix3D::Rotation(Rotation) * 
-		fMatrix3D::Identity();
+		fMatrix2Dplus::Translation(Pos) *
+		fMatrix2Dplus::Scale(Scale) * 
+		fMatrix2Dplus::Rotation(Rotation) * 
+		fMatrix2Dplus::Identity();
 	for (auto& v : poly) {
 		v = Transformation * v;
 	}

@@ -151,8 +151,9 @@
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="Mouse.h" />
+    <ClInclude Include="NDCBuffer.h" />
     <ClInclude Include="PolyLine.h" />
-    <ClInclude Include="PulsatingStar.h" />
+    <ClInclude Include="Prism.h" />
     <ClInclude Include="Rect.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ScreenBuffer.h" />
@@ -163,6 +164,7 @@
     <ClInclude Include="TextFont.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Vector.h" />
+    <ClInclude Include="VertexIndexBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
