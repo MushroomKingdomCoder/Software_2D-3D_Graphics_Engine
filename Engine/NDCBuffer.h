@@ -21,8 +21,9 @@ public:
 	fVector3D GetTransformed(const fVector3D& point) const
 	{
 		auto Point = point;
-		Point.X = (Point.X + 1.0f) * xFactor;
-		Point.Y = (-Point.Y + 1.0f) * yFactor;
+		const float zInv = 1.0f / point.Z;
+		Point.X = (Point.X * zInv + 1.0f) * xFactor;
+		Point.Y = (-Point.Y * zInv + 1.0f) * yFactor;
 		return Point;
 	}
 };

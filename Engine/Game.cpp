@@ -27,6 +27,7 @@ Game::Game(MainWindow& wnd)
 	:
 	wnd(wnd),
 	gfx(wnd),
+	rng(rd()),
 	camera(),
 	Screen(gfx, camera),
 	MousePos(wnd.mouse.GetPos()),
@@ -69,19 +70,19 @@ void Game::UpdateModel()
 
 void Game::ComposeFrame()
 {
-	auto cube_vib = Cube.GetVIB();
+	auto cube_tib = Cube.GetTIB();
 	const fMatrix3D Rotation =
 		fMatrix3D::RotationX(x_rot) *
 		fMatrix3D::RotationY(y_rot) *
 		fMatrix3D::RotationZ(z_rot) * 
 		fMatrix3D::Identity();
-	for (auto& v : cube_vib.Points) {
+	for (auto& v : cube_tib.Points) {
 		v = Rotation * v;
-		v += {0, 0, 1};
+		v += {0, 0, 3};
 		ndc.Transform(v);
 	}
-	for (const auto& l : cube_vib.Lines) {
-		gfx.DrawLine(cube_vib.Points[l.first], cube_vib.Points[l.second], Colors::White);
+	for (const auto& t : cube_tib.Triangles) {
+		gfx.DrawTriangle(cube_tib.Points[t[0]], cube_tib.Points[t[1]], cube_tib.Points[t[2]], Color(COL(rng),COL(rng),COL(rng)));
 	}
 }
 

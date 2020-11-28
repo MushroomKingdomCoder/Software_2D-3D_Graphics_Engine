@@ -416,6 +416,78 @@ void Graphics::DrawSprite(int X, int Y, const Sprite& Sprite, const iCRect& Sect
 	DrawSprite(ScreenRect(), X, Y, Sprite, Sect, FX, ckey, aux);
 }
 
+void Graphics::DrawTriangle(const fVector2D& p0, const fVector2D& p1, const fVector2D& p2, Color c)
+{
+	const fVector2D* pV0 = &p0;
+	const fVector2D* pV1 = &p1;
+	const fVector2D* pV2 = &p2;
+
+	// Sort by y
+	if (pV1->Y < pV0->Y) { std::swap(pV1, pV0); }
+	if (pV2->Y < pV1->Y) { std::swap(pV2, pV1); }
+	if (pV1->Y < pV0->Y) { std::swap(pV1, pV0); }
+
+	if (pV1->Y == pV0->Y) { // Natural Flat-Top
+		if (pV1->X < pV0->X) { std::swap(pV1, pV0); } // Sort x
+		DrawFlatTopTriangle(*pV0, *pV1, *pV2, c);
+	}
+	else if (pV2->Y == pV1->Y) { // Natural Flat-Bottom
+		if (pV2->X < pV1->X) { std::swap(pV2, pV1); } // Sort x
+		DrawFlatBottomTriangle(*pV0, *pV1, *pV2, c);
+	}
+	else {
+		// Find Splitting Vertex
+		const float AlphaSplit = (pV1->Y - pV0->Y) / (pV2->Y - pV0->Y);
+		const fVector2D s_vtx = *pV0 + (*pV2 - *pV0) * AlphaSplit;
+
+		if (s_vtx.X < pV1->X) { // Major Left
+			DrawFlatBottomTriangle(*pV0, s_vtx, *pV1, c);
+			DrawFlatTopTriangle(s_vtx, *pV1, *pV2, c);
+		}
+		else { // Major Right
+			DrawFlatBottomTriangle(*pV0, *pV1, s_vtx, c);
+			DrawFlatTopTriangle(*pV1, s_vtx, *pV2, c);
+		}
+	}
+}
+
+void Graphics::DrawFlatTopTriangle(const fVector2D& p0, const fVector2D& p1, const fVector2D& p2, Color c)
+{
+	const float w0 = (p2.X - p0.X) / (p2.Y - p0.Y);
+	const float w1 = (p2.X - p1.X) / (p2.Y - p1.Y);
+
+	const int yStart = (int)ceil(p0.Y - 0.5f);
+	const int yEnd = (int)ceil(p2.Y - 0.5f);
+
+	for (int y = yStart; y < yEnd; ++y) {
+		const float x0 = w0 * (float(y) + 0.5f - p0.Y) + p0.X;
+		const float x1 = w1 * (float(y) + 0.5f - p1.Y) + p1.X;
+		const int xStart = (int)ceil(x0 - 0.5);
+		const int xEnd = (int)ceil(x1 - 0.5);
+		for (int x = xStart; x < xEnd; ++x) {
+			PutPixel(x, y, c);
+		}
+	}
+}
+
+void Graphics::DrawFlatBottomTriangle(const fVector2D& p0, const fVector2D& p1, const fVector2D& p2, Color c)
+{
+	const float w1 = (p0.X - p1.X) / (p0.Y - p1.Y);
+	const float w2 = (p0.X - p2.X) / (p0.Y - p2.Y);
+
+	const int yStart = (int)ceil(p0.Y - 0.5f);
+	const int yEnd = (int)ceil(p2.Y - 0.5f);
+	for (int y = yStart; y < yEnd; ++y) {
+		const float x1 = w1 * (float(y) + 0.5f - p0.Y) + p0.X;
+		const float x2 = w2 * (float(y) + 0.5f - p0.Y) + p0.X;
+		const int xStart = (int)ceil(x1 - 0.5f);
+		const int xEnd = (int)ceil(x2 - 0.5f);
+		for (int x = xStart; x < xEnd; ++x) {
+			PutPixel(x, y, c);
+		}
+	}
+}
+
 //////////////////////////////////////////////////
 //           Graphics Exception
 Graphics::Exception::Exception( HRESULT hr,const std::wstring& note,const wchar_t* file,unsigned int line )

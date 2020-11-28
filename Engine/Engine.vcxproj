@@ -164,6 +164,7 @@
     <ClInclude Include="SpriteEffects.h" />
     <ClInclude Include="TextFont.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="TriangleIndexBuffer.h" />
     <ClInclude Include="Vector.h" />
     <ClInclude Include="VertexIndexBuffer.h" />
   </ItemGroup>

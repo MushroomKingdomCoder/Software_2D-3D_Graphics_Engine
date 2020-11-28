@@ -31,6 +31,7 @@
 #include "Timer.h"
 #include "SpriteEffects.h"
 #include "VertexIndexBuffer.h"
+#include "TriangleIndexBuffer.h"
 #include "ScreenBuffer.h"
 #include "NDCBuffer.h"
 #include "PolyLine.h"
@@ -73,4 +74,8 @@ private:
 	float x_rot = 0.0f;
 	float y_rot = 0.0f;
 	float z_rot = 0.0f;
+
+	std::random_device rd;
+	std::mt19937 rng;
+	std::uniform_int_distribution<int> COL{ 0,255 };
 };
