@@ -278,6 +278,14 @@ public:
 	{
 		return type(X * vec.X + Y * vec.Y + Z * vec.Z);
 	}
+	Vector3D operator %(const Vector3D& vec3) const
+	{
+		return Vector3D(
+			((Y * vec3.Z) - (Z * vec3.Y)),
+			((Z * vec3.X) - (X * vec3.Z)),
+			((X * vec3.Y) - (Y * vec3.X))
+		);
+	}
 	type Length()
 	{
 		return (type)sqrt(LengthSq());

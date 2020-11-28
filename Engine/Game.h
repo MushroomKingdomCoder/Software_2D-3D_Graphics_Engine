@@ -30,8 +30,7 @@
 #include "Vector.h"
 #include "Timer.h"
 #include "SpriteEffects.h"
-#include "VertexIndexBuffer.h"
-#include "TriangleIndexBuffer.h"
+#include "IndexBuffer3D.h"
 #include "ScreenBuffer.h"
 #include "NDCBuffer.h"
 #include "PolyLine.h"
@@ -60,6 +59,7 @@ private:
 	//Constant Objects
 	Timer Clock;
 	Camera camera;
+	NDCBuffer ndc;
 	ScreenBuffer Screen;
 	fVector2D MousePos;
 	fVector2D MousePos_Old;
@@ -68,12 +68,8 @@ private:
 	/********************************/
 	/*  User Variables              */
 	/********************************/
-	NDCBuffer ndc;
-	Prism Cube = Prism::MakeCube(1.0f);
+	Prism Cube = Prism::MakeCube(1.0f, { 0,0,3 });
 	static constexpr float d_rot = M_PI;
-	float x_rot = 0.0f;
-	float y_rot = 0.0f;
-	float z_rot = 0.0f;
 
 	std::random_device rd;
 	std::mt19937 rng;

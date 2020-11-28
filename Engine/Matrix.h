@@ -239,8 +239,8 @@ public:
 	}
 	static Matrix3D RotationX(const float radians)
 	{
-		const float cosR = cos(radians);
-		const float sinR = sin(radians);
+		const float cosR = (float)cos(radians);
+		const float sinR = (float)sin(radians);
 		return Matrix3D{
 			type(1),	type(0),	type(0),
 			type(0),	cosR,		-sinR,
@@ -249,8 +249,8 @@ public:
 	}
 	static Matrix3D RotationY(const float radians)
 	{
-		const float cosR = cos(radians);
-		const float sinR = sin(radians);
+		const float cosR = (float)cos(radians);
+		const float sinR = (float)sin(radians);
 		return Matrix3D{
 			cosR,		type(0),	sinR,
 			type(0),	type(1),	type(0),
@@ -259,8 +259,8 @@ public:
 	}
 	static Matrix3D RotationZ(const float radians)
 	{
-		const float cosR = cos(radians);
-		const float sinR = sin(radians);
+		const float cosR = (float)cos(radians);
+		const float sinR = (float)sin(radians);
 		return Matrix3D{
 			cosR,		-sinR,		type(0),
 			sinR,		cosR,		type(0),

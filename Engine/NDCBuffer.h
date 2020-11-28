@@ -5,8 +5,8 @@
 class NDCBuffer
 {
 private:
-	int xFactor;
-	int yFactor;
+	int xFactor = Graphics::ScreenWidth / 2;
+	int yFactor = Graphics::ScreenHeight / 2;
 
 public:
 	NDCBuffer()

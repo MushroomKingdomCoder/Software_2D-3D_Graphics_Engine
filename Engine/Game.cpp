@@ -29,7 +29,7 @@ Game::Game(MainWindow& wnd)
 	gfx(wnd),
 	rng(rd()),
 	camera(),
-	Screen(gfx, camera),
+	Screen(gfx, camera, ndc),
 	MousePos(wnd.mouse.GetPos()),
 	MousePos_Old(MousePos)
 {
@@ -48,42 +48,29 @@ void Game::UpdateModel()
 {
 	const float time = Clock.GetEllapsed();
 	if (wnd.kbd.KeyIsPressed('Q')) {
-		x_rot += angle_wrap(d_rot * time);
+		Cube.RotateX(d_rot * time);
 	}
 	if (wnd.kbd.KeyIsPressed('W')) {
-		y_rot += angle_wrap(d_rot * time);
+		Cube.RotateY(d_rot * time);
 	}
 	if (wnd.kbd.KeyIsPressed('E')) {
-		z_rot += angle_wrap(d_rot * time);
+		Cube.RotateZ(d_rot * time);
 	}
 	if (wnd.kbd.KeyIsPressed('A')) {
-		x_rot -= angle_wrap(d_rot * time);
+		Cube.RotateX(-d_rot * time);
 	}
 	if (wnd.kbd.KeyIsPressed('S')) {
-		y_rot -= angle_wrap(d_rot * time);
+		Cube.RotateY(-d_rot * time);
 	}
 	if (wnd.kbd.KeyIsPressed('D')) {
-		z_rot -= angle_wrap(d_rot * time);
+		Cube.RotateZ(-d_rot * time);
 	}
 	//UpdateCamera(time);
 }
 
 void Game::ComposeFrame()
 {
-	auto cube_tib = Cube.GetTIB();
-	const fMatrix3D Rotation =
-		fMatrix3D::RotationX(x_rot) *
-		fMatrix3D::RotationY(y_rot) *
-		fMatrix3D::RotationZ(z_rot) * 
-		fMatrix3D::Identity();
-	for (auto& v : cube_tib.Points) {
-		v = Rotation * v;
-		v += {0, 0, 3};
-		ndc.Transform(v);
-	}
-	for (const auto& t : cube_tib.Triangles) {
-		gfx.DrawTriangle(cube_tib.Points[t[0]], cube_tib.Points[t[1]], cube_tib.Points[t[2]], Color(COL(rng),COL(rng),COL(rng)));
-	}
+	Screen.DrawPrismOutlined(Cube, Colors::Blue, Colors::Cyan);
 }
 
 

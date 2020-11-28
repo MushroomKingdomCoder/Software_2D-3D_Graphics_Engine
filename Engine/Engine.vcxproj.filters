@@ -102,13 +102,10 @@
     <ClInclude Include="Prism.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VertexIndexBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Math.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TriangleIndexBuffer.h">
+    <ClInclude Include="IndexBuffer3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -159,6 +156,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PolyLine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Prism.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
