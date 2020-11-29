@@ -3,6 +3,7 @@
 #include "Graphics.h"
 #include "PolyLine.h"
 #include "Matrix.h"
+#include "Vector.h"
 #include "Camera.h"
 #include "Prism.h"
 
@@ -13,8 +14,8 @@ private:
 	Camera& camera;
 	NDCBuffer ndc;
 private:
-	void CullTriangles(TriangleIndexBuffer& tib);
-	void CullLines(LineIndexBuffer& lib, TriangleIndexBuffer& tib);
+	void CullTriangles(TriangleIndexBuffer& tib, const std::vector<fVector3D>& points);
+	void CullLines(LineIndexBuffer& lib, TriangleIndexBuffer& tib, const std::vector<fVector3D>& points);
 
 public:
 	ScreenBuffer(Graphics& gfx, Camera& camera, NDCBuffer& ndc);

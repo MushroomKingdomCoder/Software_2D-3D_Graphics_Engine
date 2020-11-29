@@ -9,15 +9,19 @@ class Prism
 {
 private:
 	std::vector<fVector3D> Verticies;
+	LineIndexBuffer LIB;
+	TriangleIndexBuffer TIB;
+private:
 	float rot_x = 0.0f;
 	float rot_y = 0.0f;
 	float rot_z = 0.0f;
 	fVector3D Position;
 
 public:
-	Prism(std::vector<fVector3D> verts, fVector3D pos = { 0,0,0 });
+	Prism(std::vector<fVector3D> verts, LineIndexBuffer lib, TriangleIndexBuffer tib, fVector3D pos = { 0,0,0 });
 	LineIndexBuffer GetLIB() const;
 	TriangleIndexBuffer GetTIB() const;
+	std::vector<fVector3D> GetVerticies() const;
 public:
 	void RotateX(const float radians);
 	void RotateY(const float radians);
