@@ -14,7 +14,20 @@ void ScreenBuffer::CullTriangles(TriangleIndexBuffer& tib, const std::vector<fVe
 		const auto& v0 = points[tib.Triangles[i][0]];
 		const auto& v1 = points[tib.Triangles[i][1]];
 		const auto& v2 = points[tib.Triangles[i][2]];
-		if ((((v1 - v0) % (v2 - v0)) * v0) >= 0.0f) {
+		if ((((v1 - v0) % (v2 - v0)).DotProduct(v0) >= 0.0f)) {
+			tib.Culling[i] = true;
+		}
+	}
+}
+
+void ScreenBuffer::CullTriangles(TriangleIndexBuffer& tib, const std::vector<fTextureVector>& points)
+{
+	for (int i = 0; i < tib.Triangles.size(); ++i) {
+		tib.Culling[i] = false;
+		const auto& v0 = points[tib.Triangles[i][0]].pos;
+		const auto& v1 = points[tib.Triangles[i][1]].pos;
+		const auto& v2 = points[tib.Triangles[i][2]].pos;
+		if ((((v1 - v0) % (v2 - v0)).DotProduct(v0) >= 0.0f)) {
 			tib.Culling[i] = true;
 		}
 	}
@@ -66,13 +79,13 @@ void ScreenBuffer::DrawPolyLine(PolyLine poly, Color c)
 	}
 }
 
-void ScreenBuffer::DrawPrismWireframe(Prism& prism, Color c)
+void ScreenBuffer::DrawObject3DWireframe(Object3D& obj, Color c)
 {
-	auto lib = prism.GetLIB();
-	auto points = prism.GetVerticies();
+	auto lib = obj.GetLIB();
+	auto points = obj.GetVerticies();
 	for (auto& v : points) {
-		v = prism.RotationMatrix() * v;
-		v += prism.GetPosition();
+		v = obj.RotationMatrix() * v;
+		v += obj.GetPosition();
 		ndc.Transform(v);
 	}
 	for (const auto& l : lib.Lines) {
@@ -80,13 +93,13 @@ void ScreenBuffer::DrawPrismWireframe(Prism& prism, Color c)
 	}
 }
 
-void ScreenBuffer::DrawPrismRasterized(Prism& prism, Color c)
+void ScreenBuffer::DrawObject3DRasterized(Object3D& obj, Color c)
 {
-	auto tib = prism.GetTIB();
-	auto points = prism.GetVerticies();
+	auto tib = obj.GetTIB();
+	auto points = obj.GetVerticies();
 	for (auto& v : points) {
-		v = prism.RotationMatrix() * v;
-		v += prism.GetPosition();
+		v = obj.RotationMatrix() * v;
+		v += obj.GetPosition();
 	}
 	CullTriangles(tib, points);
 	for (auto& v : points) {
@@ -103,14 +116,14 @@ void ScreenBuffer::DrawPrismRasterized(Prism& prism, Color c)
 	}
 }
 
-void ScreenBuffer::DrawPrismOutline(Prism& prism, Color c)
+void ScreenBuffer::DrawObject3DOutline(Object3D& obj, Color c)
 {
-	auto lib = prism.GetLIB();
-	auto tib = prism.GetTIB();
-	auto points = prism.GetVerticies();
+	auto lib = obj.GetLIB();
+	auto tib = obj.GetTIB();
+	auto points = obj.GetVerticies();
 	for (auto& v : points) {
-		v = prism.RotationMatrix() * v;
-		v += prism.GetPosition();
+		v = obj.RotationMatrix() * v;
+		v += obj.GetPosition();
 	}
 	CullTriangles(tib, points);
 	for (auto& v : points) {
@@ -127,14 +140,14 @@ void ScreenBuffer::DrawPrismOutline(Prism& prism, Color c)
 	}
 }
 
-void ScreenBuffer::DrawPrismOutlined(Prism& prism, Color c0, Color c1)
+void ScreenBuffer::DrawObject3DOutlined(Object3D& obj, Color c0, Color c1)
 {
-	auto lib = prism.GetLIB();
-	auto tib = prism.GetTIB();
-	auto points = prism.GetVerticies();
+	auto lib = obj.GetLIB();
+	auto tib = obj.GetTIB();
+	auto points = obj.GetVerticies();
 	for (auto& v : points) {
-		v = prism.RotationMatrix() * v;
-		v += prism.GetPosition();
+		v = obj.RotationMatrix() * v;
+		v += obj.GetPosition();
 	}
 	CullTriangles(tib, points);
 	for (auto& v : points) {
@@ -155,6 +168,29 @@ void ScreenBuffer::DrawPrismOutlined(Prism& prism, Color c0, Color c1)
 			gfx.DrawLine(
 				points[lib.Lines[i].first],
 				points[lib.Lines[i].second], c1
+			);
+		}
+	}
+}
+
+void ScreenBuffer::DrawTexturedObject3D(Object3D& obj, Sprite& texture)
+{
+	auto tib = obj.GetTIB();
+	auto points = obj.GetTextureVerticies();
+	for (auto& v : points) {
+		v = obj.RotationMatrix() * v.pos;
+		v.pos += obj.GetPosition();
+	}
+	CullTriangles(tib, points);
+	for (auto& v : points) {
+		ndc.Transform(v.pos);
+	}
+	for (int i = 0; i < tib.Triangles.size(); ++i) {
+		if (!tib.Culling[i]) {
+			gfx.DrawTexturedTriangle(
+				points[tib.Triangles[i][0]],
+				points[tib.Triangles[i][1]],
+				points[tib.Triangles[i][2]], texture
 			);
 		}
 	}

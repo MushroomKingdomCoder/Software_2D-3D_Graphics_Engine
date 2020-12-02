@@ -12,6 +12,7 @@ struct TriangleIndexBuffer : public IndexBuffer3D
 {
 	std::vector<std::vector<int>> Triangles;
 public:
+	TriangleIndexBuffer() = default;
 	TriangleIndexBuffer(std::vector<std::vector<int>> triangles)
 		:
 		Triangles(std::move(triangles))
@@ -30,6 +31,7 @@ struct LineIndexBuffer : public IndexBuffer3D
 {
 	std::vector<std::pair<int, int>> Lines;
 public:
+	LineIndexBuffer() = default;
 	LineIndexBuffer(std::vector<std::pair<int, int>> lines)
 		:
 		Lines(std::move(lines))

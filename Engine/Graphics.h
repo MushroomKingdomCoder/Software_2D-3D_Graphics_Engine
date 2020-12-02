@@ -72,10 +72,13 @@ public:
 	void DrawSprite(const iCRect& Clip, int X, int Y, const Sprite& Sprite, std::function<void(Graphics&, int, int, Color, Color, Color)>FX = SpriteEffect::Null, Color ckey = Colors::Magenta, Color aux = Colors::White);
 	void DrawSprite(int X, int Y, const Sprite& Sprite, const iCRect& Sect, std::function<void(Graphics&, int, int, Color, Color, Color)>FX = SpriteEffect::Null, Color ckey = Colors::Magenta, Color aux = Colors::White);
 	void DrawTriangle(const fVector2D& p0, const fVector2D& p1, const fVector2D& p2, Color c);
+	void DrawTexturedTriangle(const fTextureVector& p0, const fTextureVector& p1, const fTextureVector& p2, const Sprite& texture);
 	~Graphics();
 private:
 	void DrawFlatTopTriangle(const fVector2D& p0, const fVector2D& p1, const fVector2D& p2, Color c);
 	void DrawFlatBottomTriangle(const fVector2D& p0, const fVector2D& p1, const fVector2D& p2, Color c);
+	void DrawFlatTopTexturedTriangle(const fTextureVector& p0, const fTextureVector& p1, const fTextureVector& p2, const Sprite& texture);
+	void DrawFlatBottomTexturedTriangle(const fTextureVector& p0, const fTextureVector& p1, const fTextureVector& p2, const Sprite& texture);
 private:
 	Microsoft::WRL::ComPtr<IDXGISwapChain>				pSwapChain;
 	Microsoft::WRL::ComPtr<ID3D11Device>				pDevice;

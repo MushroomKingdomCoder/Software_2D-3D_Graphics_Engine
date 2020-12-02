@@ -70,7 +70,7 @@ void Game::UpdateModel()
 
 void Game::ComposeFrame()
 {
-	Screen.DrawPrismOutlined(Cube, Colors::Blue, Colors::Cyan);
+	Screen.DrawObject3DOutlined(Cube, Colors::Red, Colors::White);
 }
 
 

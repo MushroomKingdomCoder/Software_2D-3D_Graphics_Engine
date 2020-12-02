@@ -200,6 +200,10 @@ public:
 		}
 		return r_vec;
 	}
+	Vector2D<type> operator *(const Vector2D<type>& vec2) const
+	{
+		return Vector2D<type>(*this * Vector3D<type>(vec2));
+	}
 	Matrix3D operator *(const Matrix3D& mtx) const
 	{
 		Matrix3D r_mtx;

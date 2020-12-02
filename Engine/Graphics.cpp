@@ -437,8 +437,7 @@ void Graphics::DrawTriangle(const fVector2D& p0, const fVector2D& p1, const fVec
 	}
 	else {
 		// Find Splitting Vertex
-		const float AlphaSplit = (pV1->Y - pV0->Y) / (pV2->Y - pV0->Y);
-		const fVector2D s_vtx = *pV0 + (*pV2 - *pV0) * AlphaSplit;
+		const fVector2D s_vtx = pV0->InterpolatedTo(*pV1, *pV2);
 
 		if (s_vtx.X < pV1->X) { // Major Left
 			DrawFlatBottomTriangle(*pV0, s_vtx, *pV1, c);
@@ -447,6 +446,40 @@ void Graphics::DrawTriangle(const fVector2D& p0, const fVector2D& p1, const fVec
 		else { // Major Right
 			DrawFlatBottomTriangle(*pV0, *pV1, s_vtx, c);
 			DrawFlatTopTriangle(*pV1, s_vtx, *pV2, c);
+		}
+	}
+}
+
+void Graphics::DrawTexturedTriangle(const fTextureVector& p0, const fTextureVector& p1, const fTextureVector& p2, const Sprite& texture)
+{
+	const fTextureVector* pV0 = &p0;
+	const fTextureVector* pV1 = &p1;
+	const fTextureVector* pV2 = &p2;
+
+	// Sort by y
+	if (pV1->pos.Y < pV0->pos.Y) { std::swap(pV1, pV0); }
+	if (pV2->pos.Y < pV1->pos.Y) { std::swap(pV2, pV1); }
+	if (pV1->pos.Y < pV0->pos.Y) { std::swap(pV1, pV0); }
+
+	if (pV1->pos.Y == pV0->pos.Y) { // Natural Flat-Top
+		if (pV1->pos.X < pV0->pos.X) { std::swap(pV1, pV0); } // Sort x
+		DrawFlatTopTexturedTriangle(*pV0, *pV1, *pV2, texture);
+	}
+	else if (pV2->pos.Y == pV1->pos.Y) { // Natural Flat-Bottom
+		if (pV2->pos.X < pV1->pos.X) { std::swap(pV2, pV1); } // Sort x
+		DrawFlatBottomTexturedTriangle(*pV0, *pV1, *pV2, texture);
+	}
+	else {
+		// Find Splitting Vertex
+		const fTextureVector s_vtx = pV0->InterpolatedTo(*pV1, *pV2);
+
+		if (s_vtx.pos.X < pV1->pos.X) { // Major Left
+			DrawFlatBottomTexturedTriangle(*pV0, s_vtx, *pV1, texture);
+			DrawFlatTopTexturedTriangle(s_vtx, *pV1, *pV2, texture);
+		}
+		else { // Major Right
+			DrawFlatBottomTexturedTriangle(*pV0, *pV1, s_vtx, texture);
+			DrawFlatTopTexturedTriangle(*pV1, s_vtx, *pV2, texture);
 		}
 	}
 }
@@ -484,6 +517,48 @@ void Graphics::DrawFlatBottomTriangle(const fVector2D& p0, const fVector2D& p1, 
 		const int xEnd = (int)ceil(x2 - 0.5f);
 		for (int x = xStart; x < xEnd; ++x) {
 			PutPixel(x, y, c);
+		}
+	}
+}
+
+void Graphics::DrawFlatTopTexturedTriangle(const fTextureVector& p0, const fTextureVector& p1, const fTextureVector& p2, const Sprite& texture)
+{
+	fTextureVector curLstep = p0;
+	fTextureVector curRstep = p1;
+	const fTextureVector lStep = (p2 - p0) / (p2.pos.Y - p0.pos.Y);
+	const fTextureVector rStep = (p2 - p1) / (p2.pos.Y - p1.pos.Y);
+	const int yStart = (int)ceil(p0.pos.Y - 0.5f);
+	const int yEnd = (int)ceil(p2.pos.Y - 0.5f);
+	for (int y = yStart; y < yEnd; ++y, curLstep += lStep, curRstep += rStep) {
+		fTextureVector curXstep = curLstep;
+		const fTextureVector xStep = (curRstep - curLstep) / (curRstep.pos.X - curLstep.pos.X);
+		const int xStart = (int)ceil(curLstep.pos.X - 0.5f);
+		const int xEnd = (int)ceil(curRstep.pos.X - 0.5f);
+		const int curYpxl = std::min(int(curLstep.tpos.Y * texture.getHeight()), texture.getHeight() - 1);
+		for (int x = xStart; x < xEnd; ++x, curXstep += xStep) {
+			iVector2D pxl = iVector2D(std::min(int(curXstep.tpos.X * texture.getWidth()), texture.getWidth() - 1), curYpxl);
+			PutPixel(x, y, texture.GetPixel(pxl.X, pxl.Y));
+		}
+	}
+}
+
+void Graphics::DrawFlatBottomTexturedTriangle(const fTextureVector& p0, const fTextureVector& p1, const fTextureVector& p2, const Sprite& texture)
+{
+	fTextureVector curLstep = p0;
+	fTextureVector curRstep = p0;
+	const fTextureVector lStep = (p1 - p0) / (p1.pos.Y - p0.pos.Y);
+	const fTextureVector rStep = (p2 - p0) / (p2.pos.Y - p0.pos.Y);
+	const int yStart = (int)ceil(p0.pos.Y - 0.5f);
+	const int yEnd = (int)ceil(p2.pos.Y - 0.5f);
+	for (int y = yStart; y < yEnd; ++y, curLstep += lStep, curRstep += rStep) {
+		fTextureVector curXstep = curLstep;
+		const fTextureVector xStep = (curRstep - curLstep) / (curRstep.pos.X - curLstep.pos.X);
+		const int xStart = (int)ceil(curLstep.pos.X - 0.5f);
+		const int xEnd = (int)ceil(curRstep.pos.X - 0.5f);
+		const int curYpxl = std::min(int(curLstep.tpos.Y * texture.getHeight()), texture.getHeight() - 1);
+		for (int x = xStart; x < xEnd; ++x, curXstep += xStep) {
+			iVector2D pxl = iVector2D(std::min(int(curXstep.tpos.X * texture.getWidth()), texture.getWidth() - 1), curYpxl);
+			PutPixel(x, y, texture.GetPixel(pxl.X, pxl.Y));
 		}
 	}
 }
