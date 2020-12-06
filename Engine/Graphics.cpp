@@ -23,6 +23,7 @@
 #include "DXErr.h"
 #include "ChiliException.h"
 #include "SpriteEffects.h"
+#include "Math.h"
 #include <assert.h>
 #include <string>
 #include <array>
@@ -471,7 +472,8 @@ void Graphics::DrawTexturedTriangle(const fTextureVector& p0, const fTextureVect
 	}
 	else {
 		// Find Splitting Vertex
-		const fTextureVector s_vtx = pV0->InterpolatedTo(*pV1, *pV2);
+		const float alpha = (pV1->pos.Y - pV0->pos.Y) / (pV2->pos.Y - pV0->pos.Y);
+		const fTextureVector s_vtx = pV0->InterpolatedTo(*pV2, alpha);
 
 		if (s_vtx.pos.X < pV1->pos.X) { // Major Left
 			DrawFlatBottomTexturedTriangle(*pV0, s_vtx, *pV1, texture);
@@ -488,15 +490,13 @@ void Graphics::DrawFlatTopTriangle(const fVector2D& p0, const fVector2D& p1, con
 {
 	const float w0 = (p2.X - p0.X) / (p2.Y - p0.Y);
 	const float w1 = (p2.X - p1.X) / (p2.Y - p1.Y);
-
 	const int yStart = (int)ceil(p0.Y - 0.5f);
 	const int yEnd = (int)ceil(p2.Y - 0.5f);
-
 	for (int y = yStart; y < yEnd; ++y) {
 		const float x0 = w0 * (float(y) + 0.5f - p0.Y) + p0.X;
 		const float x1 = w1 * (float(y) + 0.5f - p1.Y) + p1.X;
-		const int xStart = (int)ceil(x0 - 0.5);
-		const int xEnd = (int)ceil(x1 - 0.5);
+		const int xStart = (int)ceil(x0 - 0.5f);
+		const int xEnd = (int)ceil(x1 - 0.5f);
 		for (int x = xStart; x < xEnd; ++x) {
 			PutPixel(x, y, c);
 		}
@@ -505,60 +505,61 @@ void Graphics::DrawFlatTopTriangle(const fVector2D& p0, const fVector2D& p1, con
 
 void Graphics::DrawFlatBottomTriangle(const fVector2D& p0, const fVector2D& p1, const fVector2D& p2, Color c)
 {
-	const float w1 = (p0.X - p1.X) / (p0.Y - p1.Y);
-	const float w2 = (p0.X - p2.X) / (p0.Y - p2.Y);
-
+	const float w0 = (p0.X - p1.X) / (p0.Y - p1.Y);
+	const float w1 = (p0.X - p2.X) / (p0.Y - p2.Y);
 	const int yStart = (int)ceil(p0.Y - 0.5f);
 	const int yEnd = (int)ceil(p2.Y - 0.5f);
 	for (int y = yStart; y < yEnd; ++y) {
+		const float x0 = w0 * (float(y) + 0.5f - p0.Y) + p0.X;
 		const float x1 = w1 * (float(y) + 0.5f - p0.Y) + p0.X;
-		const float x2 = w2 * (float(y) + 0.5f - p0.Y) + p0.X;
-		const int xStart = (int)ceil(x1 - 0.5f);
-		const int xEnd = (int)ceil(x2 - 0.5f);
+		const int xStart = (int)ceil(x0 - 0.5f);
+		const int xEnd = (int)ceil(x1 - 0.5f);
 		for (int x = xStart; x < xEnd; ++x) {
-			PutPixel(x, y, c);
+			if (ScreenRect().ContainsPoint(iVector2D(x, y))) {
+				PutPixel(x, y, c);
+			}
 		}
 	}
 }
 
 void Graphics::DrawFlatTopTexturedTriangle(const fTextureVector& p0, const fTextureVector& p1, const fTextureVector& p2, const Sprite& texture)
 {
-	fTextureVector curLstep = p0;
-	fTextureVector curRstep = p1;
-	const fTextureVector lStep = (p2 - p0) / (p2.pos.Y - p0.pos.Y);
-	const fTextureVector rStep = (p2 - p1) / (p2.pos.Y - p1.pos.Y);
-	const int yStart = (int)ceil(p0.pos.Y - 0.5f);
-	const int yEnd = (int)ceil(p2.pos.Y - 0.5f);
-	for (int y = yStart; y < yEnd; ++y, curLstep += lStep, curRstep += rStep) {
-		fTextureVector curXstep = curLstep;
-		const fTextureVector xStep = (curRstep - curLstep) / (curRstep.pos.X - curLstep.pos.X);
-		const int xStart = (int)ceil(curLstep.pos.X - 0.5f);
-		const int xEnd = (int)ceil(curRstep.pos.X - 0.5f);
-		const int curYpxl = std::min(int(curLstep.tpos.Y * texture.getHeight()), texture.getHeight() - 1);
-		for (int x = xStart; x < xEnd; ++x, curXstep += xStep) {
-			iVector2D pxl = iVector2D(std::min(int(curXstep.tpos.X * texture.getWidth()), texture.getWidth() - 1), curYpxl);
-			PutPixel(x, y, texture.GetPixel(pxl.X, pxl.Y));
-		}
-	}
+	const float delta_y = p2.pos.Y - p0.pos.Y;
+	const fTextureVector dv0 = (p2 - p0) / delta_y;
+	const fTextureVector dv1 = (p2 - p1) / delta_y;
+	fTextureVector edge1 = p1;
+	DrawFlatTexturedTriangle(p0, p1, p2, texture, dv0, dv1, edge1);
 }
 
 void Graphics::DrawFlatBottomTexturedTriangle(const fTextureVector& p0, const fTextureVector& p1, const fTextureVector& p2, const Sprite& texture)
 {
-	fTextureVector curLstep = p0;
-	fTextureVector curRstep = p0;
-	const fTextureVector lStep = (p1 - p0) / (p1.pos.Y - p0.pos.Y);
-	const fTextureVector rStep = (p2 - p0) / (p2.pos.Y - p0.pos.Y);
+	const float delta_y = p2.pos.Y - p0.pos.Y;
+	const fTextureVector dv0 = (p1 - p0) / delta_y;
+	const fTextureVector dv1 = (p2 - p0) / delta_y;
+	fTextureVector edge1 = p0;
+	DrawFlatTexturedTriangle(p0, p1, p2, texture, dv0, dv1, edge1);
+}
+
+void Graphics::DrawFlatTexturedTriangle(const fTextureVector& p0, const fTextureVector& p1, const fTextureVector& p2, const Sprite& texture, const fTextureVector& dv0, const fTextureVector& dv1, fTextureVector edge1)
+{
+	fTextureVector edge0 = p0;
 	const int yStart = (int)ceil(p0.pos.Y - 0.5f);
 	const int yEnd = (int)ceil(p2.pos.Y - 0.5f);
-	for (int y = yStart; y < yEnd; ++y, curLstep += lStep, curRstep += rStep) {
-		fTextureVector curXstep = curLstep;
-		const fTextureVector xStep = (curRstep - curLstep) / (curRstep.pos.X - curLstep.pos.X);
-		const int xStart = (int)ceil(curLstep.pos.X - 0.5f);
-		const int xEnd = (int)ceil(curRstep.pos.X - 0.5f);
-		const int curYpxl = std::min(int(curLstep.tpos.Y * texture.getHeight()), texture.getHeight() - 1);
-		for (int x = xStart; x < xEnd; ++x, curXstep += xStep) {
-			iVector2D pxl = iVector2D(std::min(int(curXstep.tpos.X * texture.getWidth()), texture.getWidth() - 1), curYpxl);
-			PutPixel(x, y, texture.GetPixel(pxl.X, pxl.Y));
+	edge0 += dv0 * (float(yStart) + 0.5f - p0.pos.Y);
+	edge1 += dv1 * (float(yStart) + 0.5f - p0.pos.Y);
+	const int tWidth = texture.getWidth();
+	const int tHeight = texture.getHeight();
+	for (int y = yStart; y < yEnd; ++y, edge0 += dv0, edge1 += dv1) {
+		const int xStart = (int)ceil(edge0.pos.X - 0.5f);
+		const int xEnd = (int)ceil(edge1.pos.X - 0.5f);
+		fVector2D dvl = (edge1.tpos - edge0.tpos) / (edge1.pos.X - edge0.pos.X);
+		fVector2D tpos = edge0.tpos + dvl * (float(xStart) + 0.5f - edge0.pos.X);
+		for (int x = xStart; x < xEnd; ++x, tpos += dvl) {
+			if (ScreenRect().ContainsPoint(iVector2D{ x,y })) {
+				PutPixel(x, y, texture.GetPixel(
+					int(tpos.X * tWidth) % tWidth, int(tpos.Y * tHeight) % tHeight
+				));
+			}
 		}
 	}
 }

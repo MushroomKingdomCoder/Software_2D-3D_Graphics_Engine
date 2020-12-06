@@ -50,6 +50,12 @@ void Object3D::RotateZ(const float radians)
 	rot_z = angle_wrap(rot_z + radians);
 }
 
+fMatrix2D Object3D::RotationZMatrix() const
+{
+	return  fMatrix2D::Rotation(rot_z) * 
+			fMatrix2D::Identity();
+}
+
 fMatrix3D Object3D::RotationMatrix() const
 {
 	return fMatrix3D(
@@ -98,7 +104,7 @@ Object3D Object3D::MakeCube(float size, fVector3D pos)
 
 Object3D Object3D::MakeTexturedCube(float size, fVector3D pos)
 {
-	auto s = size / 2.0f;
+	const float s = size / 2.0f;
 	return Object3D(
 		std::vector<fTextureVector>{
 		{-s,s,s,0,0},	{s,s,s,1,0},	{-s,-s,s,0,1},	{s,-s,s,1,1},
@@ -115,4 +121,20 @@ Object3D Object3D::MakeTexturedCube(float size, fVector3D pos)
 		{19,17,18},	{16,18,17},
 		{20,22,21},	{23,21,22} } },
 		pos);
+}
+
+Object3D Object3D::MakeSkinnedCube(float size, fVector3D pos)
+{
+	const float s = size / 2.0f;
+	return Object3D(
+	std::vector<fTextureVector>{
+						{-s,s,s,0.25f,0.0f},	{-s,s,-s,0.50f,0.0f},
+	{-s,s,s,0.0f,0.33f},{-s,-s,s,0.25f,0.33f},	{-s,-s,-s,0.50f,0.33f},	{-s,s,-s,0.75f,0.33f},	{-s,s,s,1.0f,0.33f},
+	{s,s,s,0.0f,0.66f},	{s,-s,s,0.25f,0.66f},	{s,-s,-s,0.50f,0.66f},	{s,s,-s,0.75f,0.66f},	{s,s,s,1.0f,0.66f},
+						{s,s,s,0.25f,1.0f},		{s,s,-s,0.50f,1.0f} },
+	TriangleIndexBuffer{ {
+							{0,1,3},	{4,3,1},
+	{2,3,7},	{8,7,3},	{3,4,8},	{9,8,4},	{4,5,9},	{10,9,5},	{5,6,10},	{10,9,5},	{5,6,10},	{11,10,6},
+							{8,9,12},	{13,12,9} } }, 
+	pos);
 }

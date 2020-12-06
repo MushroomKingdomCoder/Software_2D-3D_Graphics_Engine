@@ -178,7 +178,7 @@ void ScreenBuffer::DrawTexturedObject3D(Object3D& obj, Sprite& texture)
 	auto tib = obj.GetTIB();
 	auto points = obj.GetTextureVerticies();
 	for (auto& v : points) {
-		v = obj.RotationMatrix() * v.pos;
+		v.pos = obj.RotationMatrix() * v.pos;
 		v.pos += obj.GetPosition();
 	}
 	CullTriangles(tib, points);

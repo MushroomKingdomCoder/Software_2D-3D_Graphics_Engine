@@ -60,7 +60,7 @@ public:
 	}
 	Vector2D operator*(const type scale) const
 	{
-		return { X * scale, Y * scale };
+		return Vector2D( X * scale, Y * scale );
 	}
 	Vector2D& operator*=(const type scale)
 	{
@@ -124,13 +124,13 @@ public:
 	{
 		return Vector2D(X * cosR - Y * sinR, X * sinR + Y * cosR);
 	}
-	Vector2D InterpolatedTo(const Vector2D& point, const Vector2D& end, const float alpha) const
+	Vector2D InterpolatedTo(const Vector2D& end, const float alpha) const
 	{
 		return (*this + (end - *this) * alpha);
 	}
 	Vector2D InterpolatedTo(const Vector2D& point, const Vector2D& end) const
 	{
-		const float alpha = (point.Y - Y) / (end.Y - Y);
+		const float alpha = end.Y - Y != 0 ? (point.Y - Y) / (end.Y - Y) : 0;
 		return (*this + (end - *this) * alpha);
 	}
 	Vector2D Normalized()
@@ -304,7 +304,7 @@ public:
 	}
 	Vector3D operator*(const type scale) const
 	{
-		return { X * scale, Y * scale, Z * scale };
+		return Vector3D(X * scale, Y * scale, Z * scale);
 	}
 	Vector3D& operator*=(const type scale)
 	{
@@ -358,13 +358,13 @@ public:
 			((X * vec3.Y) - (Y * vec3.X))
 		);
 	}
-	Vector3D InterpolatedTo(const Vector3D& point, const Vector3D& end, const float alpha)
+	Vector3D InterpolatedTo(const Vector3D& end, const float alpha)
 	{
 		return (*this + (end - *this) * alpha);
 	}
 	Vector3D InterpolatedTo(const Vector3D& point, const Vector3D& end)
 	{
-		const float alpha = (point.Y - Y) / (end.Y - Y);
+		const float alpha = end.Y - Y != 0 ? (point.Y - Y) / (end.Y - Y) : 0;
 		return (*this + (end - *this) * alpha);
 	}
 	type Length()
@@ -470,7 +470,7 @@ public:
 	{}
 	TextureVector operator +(const TextureVector& tvec) const
 	{
-		return TextureVector(pos + tvec.pos, tpos + tvec.pos);
+		return TextureVector(pos + tvec.pos, tpos + tvec.tpos);
 	}
 	TextureVector& operator +=(const TextureVector& tvec)
 	{
@@ -516,20 +516,22 @@ public:
 	{
 		return *this = *this / tvec_scale;
 	}
+	TextureVector operator /(const Vector3D<type>& vec3_scale) const
+	{
+		return TextureVector(pos / vec3_scale, tpos / Vector2D<type>(vec3_scale));
+	}
 	TextureVector InterpolatedTo(const TextureVector& point, const TextureVector& end) const
 	{
-		auto pos = this->pos;
-		auto tpos = this->tpos;
 		return TextureVector(
-			pos.InterpolatedTo(point.pos, end.pos),
-			tpos.InterpolatedTo(point.tpos, end.tpos)
+			Vector3D<type>(pos).InterpolatedTo(point.pos, end.pos),
+			Vector2D<type>(tpos).InterpolatedTo(point.tpos, end.tpos)
 		);
 	}
-	TextureVector InterpolatedTo(const TextureVector& point, const TextureVector& end, const float alpha) const
+	TextureVector InterpolatedTo(const TextureVector& end, const float alpha) const
 	{
 		return TextureVector(
-			pos.InterpolatedTo(point.pos, end.pos, alpha),
-			tpos.InterpolatedTo(point.tpos, end.tpos, alpha)
+			Vector3D<type>(pos).InterpolatedTo(end.pos, alpha),
+			Vector2D<type>(tpos).InterpolatedTo(end.tpos, alpha)
 		);
 	}
 };

@@ -79,6 +79,7 @@ private:
 	void DrawFlatBottomTriangle(const fVector2D& p0, const fVector2D& p1, const fVector2D& p2, Color c);
 	void DrawFlatTopTexturedTriangle(const fTextureVector& p0, const fTextureVector& p1, const fTextureVector& p2, const Sprite& texture);
 	void DrawFlatBottomTexturedTriangle(const fTextureVector& p0, const fTextureVector& p1, const fTextureVector& p2, const Sprite& texture);
+	void DrawFlatTexturedTriangle(const fTextureVector& p0, const fTextureVector& p1, const fTextureVector& p2, const Sprite& texture, const fTextureVector& dv0, const fTextureVector& dv1, fTextureVector edge1);
 private:
 	Microsoft::WRL::ComPtr<IDXGISwapChain>				pSwapChain;
 	Microsoft::WRL::ComPtr<ID3D11Device>				pDevice;

@@ -68,7 +68,8 @@ private:
 	/********************************/
 	/*  User Variables              */
 	/********************************/
-	Object3D Cube = Object3D::MakeCube(1.0f, { 0,0,3 });
+	Object3D Cube = Object3D::MakeSkinnedCube(1.0f, { 0,0,3 });
+	Sprite Texture;
 	static constexpr float d_rot = M_PI;
 
 	std::random_device rd;

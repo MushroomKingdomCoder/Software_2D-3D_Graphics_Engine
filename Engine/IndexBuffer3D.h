@@ -19,9 +19,6 @@ public:
 	{
 		for (auto& t : Triangles) {
 			t.resize(3);
-			for (int i = 0; i < 3; ++i) {
-				assert(t[i] < Points.size());
-			}
 		}
 		Culling.resize(Triangles.size());
 	}

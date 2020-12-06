@@ -30,6 +30,7 @@ Game::Game(MainWindow& wnd)
 	rng(rd()),
 	camera(),
 	Screen(gfx, camera, ndc),
+	Texture("wood.bmp"),
 	MousePos(wnd.mouse.GetPos()),
 	MousePos_Old(MousePos)
 {
@@ -65,12 +66,18 @@ void Game::UpdateModel()
 	if (wnd.kbd.KeyIsPressed('D')) {
 		Cube.RotateZ(-d_rot * time);
 	}
+	if (wnd.kbd.KeyIsPressed(VK_DOWN)) {
+		Cube.Move({ 0,0,-0.5f * time });
+	}
+	if (wnd.kbd.KeyIsPressed(VK_UP)) {
+		Cube.Move({ 0,0,0.5f * time });
+	}
 	//UpdateCamera(time);
 }
 
 void Game::ComposeFrame()
 {
-	Screen.DrawObject3DOutlined(Cube, Colors::Red, Colors::White);
+	Screen.DrawTexturedObject3D(Cube, Texture);
 }
 
 

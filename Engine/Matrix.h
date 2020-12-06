@@ -1,6 +1,11 @@
 #pragma once
 #include "Vector.h"
 
+// ***Forward Declare Matrix3D***
+template <typename type>
+class Matrix3D;
+// ------------------------------
+
 /*
 
 	Matrix 2D
@@ -203,6 +208,10 @@ public:
 	Vector2D<type> operator *(const Vector2D<type>& vec2) const
 	{
 		return Vector2D<type>(*this * Vector3D<type>(vec2));
+	}
+	TextureVector<type> operator *(const TextureVector<type>& tvec) const
+	{
+		return TextureVector<type>(*this * tvec.pos, tvec.tpos);
 	}
 	Matrix3D operator *(const Matrix3D& mtx) const
 	{

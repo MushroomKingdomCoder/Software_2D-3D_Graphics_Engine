@@ -29,6 +29,7 @@ public:
 	void RotateX(const float radians);
 	void RotateY(const float radians);
 	void RotateZ(const float radians);
+	fMatrix2D RotationZMatrix() const;
 	fMatrix3D RotationMatrix() const;
 	void Move(const fVector3D& d_vec3);
 	void SetPosition(const fVector3D& pos);
@@ -36,4 +37,5 @@ public:
 public:
 	static Object3D MakeCube(float size, fVector3D pos = { 0,0,0 });
 	static Object3D MakeTexturedCube(float size, fVector3D pos = { 0,0,0 });
+	static Object3D MakeSkinnedCube(float size, fVector3D pos = { 0,0,0 });
 };
