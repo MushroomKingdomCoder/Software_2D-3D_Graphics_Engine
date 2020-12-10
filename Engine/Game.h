@@ -30,11 +30,12 @@
 #include "Vector.h"
 #include "Timer.h"
 #include "SpriteEffects.h"
-#include "IndexBuffer3D.h"
+#include "Indexer3D.h"
 #include "ScreenBuffer.h"
 #include "NDCBuffer.h"
 #include "PolyLine.h"
 #include "Object3D.h"
+#include "Pipeline3D.h"
 #include "Camera.h"
 #include "Math.h"
 #include <random>
@@ -60,6 +61,7 @@ private:
 	Timer Clock;
 	Camera camera;
 	NDCBuffer ndc;
+	Pipeline3D pipe3d;
 	ScreenBuffer Screen;
 	fVector2D MousePos;
 	fVector2D MousePos_Old;

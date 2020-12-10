@@ -96,13 +96,7 @@
     <ClInclude Include="Object3D.h">
       <Filter>3D Engine</Filter>
     </ClInclude>
-    <ClInclude Include="IndexBuffer3D.h">
-      <Filter>3D Engine</Filter>
-    </ClInclude>
     <ClInclude Include="NDCBuffer.h">
-      <Filter>3D Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="ScreenBuffer.h">
       <Filter>3D Engine</Filter>
     </ClInclude>
     <ClInclude Include="Graphics.h">
@@ -116,6 +110,18 @@
     </ClInclude>
     <ClInclude Include="Vector.h">
       <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Indexer3D.h">
+      <Filter>3D Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Pipeline3D.h">
+      <Filter>3D Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="ScreenBuffer.h">
+      <Filter>2D Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Triangle.h">
+      <Filter>3D Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -147,9 +153,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Sprite.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ScreenBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PolyLine.cpp">

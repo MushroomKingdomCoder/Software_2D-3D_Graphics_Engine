@@ -29,12 +29,16 @@ Game::Game(MainWindow& wnd)
 	gfx(wnd),
 	rng(rd()),
 	camera(),
-	Screen(gfx, camera, ndc),
+	pipe3d(gfx, ndc),
+	Screen(gfx, camera),
 	Texture("wood.bmp"),
 	MousePos(wnd.mouse.GetPos()),
 	MousePos_Old(MousePos)
 {
 	Clock.Start();
+	pipe3d.BindRotation(Cube.GetRotationMatrix());
+	pipe3d.BindTranslation(Cube.GetPosition());
+	pipe3d.BindTexture(Texture);
 }
 
 void Game::Go()
@@ -77,7 +81,7 @@ void Game::UpdateModel()
 
 void Game::ComposeFrame()
 {
-	Screen.DrawTexturedObject3D(Cube, Texture);
+	pipe3d.ProcessObject3D(Cube.GetTriangleModel());
 }
 
 

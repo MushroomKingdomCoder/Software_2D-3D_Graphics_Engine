@@ -147,13 +147,14 @@
     <ClInclude Include="DXErr.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Graphics.h" />
-    <ClInclude Include="IndexBuffer3D.h" />
+    <ClInclude Include="Indexer3D.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="NDCBuffer.h" />
+    <ClInclude Include="Pipeline3D.h" />
     <ClInclude Include="PolyLine.h" />
     <ClInclude Include="Object3D.h" />
     <ClInclude Include="Rect.h" />
@@ -165,6 +166,7 @@
     <ClInclude Include="SpriteEffects.h" />
     <ClInclude Include="TextFont.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="Triangle.h" />
     <ClInclude Include="Vector.h" />
   </ItemGroup>
   <ItemGroup>
@@ -178,7 +180,6 @@
     <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="PolyLine.cpp" />
     <ClCompile Include="Object3D.cpp" />
-    <ClCompile Include="ScreenBuffer.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="SpriteEffects.cpp" />
