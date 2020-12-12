@@ -51,7 +51,6 @@ public:
 private:
 	void ComposeFrame();
 	void UpdateModel();
-	void UpdateCamera(const float time);
 	/********************************/
 	/*  User Functions              */
 	/********************************/
@@ -63,11 +62,9 @@ private:
 	/********************************/
 	Timer Clock;
 	NDCBuffer ndc;
-	vbPIXELSHADER pxlS;
-	Pipeline3D<vbPIXELSHADER> pipe3d;
-	vbObject3D Cube = vbObject3D::MakeBlendingCube(1.0f, std::vector<Color>{
-		Colors::Blue, Colors::Cyan, Colors::Yellow, Colors::Green, Colors::Red, Colors::Blue, Colors::Yellow, Colors::Magenta
-	}, { 0, 0, 3 });
+	tPIXELSHADER pxlS{ "wood.bmp" };
+	tpsPIPELINE pipe3d;
+	tObject3D Cube = tObject3D::MakeSkinnedCube(1.0f, { 0, 0, 3 });
 
 	// control vars
 	static constexpr float d_rot = M_PI;

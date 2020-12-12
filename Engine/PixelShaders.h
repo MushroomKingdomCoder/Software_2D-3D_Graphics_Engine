@@ -13,6 +13,8 @@ namespace PixelShaders
 		Sprite texture;
 		const int twidth;
 		const int theight;
+	private:
+		bool isNegative;
 
 	public:
 		class Vertex : public fTextureVector
@@ -30,15 +32,21 @@ namespace PixelShaders
 			}
 		};
 	public:
-		Texture(std::string filename)
+		Texture(std::string filename, bool negative = false)
 			:
 			texture(filename),
 			twidth(texture.getWidth()),
-			theight(texture.getHeight())
+			theight(texture.getHeight()),
+			isNegative(negative)
 		{}
-		Color operator ()(const Vertex& ipos)
+		Color operator ()(const Vertex& vtx)
 		{
-			return texture.GetPixel(int(ipos.tpos.X * twidth) % twidth, int(ipos.tpos.Y * texture.getHeight()) % theight);
+			if (!isNegative) {
+				return texture.GetPixel(int(vtx.tpos.X * twidth) % twidth, int(vtx.tpos.Y * texture.getHeight()) % theight);
+			}
+			else {
+				return -texture.GetPixel(int(vtx.tpos.X * twidth) % twidth, int(vtx.tpos.Y * texture.getHeight()) % theight);
+			}
 		}
 	};
 
@@ -99,9 +107,9 @@ namespace PixelShaders
 			}
 		};
 	public:
-		Color operator ()(const Vertex& ipos) 
+		Color operator ()(const Vertex& vtx) 
 		{
-			return Color(ipos.color);
+			return Color(vtx.color);
 		}
 	};
 
@@ -167,7 +175,7 @@ namespace PixelShaders
 			:
 			color(color)
 		{}
-		Color operator ()(const Vertex& ipos)
+		Color operator ()(const Vertex& vtx)
 		{
 			return color;
 		}
@@ -179,3 +187,6 @@ typedef PixelShaders::VertexBlend			vbPIXELSHADER;
 typedef PixelShaders::VertexBlend::Vertex	vbpsVERTEX;
 typedef PixelShaders::Monochrome			mPIXELSHADER;
 typedef PixelShaders::Monochrome::Vertex	mpsVERTEX;
+
+
+

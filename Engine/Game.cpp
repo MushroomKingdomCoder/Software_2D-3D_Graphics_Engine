@@ -69,7 +69,6 @@ void Game::UpdateModel()
 	if (wnd.kbd.KeyIsPressed(VK_UP)) {
 		Cube.Move({ 0,0,0.5f * time });
 	}
-	//UpdateCamera(time);
 }
 
 void Game::ComposeFrame()
@@ -78,34 +77,3 @@ void Game::ComposeFrame()
 }
 
 
-/*
-void Game::UpdateCamera(const float time)
-{
-	if (wnd.mouse.LeftIsPressed()) {
-		MousePos_Old = MousePos;
-		MousePos = fVector2D(wnd.mouse.GetPos());
-		fVector2D delta_pan = MousePos - MousePos_Old;
-		delta_pan.X = -delta_pan.X;
-		delta_pan.Rotate(camera.TiltAngle());
-		camera.Pan(delta_pan * (1.0f / camera.ZoomFactor()) * time * panSpd);
-	}
-	else {
-		MousePos = wnd.mouse.GetPos();
-	}
-
-	auto mouse_event = wnd.mouse.Read().GetType();
-	if (mouse_event == Mouse::Event::Type::WheelDown) {
-		camera.Zoom_By(0.95);
-	}
-	if (mouse_event == Mouse::Event::Type::WheelUp) {
-		camera.Zoom_By(1.05f);
-	}
-
-	if (wnd.kbd.KeyIsPressed('Q')) {
-		camera.Tilt(float(M_PI * time * spinSpd));
-	}
-	if (wnd.kbd.KeyIsPressed('E')) {
-		camera.Tilt(float(-M_PI * time * spinSpd));
-	}
-}
-*/

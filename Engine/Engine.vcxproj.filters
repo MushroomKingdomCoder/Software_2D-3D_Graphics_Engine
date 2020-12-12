@@ -99,9 +99,6 @@
     <ClInclude Include="NDCBuffer.h">
       <Filter>3D Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics.h">
-      <Filter>3D Engine</Filter>
-    </ClInclude>
     <ClInclude Include="Math.h">
       <Filter>Math</Filter>
     </ClInclude>
@@ -125,6 +122,9 @@
     </ClInclude>
     <ClInclude Include="PixelShaders.h">
       <Filter>3D Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

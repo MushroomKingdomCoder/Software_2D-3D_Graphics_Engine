@@ -15,7 +15,7 @@ class Pipeline3D
 private:
 	Graphics& gfx;
 	NDCBuffer& ndc;
-	pShader PixelShade;
+	pShader& PixelShade;
 private:
 	fMatrix3D const* pRotation = nullptr;
 	fVector3D const* pTranslation = nullptr;
@@ -41,9 +41,9 @@ private:
 	}
 	void ProcessTriangle(Triangle<Vertex>& triangle)
 	{
-		ndc.Transform(triangle.v0.pos);
-		ndc.Transform(triangle.v1.pos);
-		ndc.Transform(triangle.v2.pos);
+		ndc.Transform(triangle.v0);
+		ndc.Transform(triangle.v1);
+		ndc.Transform(triangle.v2);
 		RasterizeTriangle(triangle);
 	}
 	void RasterizeTriangle(const Triangle<Vertex>& tTriangle)
@@ -114,7 +114,9 @@ private:
 			Vertex ipos = edge0 + dvl * (float(xStart) + 0.5f - edge0.pos.X);
 			for (int x = xStart; x < xEnd; ++x, ipos += dvl) {
 				if (gfx.ScreenRect().ContainsPoint(iVector2D{ x,y })) {
-					gfx.PutPixel(x, y, PixelShade(ipos));
+					const float zCorrection = 1.0f / ipos.pos.Z;
+					const Vertex pCorrectionVtx = ipos * zCorrection;
+					gfx.PutPixel(x, y, PixelShade(pCorrectionVtx));
 				}
 			}
 		}
@@ -122,7 +124,7 @@ private:
 
 public:
 	Pipeline3D() = delete;
-	Pipeline3D(Graphics& gfx, NDCBuffer& ndc, pShader pShader)
+	Pipeline3D(Graphics& gfx, NDCBuffer& ndc, pShader& pShader)
 		:
 		gfx(gfx),
 		ndc(ndc),
@@ -143,4 +145,7 @@ public:
 		ProcessVerticies(tmodel.Verticies, tmodel.Triangles);
 	}
 };
-using tpsPipeline = Pipeline3D<PixelShaders::Texture>;
+typedef Pipeline3D<tPIXELSHADER> tpsPIPELINE;
+typedef Pipeline3D<vbPIXELSHADER> vbpsPIPELINE;
+typedef Pipeline3D<mPIXELSHADER> mpsPIPELINE;
+

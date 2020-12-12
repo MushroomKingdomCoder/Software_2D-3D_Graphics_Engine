@@ -26,4 +26,20 @@ public:
 		Point.Y = (-Point.Y * zInv + 1.0f) * yFactor;
 		return Point;
 	}
+	template <typename Vertex>
+	Vertex GetTransformed(const Vertex& vtx) const
+	{
+		auto Vtx = vtx;
+		const float zInv = 1.0f / Vtx.pos.Z;
+		Vtx *= zInv;
+		Vtx.pos.X = (Vtx.pos.X + 1.0f) * xFactor;
+		Vtx.pos.Y = (-Vtx.pos.Y + 1.0f) * yFactor;
+		Vtx.pos.Z = zInv;
+		return Vtx;
+	}
+	template <typename Vertex>
+	Vertex& Transform(Vertex& vtx)
+	{
+		return vtx = GetTransformed(vtx);
+	}
 };
