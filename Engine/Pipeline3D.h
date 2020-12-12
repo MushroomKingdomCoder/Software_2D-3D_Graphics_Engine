@@ -4,6 +4,7 @@
 #include "NDCBuffer.h"
 #include "Indexer3D.h"
 #include "PixelShaders.h"
+#include "ZBuffer.h"
 #include "Matrix.h"
 #include "Vector.h"
 #include <memory>
@@ -16,6 +17,7 @@ private:
 	Graphics& gfx;
 	NDCBuffer& ndc;
 	pShader& PixelShade;
+	ZBuffer& zBuffer;
 private:
 	fMatrix3D const* pRotation = nullptr;
 	fVector3D const* pTranslation = nullptr;
@@ -115,8 +117,10 @@ private:
 			for (int x = xStart; x < xEnd; ++x, ipos += dvl) {
 				if (gfx.ScreenRect().ContainsPoint(iVector2D{ x,y })) {
 					const float zCorrection = 1.0f / ipos.pos.Z;
-					const Vertex pCorrectionVtx = ipos * zCorrection;
-					gfx.PutPixel(x, y, PixelShade(pCorrectionVtx));
+					if (zBuffer.TestAndSet(x, y, zCorrection)) {
+						const Vertex pCorrectionVtx = ipos * zCorrection;
+						gfx.PutPixel(x, y, PixelShade(pCorrectionVtx));
+					}
 				}
 			}
 		}
@@ -124,11 +128,12 @@ private:
 
 public:
 	Pipeline3D() = delete;
-	Pipeline3D(Graphics& gfx, NDCBuffer& ndc, pShader& pShader)
+	Pipeline3D(Graphics& gfx, NDCBuffer& ndc, pShader& pShader, ZBuffer& zbuf)
 		:
 		gfx(gfx),
 		ndc(ndc),
-		PixelShade(pShader)
+		PixelShade(pShader),
+		zBuffer(zbuf)
 	{}
 public:
 	void BindRotation(const fMatrix3D& rotation)
