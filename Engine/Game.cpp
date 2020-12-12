@@ -27,18 +27,11 @@ Game::Game(MainWindow& wnd)
 	:
 	wnd(wnd),
 	gfx(wnd),
-	rng(rd()),
-	camera(),
-	pipe3d(gfx, ndc),
-	Screen(gfx, camera),
-	Texture("wood.bmp"),
-	MousePos(wnd.mouse.GetPos()),
-	MousePos_Old(MousePos)
+	pipe3d(gfx, ndc, pxlS)
 {
 	Clock.Start();
 	pipe3d.BindRotation(Cube.GetRotationMatrix());
 	pipe3d.BindTranslation(Cube.GetPosition());
-	pipe3d.BindTexture(Texture);
 }
 
 void Game::Go()
@@ -85,8 +78,7 @@ void Game::ComposeFrame()
 }
 
 
-
-
+/*
 void Game::UpdateCamera(const float time)
 {
 	if (wnd.mouse.LeftIsPressed()) {
@@ -116,4 +108,4 @@ void Game::UpdateCamera(const float time)
 		camera.Tilt(float(-M_PI * time * spinSpd));
 	}
 }
-
+*/

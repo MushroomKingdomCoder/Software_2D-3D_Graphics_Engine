@@ -123,6 +123,9 @@
     <ClInclude Include="Triangle.h">
       <Filter>3D Engine</Filter>
     </ClInclude>
+    <ClInclude Include="PixelShaders.h">
+      <Filter>3D Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXErr.cpp">
@@ -156,9 +159,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PolyLine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Object3D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SpriteEffects.cpp">

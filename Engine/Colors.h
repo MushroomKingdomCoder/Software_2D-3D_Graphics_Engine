@@ -19,6 +19,7 @@
 *	along with The Chili DirectX Framework.  If not, see <http://www.gnu.org/licenses/>.  *
 ******************************************************************************************/
 #pragma once
+#include "Vector.h"
 
 class Color
 {
@@ -45,6 +46,10 @@ public:
 	constexpr Color( Color col,unsigned char x )
 		:
 		Color( (x << 24u) | col.dword )
+	{}
+	Color(fVector3D color)
+		:
+		Color(unsigned char(color.X), unsigned char(color.Y), unsigned char(color.Z))
 	{}
 	Color& operator =( Color color )
 	{

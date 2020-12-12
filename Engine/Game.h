@@ -35,6 +35,7 @@
 #include "NDCBuffer.h"
 #include "PolyLine.h"
 #include "Object3D.h"
+#include "PixelShaders.h"
 #include "Pipeline3D.h"
 #include "Camera.h"
 #include "Math.h"
@@ -57,24 +58,17 @@ private:
 private:
 	MainWindow& wnd;
 	Graphics gfx;
-	//Constant Objects
-	Timer Clock;
-	Camera camera;
-	NDCBuffer ndc;
-	Pipeline3D pipe3d;
-	ScreenBuffer Screen;
-	fVector2D MousePos;
-	fVector2D MousePos_Old;
-	static constexpr int panSpd = 60;
-	static constexpr float spinSpd = M_PI;
 	/********************************/
 	/*  User Variables              */
 	/********************************/
-	Object3D Cube = Object3D::MakeSkinnedCube(1.0f, { 0,0,3 });
-	Sprite Texture;
-	static constexpr float d_rot = M_PI;
+	Timer Clock;
+	NDCBuffer ndc;
+	vbPIXELSHADER pxlS;
+	Pipeline3D<vbPIXELSHADER> pipe3d;
+	vbObject3D Cube = vbObject3D::MakeBlendingCube(1.0f, std::vector<Color>{
+		Colors::Blue, Colors::Cyan, Colors::Yellow, Colors::Green, Colors::Red, Colors::Blue, Colors::Yellow, Colors::Magenta
+	}, { 0, 0, 3 });
 
-	std::random_device rd;
-	std::mt19937 rng;
-	std::uniform_int_distribution<int> COL{ 0,255 };
+	// control vars
+	static constexpr float d_rot = M_PI;
 };

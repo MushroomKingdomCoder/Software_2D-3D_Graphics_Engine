@@ -155,6 +155,7 @@
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="NDCBuffer.h" />
     <ClInclude Include="Pipeline3D.h" />
+    <ClInclude Include="PixelShaders.h" />
     <ClInclude Include="PolyLine.h" />
     <ClInclude Include="Object3D.h" />
     <ClInclude Include="Rect.h" />
@@ -179,7 +180,6 @@
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="PolyLine.cpp" />
-    <ClCompile Include="Object3D.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="SpriteEffects.cpp" />
