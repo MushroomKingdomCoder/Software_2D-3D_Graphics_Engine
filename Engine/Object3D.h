@@ -180,18 +180,18 @@ public:
 		for (int y = 0; y < teselations.Y - 1; ++y, cur_d += delta_d) {
 			float cur_w = 0.0f;
 			for (int x = 0; x < teselations.X - 1; ++x, cur_w += delta_w) {
-				vtxes.emplace_back(mpsVERTEX(cur_w, 0, cur_d);
+				vtxes.emplace_back(mpsVERTEX(cur_w, 0, cur_d));
 				const int cur_vtx = y * teselations.X + x;
 				triangles.emplace_back(cur_vtx + 1, cur_vtx + teselations.X + 1, cur_vtx);
 				triangles.emplace_back(cur_vtx + teselations.X, cur_vtx, cur_vtx + teselations.X + 1);
 				triangles.emplace_back(cur_vtx + 1, cur_vtx, cur_vtx + teselations.X + 1);
 				triangles.emplace_back(cur_vtx + teselations.X, cur_vtx + teselations.X + 1, cur_vtx);
 			}
-			vtxes.emplace_back(mpsVERTEX(cur_w, 0, cur_d);
+			vtxes.emplace_back(mpsVERTEX(cur_w, 0, cur_d));
 		} cur_d += delta_d;
 		float cur_w = 0.0f;
 		for (int x = 0; x <= teselations.X; ++x, cur_w += delta_w) {
-			vtxes.emplace_back(mpsVERTEX(cur_w, 0, cur_d);
+			vtxes.emplace_back(mpsVERTEX(cur_w, 0, cur_d));
 		}
 
 		return mObject3D(
