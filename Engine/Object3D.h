@@ -83,6 +83,22 @@ public:
 		return Position;
 	}
 public:
+	static Object3D MakeCube(float size, fVector3D pos = { 0,0,0 }) {
+		const float s = size / 2.0f;
+		return mObject3D(
+			TriangleIndexer<mpsVERTEX>{
+			std::vector<mpsVERTEX>{
+				{-s, -s, s}, { s,-s,s }, { s,s,s }, { -s,s,s },
+				{ -s,-s,-s }, { s,-s,-s }, { s,s,-s }, { -s,s,-s } },
+				std::vector<Triangle<int>>{
+					{1, 2, 0}, { 3,0,2 },
+					{ 0,3,4 }, { 7,4,3 },
+					{ 0,4,1 }, { 5,1,4 },
+					{ 1,5,2 }, { 6,2,5 },
+					{ 5,4,6 }, { 7,6,4 },
+					{ 2,6,3 }, { 7,3,6 } }
+		}, pos);
+	}
 	static Object3D MakeTexturedCube(float size, fVector3D pos = { 0,0,0 })
 	{
 		const float s = size / 2.0f;
@@ -154,21 +170,33 @@ public:
 		{2,6,3},	{7,3,6} } 
 		}, pos);
 	}
-	static Object3D MakeMonochromeCube(float size, fVector3D pos = { 0,0,0 }) {
-		const float s = size / 2.0f;
-		return mObject3D(
-		TriangleIndexer<mpsVERTEX>{
-		std::vector<mpsVERTEX>{
-		{-s,-s,s},	{s,-s,s},	{s,s,s},	{-s,s,s},
-		{-s,-s,-s},	{s,-s,-s},	{s,s,-s},	{-s,s,-s} },
-		std::vector<Triangle<int>>{
-		{1,2,0},	{3,0,2},
-		{0,3,4},	{7,4,3},
-		{0,4,1},	{5,1,4},
-		{1,5,2},	{6,2,5},
-		{5,4,6},	{7,6,4},
-		{2,6,3},	{7,3,6} }
-		}, pos);
+	static Object3D MakeTeselatedSkinnedPlane(const iVector2D teselations, const float width, const float depth, fVector3D pos = { 0,0,0 })
+	{
+		std::vector<tpsVERTEX> vtxes;
+		std::vector<Triangle<int>> triangles;
+		const float delta_w = width / teselations.X;
+		const float delta_d = depth / teselations.Y;
+		float cur_d = 0.0f;
+		for (int y = 0; y < teselations.Y - 1; ++y, cur_d += delta_d) {
+			float cur_w = 0.0f;
+			for (int x = 0; x < teselations.X - 1; ++x, cur_w += delta_w) {
+				vtxes.emplace_back(tpsVERTEX(cur_w, 0, cur_d, cur_w / width, 1.0f - (cur_d / depth)));
+				const int cur_vtx = y * teselations.X + x;
+				triangles.emplace_back(cur_vtx + 1, cur_vtx + teselations.X + 1, cur_vtx);
+				triangles.emplace_back(cur_vtx + teselations.X, cur_vtx, cur_vtx + teselations.X + 1);
+				triangles.emplace_back(cur_vtx + 1, cur_vtx, cur_vtx + teselations.X + 1);
+				triangles.emplace_back(cur_vtx + teselations.X, cur_vtx + teselations.X + 1, cur_vtx);
+			}
+			vtxes.emplace_back(tpsVERTEX(cur_w, 0, cur_d, cur_w / width, 1.0f - (cur_d / depth)));
+		} cur_d += delta_d;
+		float cur_w = 0.0f;
+		for (int x = 0; x <= teselations.X; ++x, cur_w += delta_w) {
+			vtxes.emplace_back(tpsVERTEX(cur_w, 0, cur_d, cur_w / width, 1.0f - (cur_d / depth)));
+		}
+
+		return tObject3D(
+			TriangleIndexer<tpsVERTEX>{
+			vtxes, triangles}, pos - fVector3D(width / 2, 0, depth / 2));
 	}
 };
 typedef Object3D<tpsVERTEX> tObject3D;

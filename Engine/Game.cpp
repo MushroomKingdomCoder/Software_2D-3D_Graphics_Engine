@@ -28,15 +28,9 @@ Game::Game(MainWindow& wnd)
 	wnd(wnd),
 	gfx(wnd),
 	zBuffer(Graphics::ScreenWidth, Graphics::ScreenHeight),
-	pipe3d(gfx, ndc, pxlS, zBuffer),
-	pipe3dn(gfx, ndc, pxlSn, zBuffer)
+	pipe3d(gfx, ndc, effect, zBuffer)
 {
 	Clock.Start();
-	pipe3d.BindRotation(Cube0.GetRotationMatrix());
-	pipe3d.BindTranslation(Cube0.GetPosition());
-
-	pipe3dn.BindRotation(Cube1.GetRotationMatrix());
-	pipe3dn.BindTranslation(Cube1.GetPosition());
 }
 
 void Game::Go()
@@ -49,63 +43,51 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
-	zBuffer.Clear();
 	const float time = Clock.GetEllapsed();
+	zBuffer.Clear();
 	if (wnd.kbd.KeyIsPressed('Q')) {
-		Cube0.RotateX(d_rot * time);
+		Object0.RotateX(d_rot * time);
 	}
 	if (wnd.kbd.KeyIsPressed('W')) {
-		Cube0.RotateY(d_rot * time);
+		Object0.RotateY(d_rot * time);
 	}
 	if (wnd.kbd.KeyIsPressed('E')) {
-		Cube0.RotateZ(d_rot * time);
+		Object0.RotateZ(d_rot * time);
 	}
 	if (wnd.kbd.KeyIsPressed('A')) {
-		Cube0.RotateX(-d_rot * time);
+		Object0.RotateX(-d_rot * time);
 	}
 	if (wnd.kbd.KeyIsPressed('S')) {
-		Cube0.RotateY(-d_rot * time);
+		Object0.RotateY(-d_rot * time);
 	}
 	if (wnd.kbd.KeyIsPressed('D')) {
-		Cube0.RotateZ(-d_rot * time);
+		Object0.RotateZ(-d_rot * time);
 	}
-	if (wnd.kbd.KeyIsPressed(VK_DOWN)) {
-		Cube0.Move({ 0,0,-0.5f * time });
+	if (wnd.kbd.KeyIsPressed(VK_DIVIDE)) {
+		Object0.Move({ 0,0,0.5f * time });
 	}
-	if (wnd.kbd.KeyIsPressed(VK_UP)) {
-		Cube0.Move({ 0,0,0.5f * time });
+	if (wnd.kbd.KeyIsPressed(VK_NUMPAD2)) {
+		Object0.Move({ 0,0,-0.5f * time });
 	}
-
-	if (wnd.kbd.KeyIsPressed('R')) {
-		Cube1.RotateX(d_rot * time);
+	// ! experimental !
+	if (wnd.kbd.KeyIsPressed(VK_NUMPAD8)) {
+		Object0.Move({ 0,0.5f * time,0 });
 	}
-	if (wnd.kbd.KeyIsPressed('T')) {
-		Cube1.RotateY(d_rot * time);
+	if (wnd.kbd.KeyIsPressed(VK_NUMPAD4)) {
+		Object0.Move({ -0.5f * time,0,0 });
 	}
-	if (wnd.kbd.KeyIsPressed('Y')) {
-		Cube1.RotateZ(d_rot * time);
+	if (wnd.kbd.KeyIsPressed(VK_NUMPAD5)) {
+		Object0.Move({ 0,-0.5f * time,0 });
 	}
-	if (wnd.kbd.KeyIsPressed('F')) {
-		Cube1.RotateX(-d_rot * time);
+	if (wnd.kbd.KeyIsPressed(VK_NUMPAD6)) {
+		Object0.Move({ 0.5f * time,0,0 });
 	}
-	if (wnd.kbd.KeyIsPressed('G')) {
-		Cube1.RotateY(-d_rot * time);
-	}
-	if (wnd.kbd.KeyIsPressed('H')) {
-		Cube1.RotateZ(-d_rot * time);
-	}
-	if (wnd.kbd.KeyIsPressed(VK_SUBTRACT)) {
-		Cube1.Move({ 0,0,-0.5f * time });
-	}
-	if (wnd.kbd.KeyIsPressed(VK_ADD)) {
-		Cube1.Move({ 0,0,0.5f * time });
-	}
+	
 }
 
 void Game::ComposeFrame()
 {
-	pipe3d.ProcessObject3D(Cube0.GetTriangleModel());
-	pipe3dn.ProcessObject3D(Cube1.GetTriangleModel());
+	pipe3d.ProcessObject3D(Object0.GetTriangleModel());
 }
 
 

@@ -129,6 +129,12 @@
     <ClInclude Include="ZBuffer.h">
       <Filter>3D Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Effect3D.h">
+      <Filter>3D Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexShaders.h">
+      <Filter>3D Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXErr.cpp">

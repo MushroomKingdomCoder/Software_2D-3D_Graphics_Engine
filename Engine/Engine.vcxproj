@@ -145,6 +145,7 @@
     <ClInclude Include="COMInitializer.h" />
     <ClInclude Include="CRect.h" />
     <ClInclude Include="DXErr.h" />
+    <ClInclude Include="Effect3D.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Indexer3D.h" />
@@ -169,6 +170,7 @@
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Triangle.h" />
     <ClInclude Include="Vector.h" />
+    <ClInclude Include="VertexShaders.h" />
     <ClInclude Include="ZBuffer.h" />
   </ItemGroup>
   <ItemGroup>

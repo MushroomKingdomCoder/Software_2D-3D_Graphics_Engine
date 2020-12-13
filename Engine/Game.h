@@ -36,6 +36,8 @@
 #include "PolyLine.h"
 #include "Object3D.h"
 #include "PixelShaders.h"
+#include "VertexShaders.h"
+#include "Effect3D.h"
 #include "Pipeline3D.h"
 #include "ZBuffer.h"
 #include "Camera.h"
@@ -64,14 +66,9 @@ private:
 	Timer Clock;
 	ZBuffer zBuffer;
 	NDCBuffer ndc;
-	tPIXELSHADER pxlS{ "wood.bmp" };
-	tpsPIPELINE pipe3d;
-	tObject3D Cube0 = tObject3D::MakeSkinnedCube(1.0f, { 0, 0, 3 });
-	vbPIXELSHADER pxlSn;
-	vbpsPIPELINE pipe3dn;
-	vbObject3D Cube1 = vbObject3D::MakeBlendingCube(1.0f, std::vector<Color>{
-		Colors::Blue, Colors::Cyan, Colors::Gray, Colors::Green, Colors::LightGray, Colors::Magenta, Colors::Red, Colors::White
-	}, { 0, 0, 3 });
+	mObject3D Object0 = mObject3D::MakeCube( 1, { 0,0,3 });
+	VB_P2C_EFFECT effect{ {},{Object0.GetRotationMatrix(), Object0.GetPosition()} };
+	PIPE_VB_P2C pipe3d;
 
 	// control vars
 	static constexpr float d_rot = M_PI;

@@ -2,6 +2,7 @@
 #include "Sprite.h"
 #include "Colors.h"
 #include "Vector.h"
+#include "Effect3D.h"
 #include <functional>
 
 namespace PixelShaders
@@ -120,56 +121,7 @@ namespace PixelShaders
 		Color color;
 
 	public:
-		class Vertex
-		{
-		public:
-			fVector3D pos;
-		public:
-			Vertex(fVector3D vec3)
-				:
-				pos(vec3)
-			{}
-			Vertex(float x, float y, float z)
-				:
-				pos(x,y,z)
-			{}
-			Vertex operator +(const Vertex& vtx) const
-			{
-				return Vertex(pos + vtx.pos);
-			}
-			Vertex& operator +=(const Vertex& vtx)
-			{
-				return *this = *this + vtx;
-			}
-			Vertex operator -(const Vertex& vtx) const
-			{
-				return Vertex(pos - vtx.pos);
-			}
-			Vertex& operator -=(const Vertex& vtx)
-			{
-				return *this = *this - vtx;
-			}
-			Vertex operator *(const float scale) const
-			{
-				return Vertex(pos * scale);
-			}
-			Vertex& operator *=(const float scale)
-			{
-				return *this = *this * scale;
-			}
-			Vertex operator /(const float scale) const
-			{
-				return Vertex(pos / scale);
-			}
-			Vertex& operator /=(const float scale)
-			{
-				return *this = *this / scale;
-			}
-			Vertex InterpolatedTo(const Vertex& vtx, const float alpha)
-			{
-				return Vertex(pos.InterpolatedTo(vtx.pos, alpha));
-			}
-		};
+		typedef typename dVertex Vertex;
 	public:
 		Monochrome(Color color)
 			:
@@ -189,4 +141,7 @@ typedef PixelShaders::Monochrome			mPIXELSHADER;
 typedef PixelShaders::Monochrome::Vertex	mpsVERTEX;
 
 
+typedef Effect3D<tPIXELSHADER, EffectDefaults::VertexShader<tPIXELSHADER>> tEFFECT_ONLY;
+typedef Effect3D<vbPIXELSHADER, EffectDefaults::VertexShader<vbPIXELSHADER>> vbEFFECT_ONLY;
+typedef Effect3D<mPIXELSHADER, EffectDefaults::VertexShader<mPIXELSHADER>> mEFFECT_ONLY;
 
