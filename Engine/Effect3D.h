@@ -1,16 +1,19 @@
 #pragma once
+#include "Triangle.h"
 #include "Matrix.h"
 #include "Vector.h"
 
-template <class pShader, class vShader>
+template <class pShader, class vShader, class gShader>
 class Effect3D
 {
 public:
 	typedef typename pShader PIXELSHADER;
 	typedef typename vShader VERTEXSHADER;
+	typedef typename gShader GEOMETRYSHADER;
 public:
 	PIXELSHADER PixelShader;
 	VERTEXSHADER VertexShader;
+	GEOMETRYSHADER GeometryShader;
 };
 
 
@@ -29,6 +32,7 @@ namespace EffectDefaults
 	public:
 		fVector3D pos;
 	public:
+		Vertex() = default;
 		Vertex(fVector3D vec3)
 			:
 			pos(vec3)
@@ -76,7 +80,7 @@ namespace EffectDefaults
 	};
 
 	// default vertex shader, no special effects
-	template <class pShader>
+	template <class vertex>
 	class VertexShader
 	{
 	private:
@@ -84,8 +88,8 @@ namespace EffectDefaults
 		fVector3D const* pTranslation;
 
 	public:
-		typedef typename pShader::Vertex VertexIn;
-		typedef typename VertexIn VertexOut;
+		typedef typename vertex VertexIn;
+		typedef typename vertex VertexOut;
 	public:
 		VertexShader(const fMatrix3D& rotation, const fVector3D& translation)
 			:
@@ -107,5 +111,18 @@ namespace EffectDefaults
 			pTranslation = &translation;
 		}
  	};
+
+	template <class vertex>
+	class GeometryShader
+	{
+	public:
+		typedef typename vertex VertexIn;
+		typedef typename vertex VertexOut;
+	public:
+		Triangle<VertexOut> operator ()(const VertexIn& v0, const VertexIn& v1, const VertexIn& v2, int id)
+		{
+			return Triangle<VertexOut>(VertexOut(v0), VertexOut(v1), VertexOut(v2));
+		}
+	};
 }
 typedef EffectDefaults::Vertex dVertex;

@@ -67,8 +67,8 @@ private:
 	ZBuffer zBuffer;
 	NDCBuffer ndc;
 	mObject3D Object0 = mObject3D::MakeCube( 1, { 0,0,3 });
-	VB_P2C_EFFECT effect{ {},{Object0.GetRotationMatrix(), Object0.GetPosition()} };
-	PIPE_VB_P2C pipe3d;
+	CV_D_QC_EFFECT effect{ {},{Object0.GetRotationMatrix(), Object0.GetPosition()},{std::vector<Color>{Colors::Blue,Colors::Cyan,Colors::Green,Colors::Red,Colors::White,Colors::Yellow}} };
+	PIPE_CV_D_QC pipe3d;
 
 	// control vars
 	static constexpr float d_rot = M_PI;

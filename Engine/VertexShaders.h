@@ -67,16 +67,16 @@ namespace VertexShaders
 		}
 	};
 }
-typedef EffectDefaults::VertexShader<tPIXELSHADER>	dtVERTEXSHADER;
-typedef EffectDefaults::VertexShader<vbPIXELSHADER>	dvbVERTEXSHADER;
-typedef EffectDefaults::VertexShader<mPIXELSHADER>	dmVERTEXSHADER;
+typedef EffectDefaults::VertexShader<tpsVERTEX>		dtVERTEXSHADER;
+typedef EffectDefaults::VertexShader<vbpsVERTEX>	dvbVERTEXSHADER;
+typedef EffectDefaults::VertexShader<mpsVERTEX>		dmVERTEXSHADER;
 typedef VertexShaders::Pos2Color					pcVERTEXSHADER;
-typedef VertexShaders::SineWave<tPIXELSHADER>		swtVERTEXSHADER;
-typedef VertexShaders::SineWave<vbPIXELSHADER>		swvbVERTEXSHADER;
-typedef VertexShaders::SineWave<mPIXELSHADER>		swmVERTEXSHADER;
+typedef VertexShaders::SineWave<tpsVERTEX>			swtVERTEXSHADER;
+typedef VertexShaders::SineWave<vbpsVERTEX>			swvbVERTEXSHADER;
+typedef VertexShaders::SineWave<mpsVERTEX>			swmVERTEXSHADER;
 
 
-typedef Effect3D<vbPIXELSHADER, pcVERTEXSHADER>		VB_P2C_EFFECT;
-typedef Effect3D<tPIXELSHADER, swtVERTEXSHADER>		T_SW_EFFECT;
-typedef Effect3D<vbPIXELSHADER, swvbVERTEXSHADER>	VB_SW_EFFECT;
-typedef Effect3D<mPIXELSHADER, swmVERTEXSHADER>		M_SW_EFFECT;
+typedef Effect3D<vbPIXELSHADER, pcVERTEXSHADER, EffectDefaults::GeometryShader<vbpsVERTEX>>			VB_P2C_EFFECT;
+typedef Effect3D<tPIXELSHADER, swtVERTEXSHADER, EffectDefaults::GeometryShader<tpsVERTEX>>			T_SW_EFFECT;
+typedef Effect3D<vbPIXELSHADER, swvbVERTEXSHADER, EffectDefaults::GeometryShader<vbpsVERTEX>>		VB_SW_EFFECT;
+typedef Effect3D<mPIXELSHADER, swmVERTEXSHADER, EffectDefaults::GeometryShader<mpsVERTEX>>			M_SW_EFFECT;

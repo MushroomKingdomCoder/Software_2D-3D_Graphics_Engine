@@ -147,6 +147,7 @@
     <ClInclude Include="DXErr.h" />
     <ClInclude Include="Effect3D.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GeometryShaders.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Indexer3D.h" />
     <ClInclude Include="Keyboard.h" />

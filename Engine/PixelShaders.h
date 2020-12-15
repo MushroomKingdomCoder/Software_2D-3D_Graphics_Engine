@@ -132,16 +132,84 @@ namespace PixelShaders
 			return color;
 		}
 	};
+
+	// 4. Simple color
+	class ColoredVertex
+	{
+	public:
+		class Vertex
+		{
+		public:
+			fVector3D pos;
+			Color color;
+		public:                                                    
+			Vertex(dVertex vec3, Color color)
+				:
+				pos(vec3.pos),
+				color(color)
+			{}
+			Vertex(float x, float y, float z, Color color)
+				:
+				pos(x, y, z),
+				color(color)
+			{}
+			Vertex operator +(const Vertex& vtx) const
+			{
+				return Vertex(pos + vtx.pos, color);
+			}
+			Vertex& operator +=(const Vertex& vtx)
+			{
+				return *this = *this + vtx;
+			}
+			Vertex operator -(const Vertex& vtx) const
+			{
+				return Vertex(pos - vtx.pos, color);
+			}
+			Vertex& operator -=(const Vertex& vtx)
+			{
+				return *this = *this - vtx;
+			}
+			Vertex operator *(const float scale) const
+			{
+				return Vertex(pos * scale, color);
+			}
+			Vertex& operator *=(const float scale)
+			{
+				return *this = *this * scale;
+			}
+			Vertex operator /(const float scale) const
+			{
+				return Vertex(pos / scale, color);
+			}
+			Vertex& operator /=(const float scale)
+			{
+				return *this = *this / scale;
+			}
+			Vertex InterpolatedTo(const Vertex& vtx, const float alpha)
+			{
+				return Vertex(pos.InterpolatedTo(vtx.pos, alpha), color);
+			}
+		};
+	public:
+		Color operator ()(const Vertex& vtx)
+		{
+			return vtx.color;
+		}
+	};
 }
-typedef PixelShaders::Texture				tPIXELSHADER;
-typedef PixelShaders::Texture::Vertex		tpsVERTEX;
-typedef PixelShaders::VertexBlend			vbPIXELSHADER;
-typedef PixelShaders::VertexBlend::Vertex	vbpsVERTEX;
-typedef PixelShaders::Monochrome			mPIXELSHADER;
-typedef PixelShaders::Monochrome::Vertex	mpsVERTEX;
+typedef PixelShaders::Texture					tPIXELSHADER;
+typedef PixelShaders::Texture::Vertex			tpsVERTEX;
+typedef PixelShaders::VertexBlend				vbPIXELSHADER;
+typedef PixelShaders::VertexBlend::Vertex		vbpsVERTEX;
+typedef PixelShaders::Monochrome				mPIXELSHADER;
+typedef PixelShaders::Monochrome::Vertex		mpsVERTEX;
+typedef PixelShaders::ColoredVertex				cvPIXELSHADER;
+typedef PixelShaders::ColoredVertex::Vertex		cvpsVERTEX;
 
 
-typedef Effect3D<tPIXELSHADER, EffectDefaults::VertexShader<tPIXELSHADER>> tEFFECT_ONLY;
-typedef Effect3D<vbPIXELSHADER, EffectDefaults::VertexShader<vbPIXELSHADER>> vbEFFECT_ONLY;
-typedef Effect3D<mPIXELSHADER, EffectDefaults::VertexShader<mPIXELSHADER>> mEFFECT_ONLY;
+typedef Effect3D<tPIXELSHADER, EffectDefaults::VertexShader<tpsVERTEX>, EffectDefaults::GeometryShader<tpsVERTEX>>			tEFFECT_ONLY;
+typedef Effect3D<vbPIXELSHADER, EffectDefaults::VertexShader<vbpsVERTEX>, EffectDefaults::GeometryShader<vbpsVERTEX>>		vbEFFECT_ONLY;
+typedef Effect3D<mPIXELSHADER, EffectDefaults::VertexShader<mpsVERTEX>, EffectDefaults::GeometryShader<mpsVERTEX>>			mEFFECT_ONLY;
+typedef Effect3D<cvPIXELSHADER, EffectDefaults::VertexShader<cvpsVERTEX>, EffectDefaults::GeometryShader<cvpsVERTEX>>		cvEFFECT_ONLY;
+
 

@@ -135,6 +135,9 @@
     <ClInclude Include="VertexShaders.h">
       <Filter>3D Engine</Filter>
     </ClInclude>
+    <ClInclude Include="GeometryShaders.h">
+      <Filter>3D Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXErr.cpp">

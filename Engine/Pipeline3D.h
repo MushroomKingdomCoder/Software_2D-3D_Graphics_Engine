@@ -5,61 +5,60 @@
 #include "Indexer3D.h"
 #include "PixelShaders.h"
 #include "VertexShaders.h"
+#include "GeometryShaders.h"
 #include "ZBuffer.h"
 #include "Matrix.h"
 #include "Vector.h"
-#include <memory>
-#include <functional>
 
 template <class Effect3D>
 class Pipeline3D
 {
-	typedef typename Effect3D::PIXELSHADER pShader;
-	typedef typename Effect3D::VERTEXSHADER vShader;
-	typedef typename vShader::VertexIn VSIn;
-	typedef typename vShader::VertexOut VSOut;
+	typedef typename Effect3D::VERTEXSHADER::VertexIn Vertex;
+	typedef typename Effect3D::VERTEXSHADER::VertexOut VSOut;
+	typedef typename Effect3D::GEOMETRYSHADER::VertexOut GSOut;
 private:
 	Graphics& gfx;
 	NDCBuffer& ndc;
-	pShader& PixelShade;
-	vShader& VertexShade;
+	Effect3D& Effect;
 	ZBuffer& zBuffer;
 private:
-	void ProcessVerticies(std::vector<VSIn> vtxes, std::vector<Triangle<int>> triangles)
+	void ProcessVerticies(std::vector<Vertex> vtxes, std::vector<Triangle<int>> triangles)
 	{
 		std::vector<VSOut> vtxes_out;
 		for (auto& v : vtxes) {
-			vtxes_out.emplace_back(VertexShade(v));
+			vtxes_out.emplace_back(Effect.VertexShader(v));
 		}
 		ProcessTriangleModel(vtxes_out, triangles);
 	}
 	void ProcessTriangleModel(std::vector<VSOut>& vtxes, std::vector<Triangle<int>>& triangles)
 	{
+		int id = 0;
 		for (const auto& t : triangles) {
 			const auto& p0 = vtxes[t.v0];
 			const auto& p1 = vtxes[t.v1];
 			const auto& p2 = vtxes[t.v2];
 			if ((((p1.pos - p0.pos) % (p2.pos - p0.pos)).DotProduct(p0.pos) < 0.0f)) {
-				ProcessTriangle(Triangle<VSOut>(p0, p1, p2));
+				ProcessTriangle(Effect.GeometryShader(p0, p1, p2, id));
 			}
+			++id;
 		}
 	}
-	void ProcessTriangle(Triangle<VSOut>& triangle)
+	void ProcessTriangle(Triangle<GSOut>& triangle)
 	{
 		ndc.Transform(triangle.v0);
 		ndc.Transform(triangle.v1);
 		ndc.Transform(triangle.v2);
 		RasterizeTriangle(triangle);
 	}
-	void RasterizeTriangle(const Triangle<VSOut>& tTriangle)
+	void RasterizeTriangle(const Triangle<GSOut>& tTriangle)
 	{
 		DrawTriangle(tTriangle.v0, tTriangle.v1, tTriangle.v2);
 	}
-	void DrawTriangle(const VSOut& p0, const VSOut& p1, const VSOut& p2)
+	void DrawTriangle(const GSOut& p0, const GSOut& p1, const GSOut& p2)
 	{
-		const VSOut* pV0 = &p0;
-		const VSOut* pV1 = &p1;
-		const VSOut* pV2 = &p2;
+		const GSOut* pV0 = &p0;
+		const GSOut* pV1 = &p1;
+		const GSOut* pV2 = &p2;
 
 		// Sort by y
 		if (pV1->pos.Y < pV0->pos.Y) { std::swap(pV1, pV0); }
@@ -75,9 +74,9 @@ private:
 			DrawFlatBottomTriangle(*pV0, *pV1, *pV2);
 		}
 		else {
-			// Find Splitting VSOut
+			// Find Splitting GSOut
 			const float alpha = (pV1->pos.Y - pV0->pos.Y) / (pV2->pos.Y - pV0->pos.Y);
-			const VSOut s_vtx = VSOut(*pV0).InterpolatedTo(*pV2, alpha);
+			const GSOut s_vtx = GSOut(*pV0).InterpolatedTo(*pV2, alpha);
 
 			if (s_vtx.pos.X < pV1->pos.X) { // Major Left
 				DrawFlatBottomTriangle(*pV0, s_vtx, *pV1);
@@ -89,25 +88,25 @@ private:
 			}
 		}
 	}
-	void DrawFlatTopTriangle(const VSOut& p0, const VSOut& p1, const VSOut& p2)
+	void DrawFlatTopTriangle(const GSOut& p0, const GSOut& p1, const GSOut& p2)
 	{
 		const float delta_y = p2.pos.Y - p0.pos.Y;
-		const VSOut dv0 = (p2 - p0) / delta_y;
-		const VSOut dv1 = (p2 - p1) / delta_y;
-		VSOut edge1 = p1;
+		const GSOut dv0 = (p2 - p0) / delta_y;
+		const GSOut dv1 = (p2 - p1) / delta_y;
+		GSOut edge1 = p1;
 		DrawFlatTriangle(p0, p1, p2, dv0, dv1, edge1);
 	}
-	void DrawFlatBottomTriangle(const VSOut& p0, const VSOut& p1, const VSOut& p2)
+	void DrawFlatBottomTriangle(const GSOut& p0, const GSOut& p1, const GSOut& p2)
 	{
 		const float delta_y = p2.pos.Y - p0.pos.Y;
-		const VSOut dv0 = (p1 - p0) / delta_y;
-		const VSOut dv1 = (p2 - p0) / delta_y;
-		VSOut edge1 = p0;
+		const GSOut dv0 = (p1 - p0) / delta_y;
+		const GSOut dv1 = (p2 - p0) / delta_y;
+		GSOut edge1 = p0;
 		DrawFlatTriangle(p0, p1, p2, dv0, dv1, edge1);
 	}
-	void DrawFlatTriangle(const VSOut& p0, const VSOut& p1, const VSOut& p2, const VSOut& dv0, const VSOut& dv1, VSOut edge1)
+	void DrawFlatTriangle(const GSOut& p0, const GSOut& p1, const GSOut& p2, const GSOut& dv0, const GSOut& dv1, GSOut edge1)
 	{
-		VSOut edge0 = p0;
+		GSOut edge0 = p0;
 		const int yStart = (int)ceil(p0.pos.Y - 0.5f);
 		const int yEnd = (int)ceil(p2.pos.Y - 0.5f);
 		edge0 += dv0 * (float(yStart) + 0.5f - p0.pos.Y);
@@ -115,14 +114,14 @@ private:
 		for (int y = yStart; y < yEnd; ++y, edge0 += dv0, edge1 += dv1) {
 			const int xStart = (int)ceil(edge0.pos.X - 0.5f);
 			const int xEnd = (int)ceil(edge1.pos.X - 0.5f);
-			VSOut dvl = (edge1 - edge0) / (edge1.pos.X - edge0.pos.X);
-			VSOut ipos = edge0 + dvl * (float(xStart) + 0.5f - edge0.pos.X);
+			GSOut dvl = (edge1 - edge0) / (edge1.pos.X - edge0.pos.X);
+			GSOut ipos = edge0 + dvl * (float(xStart) + 0.5f - edge0.pos.X);
 			for (int x = xStart; x < xEnd; ++x, ipos += dvl) {
 				if (gfx.ScreenRect().ContainsPoint(iVector2D{ x,y })) {
 					const float zCorrection = 1.0f / ipos.pos.Z;
 					if (zBuffer.TestAndSet(x, y, zCorrection)) {
-						const VSOut pCorrectionVtx = ipos * zCorrection;
-						gfx.PutPixel(x, y, PixelShade(pCorrectionVtx));
+						const GSOut pCorrectionVtx = ipos * zCorrection;
+						gfx.PutPixel(x, y, Effect.PixelShader(pCorrectionVtx));
 					}
 				}
 			}
@@ -135,12 +134,11 @@ public:
 		:
 		gfx(gfx),
 		ndc(ndc),
-		PixelShade(effect3d.PixelShader),
-		VertexShade(effect3d.VertexShader),
+		Effect(effect3d),
 		zBuffer(zbuf)
 	{}
 public:
-	void ProcessObject3D(const TriangleIndexer<VSIn>& tmodel)
+	void ProcessObject3D(const TriangleIndexer<Vertex>& tmodel)
 	{
 		ProcessVerticies(tmodel.Verticies, tmodel.Triangles);
 	}
@@ -152,4 +150,5 @@ typedef Pipeline3D<VB_P2C_EFFECT>	PIPE_VB_P2C;
 typedef Pipeline3D<T_SW_EFFECT>		PIPE_T_SW;
 typedef Pipeline3D<VB_SW_EFFECT>	PIPE_VB_SW;
 typedef Pipeline3D<M_SW_EFFECT>		PIPE_M_SW;
+typedef Pipeline3D<CV_D_QC_EFFECT>	PIPE_CV_D_QC;
 
