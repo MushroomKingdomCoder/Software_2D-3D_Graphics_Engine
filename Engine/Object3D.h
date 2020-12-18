@@ -193,10 +193,13 @@ public:
 		for (int x = 0; x <= teselations.X; ++x, cur_w += delta_w) {
 			vtxes.emplace_back(mpsVERTEX(cur_w, 0, cur_d));
 		}
+		for (auto& v : vtxes) {
+			v.pos -= fVector3D(width / 2, 0, depth / 2);
+		}
 
 		return mObject3D(
 			TriangleIndexer<mpsVERTEX>{
-			vtxes, triangles}, pos - fVector3D(width / 2, 0, depth / 2));
+			vtxes, triangles}, pos);
 	}
 	static Object3D MakeTeselatedSkinnedPlane(const iVector2D teselations, const float width, const float depth, fVector3D pos = { 0,0,0 })
 	{
@@ -221,10 +224,13 @@ public:
 		for (int x = 0; x <= teselations.X; ++x, cur_w += delta_w) {
 			vtxes.emplace_back(tpsVERTEX(cur_w, 0, cur_d, cur_w / width, 1.0f - (cur_d / depth)));
 		}
+		for (auto& v : vtxes) {
+			v.pos -= fVector3D(width / 2, 0, depth / 2);
+		}
 
 		return tObject3D(
 			TriangleIndexer<tpsVERTEX>{
-			vtxes, triangles}, pos - fVector3D(width / 2, 0, depth / 2));
+			vtxes, triangles}, pos);
 	}
 };
 typedef Object3D<tpsVERTEX> tObject3D;

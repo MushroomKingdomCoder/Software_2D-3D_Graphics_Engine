@@ -44,7 +44,9 @@ void Game::Go()
 void Game::UpdateModel()
 {
 	const float time = Clock.GetEllapsed();
+	effect.VertexShader.UpdateTime(time);
 	zBuffer.Clear();
+	// Object Controls
 	if (wnd.kbd.KeyIsPressed('Q')) {
 		Object0.RotateX(d_rot * time);
 	}
@@ -83,6 +85,16 @@ void Game::UpdateModel()
 		Object0.Move({ 0.5f * time,0,0 });
 	}
 	
+	// Lighting Controls
+	if (wnd.kbd.KeyIsPressed('1')) {
+		effect.GeometryShader.RotateLightX(angle_wrap(d_rot * time));
+	}
+	if (wnd.kbd.KeyIsPressed('2')) {
+		effect.GeometryShader.RotateLightY(angle_wrap(d_rot * time));
+	}
+	if (wnd.kbd.KeyIsPressed('3')) {
+		effect.GeometryShader.RotateLightZ(angle_wrap(d_rot * time));
+	}
 }
 
 void Game::ComposeFrame()

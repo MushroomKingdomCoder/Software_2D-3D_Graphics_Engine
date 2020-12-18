@@ -66,9 +66,9 @@ private:
 	Timer Clock;
 	ZBuffer zBuffer;
 	NDCBuffer ndc;
-	mObject3D Object0 = mObject3D::MakeCube( 1, { 0,0,3 });
-	CV_D_QC_EFFECT effect{ {},{Object0.GetRotationMatrix(), Object0.GetPosition()},{std::vector<Color>{Colors::Blue,Colors::Cyan,Colors::Green,Colors::Red,Colors::White,Colors::Yellow}} };
-	PIPE_CV_D_QC pipe3d;
+	tObject3D Object0 = tObject3D::MakeTeselatedSkinnedPlane({ 15,6 }, 2.5f, 1.0f, { 0,0,3 });
+	T_SW_EFFECT effect{ {"USflag1.bmp"},{Object0.GetRotationMatrix(), Object0.GetPosition(), 0.1f, 2, 10},{} };
+	PIPE_T_SW pipe3d;
 
 	// control vars
 	static constexpr float d_rot = M_PI;

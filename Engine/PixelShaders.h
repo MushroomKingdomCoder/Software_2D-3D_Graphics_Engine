@@ -40,13 +40,15 @@ namespace PixelShaders
 			theight(texture.getHeight()),
 			isNegative(negative)
 		{}
-		Color operator ()(const Vertex& vtx)
+		Color operator ()(const Vertex& vtx, const fVector3D& lighting = { 1,1,1 })
 		{
+			Color color = texture.GetPixel(int(vtx.tpos.X * twidth) % twidth, int(vtx.tpos.Y * texture.getHeight()) % theight);
+			Color lighted_color = fVector3D(color.GetR(), color.GetG(), color.GetB()).GetHadamardProduct(lighting);
 			if (!isNegative) {
-				return texture.GetPixel(int(vtx.tpos.X * twidth) % twidth, int(vtx.tpos.Y * texture.getHeight()) % theight);
+				return lighted_color;
 			}
 			else {
-				return -texture.GetPixel(int(vtx.tpos.X * twidth) % twidth, int(vtx.tpos.Y * texture.getHeight()) % theight);
+				return -lighted_color;
 			}
 		}
 	};
@@ -108,9 +110,9 @@ namespace PixelShaders
 			}
 		};
 	public:
-		Color operator ()(const Vertex& vtx) 
+		Color operator ()(const Vertex& vtx, const fVector3D& lighting = { 1,1,1 })
 		{
-			return Color(vtx.color);
+			return Color(vtx.color.GetHadamardProduct(lighting));
 		}
 	};
 
@@ -127,9 +129,9 @@ namespace PixelShaders
 			:
 			color(color)
 		{}
-		Color operator ()(const Vertex& vtx)
+		Color operator ()(const Vertex& vtx, const fVector3D& lighting = { 1,1,1 })
 		{
-			return color;
+			return fVector3D(color.GetR(),color.GetG(),color.GetB()).GetHadamardProduct(lighting);
 		}
 	};
 
@@ -191,9 +193,9 @@ namespace PixelShaders
 			}
 		};
 	public:
-		Color operator ()(const Vertex& vtx)
+		Color operator ()(const Vertex& vtx, const fVector3D& lighting = { 1,1,1 })
 		{
-			return vtx.color;
+			return fVector3D(vtx.color.GetR(), vtx.color.GetG(), vtx.color.GetB()).GetHadamardProduct(lighting);
 		}
 	};
 }

@@ -121,7 +121,7 @@ private:
 					const float zCorrection = 1.0f / ipos.pos.Z;
 					if (zBuffer.TestAndSet(x, y, zCorrection)) {
 						const GSOut pCorrectionVtx = ipos * zCorrection;
-						gfx.PutPixel(x, y, Effect.PixelShader(pCorrectionVtx));
+						gfx.PutPixel(x, y, Effect.PixelShader(pCorrectionVtx, Effect.GeometryShader.Lighting()));
 					}
 				}
 			}

@@ -21,6 +21,8 @@
 #include "MainWindow.h"
 #include "Game.h"
 #include "ChiliException.h"
+#define TINYOBJLOADER_IMPLEMENTATION
+#include "tiny_obj_loader.h"
 
 int WINAPI wWinMain( HINSTANCE hInst,HINSTANCE,LPWSTR pArgs,INT )
 {

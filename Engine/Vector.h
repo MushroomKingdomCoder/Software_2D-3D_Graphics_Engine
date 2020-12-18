@@ -344,7 +344,7 @@ public:
 	}
 	Vector3D operator -() const
 	{
-		return Vector3D(-(this->X), -(this->Y), -(this->Z));
+		return Vector3D(-X, -Y, -Z);
 	}
 	type DotProduct(const Vector3D& vec) const
 	{
@@ -373,19 +373,41 @@ public:
 	}
 	type LengthSq()
 	{
-		return type(pow(x, 2) + pow(y, 2) + pow(z, 2));
+		return type(pow(X, 2) + pow(Y, 2) + pow(Z, 2));
 	}
 	Vector3D Normalized()
 	{
 		const type len = Length();
 		if (len != (type)0.0f) {
-			return *this * ((type)1.0f / len);
+			return *this / len;
 		}
-		return { (type)0,(type)0 };
+		return Vector3D( (type)0,(type)0,(type)0 );
 	}
 	Vector3D& Normalize()
 	{
 		return *this = Normalized();
+	}
+	Vector3D GetHadamardProduct(const Vector3D& vec3) const
+	{
+		return Vector3D(
+			X * vec3.X, Y * vec3.Y, Z * vec3.Z
+		);
+	}
+	Vector3D& Hadamard(const Vector3D& vec3)
+	{
+		return *this = GetHadamardProduct(vec3);
+	}
+	Vector3D Saturated() const
+	{
+		return Vector3D(
+			std::min(std::max(X, (type)0), (type)1),
+			std::min(std::max(Y, (type)0), (type)1),
+			std::min(std::max(Z, (type)0), (type)1)
+		);
+	}
+	Vector3D& Saturate()
+	{
+		return *this = Saturated();
 	}
 	bool operator ==(const Vector3D& vec3) const
 	{
