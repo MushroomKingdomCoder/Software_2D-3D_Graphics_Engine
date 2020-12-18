@@ -1,4 +1,5 @@
 #pragma once
+#include "tiny_obj_loader.h"
 #include "Indexer3D.h"
 #include "PixelShaders.h"
 #include "Matrix.h"
