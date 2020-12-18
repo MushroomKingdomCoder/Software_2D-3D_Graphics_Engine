@@ -67,8 +67,8 @@ private:
 	ZBuffer zBuffer;
 	NDCBuffer ndc;
 	tObject3D Object0 = tObject3D::MakeTeselatedSkinnedPlane({ 15,6 }, 2.5f, 1.0f, { 0,0,3 });
-	T_SW_EFFECT effect{ {"USflag1.bmp"},{Object0.GetRotationMatrix(), Object0.GetPosition(), 0.1f, 2, 10},{} };
-	PIPE_T_SW pipe3d;
+	LT_SW_DL_EFFECT effect{ {"USflag1.bmp"},{Object0.GetRotationMatrix(), Object0.GetPosition(), 0.1f, 2, 10},{} };
+	PIPE_LT_SW_DL pipe3d;
 
 	// control vars
 	static constexpr float d_rot = M_PI;

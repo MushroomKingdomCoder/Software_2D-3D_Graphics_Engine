@@ -116,44 +116,12 @@ namespace EffectDefaults
 	template <class vertex>
 	class GeometryShader
 	{
-	private:
-		fVector3D lighting = { 1,1,1 };
-		fVector3D ambience = { 0.1f,0.1f,0.1f };
-		fVector3D direction = { 0,0,1 };
-		fVector3D CurrentTriangleLighting;
-
-	public:
-		GeometryShader() = default;
-		GeometryShader(fVector3D lighting, fVector3D ambience, fVector3D direction)
-			:
-			lighting(lighting),
-			ambience(ambience),
-			direction(direction)
-		{}
-		fVector3D Lighting() const
-		{
-			return CurrentTriangleLighting;
-		}
-		void RotateLightX(const float radians)
-		{
-			direction = fMatrix3D::RotationX(radians) * direction;
-		}
-		void RotateLightY(const float radians)
-		{
-			direction = fMatrix3D::RotationY(radians) * direction;
-		}
-		void RotateLightZ(const float radians)
-		{
-			direction = fMatrix3D::RotationZ(radians) * direction;
-		}
 	public:
 		typedef typename vertex VertexIn;
 		typedef typename vertex VertexOut;
 	public:
 		Triangle<VertexOut> operator ()(const VertexIn& v0, const VertexIn& v1, const VertexIn& v2, int id)
 		{
-			const fVector3D face_normal = fVector3D((v1.pos - v0.pos) % (v2.pos - v0.pos)).Normalized();
-			CurrentTriangleLighting = fVector3D((-lighting * direction.DotProduct(face_normal)) + ambience).Saturated();
 			return Triangle<VertexOut>(VertexOut(v0), VertexOut(v1), VertexOut(v2));
 		}
 	};

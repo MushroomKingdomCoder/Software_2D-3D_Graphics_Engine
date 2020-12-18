@@ -14,7 +14,7 @@ namespace VertexShaders
 
 	public:
 		typedef typename dVertex VertexIn;
-		typedef typename vbPIXELSHADER::Vertex VertexOut;
+		typedef typename vbpsVERTEX VertexOut;
 	public:
 		Pos2Color(const fMatrix3D& rotation, const fVector3D& translation)
 			:
@@ -30,7 +30,7 @@ namespace VertexShaders
 	};
 
 	// templated on pixel shader, adds a sine wave effect to the model
-	template <class pShader>
+	template <typename vertex>
 	class SineWave
 	{
 	private:
@@ -43,8 +43,8 @@ namespace VertexShaders
 		float wavelength;
 
 	public:
-		typedef typename pShader::Vertex VertexIn;
-		typedef typename VertexIn VertexOut;
+		typedef typename vertex VertexIn;
+		typedef typename vertex VertexOut;
 	public:
 		SineWave(const fMatrix3D& rot, const fVector3D& trans, float ampl, float hz, float wv)
 			:
@@ -70,13 +70,16 @@ namespace VertexShaders
 typedef EffectDefaults::VertexShader<tpsVERTEX>		dtVERTEXSHADER;
 typedef EffectDefaults::VertexShader<vbpsVERTEX>	dvbVERTEXSHADER;
 typedef EffectDefaults::VertexShader<mpsVERTEX>		dmVERTEXSHADER;
+typedef EffectDefaults::VertexShader<cvpsVERTEX>	dcvVERTEXSHADER;
 typedef VertexShaders::Pos2Color					pcVERTEXSHADER;
 typedef VertexShaders::SineWave<tpsVERTEX>			swtVERTEXSHADER;
 typedef VertexShaders::SineWave<vbpsVERTEX>			swvbVERTEXSHADER;
 typedef VertexShaders::SineWave<mpsVERTEX>			swmVERTEXSHADER;
+typedef VertexShaders::SineWave<cvpsVERTEX>			swcvVERTEXSHADER;
 
 
 typedef Effect3D<vbPIXELSHADER, pcVERTEXSHADER, EffectDefaults::GeometryShader<vbpsVERTEX>>			VB_P2C_EFFECT;
 typedef Effect3D<tPIXELSHADER, swtVERTEXSHADER, EffectDefaults::GeometryShader<tpsVERTEX>>			T_SW_EFFECT;
 typedef Effect3D<vbPIXELSHADER, swvbVERTEXSHADER, EffectDefaults::GeometryShader<vbpsVERTEX>>		VB_SW_EFFECT;
 typedef Effect3D<mPIXELSHADER, swmVERTEXSHADER, EffectDefaults::GeometryShader<mpsVERTEX>>			M_SW_EFFECT;
+typedef Effect3D<mPIXELSHADER, swcvVERTEXSHADER, EffectDefaults::GeometryShader<cvpsVERTEX>>		CV_SW_EFFECT;

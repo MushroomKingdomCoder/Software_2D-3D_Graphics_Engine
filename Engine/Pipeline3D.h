@@ -121,7 +121,7 @@ private:
 					const float zCorrection = 1.0f / ipos.pos.Z;
 					if (zBuffer.TestAndSet(x, y, zCorrection)) {
 						const GSOut pCorrectionVtx = ipos * zCorrection;
-						gfx.PutPixel(x, y, Effect.PixelShader(pCorrectionVtx, Effect.GeometryShader.Lighting()));
+						gfx.PutPixel(x, y, Effect.PixelShader(pCorrectionVtx));
 					}
 				}
 			}
@@ -143,12 +143,26 @@ public:
 		ProcessVerticies(tmodel.Verticies, tmodel.Triangles);
 	}
 };
-typedef Pipeline3D<tEFFECT_ONLY>	PIPE_tONLY;
-typedef Pipeline3D<vbEFFECT_ONLY>	PIPE_vbONLY;
-typedef Pipeline3D<mEFFECT_ONLY>	PIPE_mONLY;
-typedef Pipeline3D<VB_P2C_EFFECT>	PIPE_VB_P2C;
-typedef Pipeline3D<T_SW_EFFECT>		PIPE_T_SW;
-typedef Pipeline3D<VB_SW_EFFECT>	PIPE_VB_SW;
-typedef Pipeline3D<M_SW_EFFECT>		PIPE_M_SW;
-typedef Pipeline3D<CV_D_QC_EFFECT>	PIPE_CV_D_QC;
+// ***Pixel Shaders Only***
+typedef Pipeline3D<tEFFECT_ONLY>		PIPE_tONLY;
+typedef Pipeline3D<vbEFFECT_ONLY>		PIPE_vbONLY;
+typedef Pipeline3D<mEFFECT_ONLY>		PIPE_mONLY;
+typedef Pipeline3D<cvEFFECT_ONLY>		PIPE_cvONLY;
+// ***Pixel & Vertex Shaders***
+typedef Pipeline3D<VB_P2C_EFFECT>		PIPE_VB_P2C;
+typedef Pipeline3D<T_SW_EFFECT>			PIPE_T_SW;
+typedef Pipeline3D<VB_SW_EFFECT>		PIPE_VB_SW;
+typedef Pipeline3D<M_SW_EFFECT>			PIPE_M_SW;
+typedef Pipeline3D<CV_SW_EFFECT>		PIPE_CV_SW;
+// ***Pixel, Vertex, & Geometry Shaders***
+typedef Pipeline3D<CV_D_QC_EFFECT>		PIPE_CV_D_QC;
+typedef Pipeline3D<LT_D_DL_EFFECT>		PIPE_LT_D_DL;
+typedef Pipeline3D<LVB_D_DL_EFFECT>		PIPE_LVB_D_DL;
+typedef Pipeline3D<LM_D_DL_EFFECT>		PIPE_LM_D_DL;
+typedef Pipeline3D<LCV_D_DL_EFFECT>		PIPE_LCV_D_DL;
+typedef Pipeline3D<LT_SW_DL_EFFECT>		PIPE_LT_SW_DL;
+typedef Pipeline3D<LVB_SW_DL_EFFECT>	PIPE_LVB_SW_DL;
+typedef Pipeline3D<LM_SW_DL_EFFECT>		PIPE_LM_SW_DL;
+typedef Pipeline3D<LCV_SW_DL_EFFECT>	PIPE_LCV_SW_DL;
+typedef Pipeline3D<LVB_P2C_DL_EFFECT>	PIPE_LVB_P2C_DL;
 
