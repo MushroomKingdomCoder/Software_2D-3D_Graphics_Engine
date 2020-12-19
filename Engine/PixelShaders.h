@@ -485,9 +485,9 @@ namespace PixelShaders
 			:
 			color(color)
 		{}
-		Color operator ()(const Vertex& vtx, const fVector3D& lighting = { 1,1,1 })
+		Color operator ()(const Vertex& vtx)
 		{
-			return fVector3D(color.GetR(), color.GetG(), color.GetB()).GetHadamardProduct(lighting);
+			return fVector3D(color.GetR(), color.GetG(), color.GetB()).GetHadamardProduct(vtx.light);
 		}
 	};
 

@@ -233,6 +233,16 @@ public:
 			TriangleIndexer<tpsVERTEX>{
 			vtxes, triangles}, pos);
 	}
+	static Object3D MakeSphere(float radius, unsigned int depth, fVector3D pos = { 0,0,0 })
+	{
+		std::vector<mpsVERTEX> vertexes;
+		std::vector<Triangle<int>> triangles;
+		initialize_sphere(vertexes, triangles, depth);
+		for (auto& v : vertexes) {
+			v.pos *= radius;
+		}
+		return mObject3D(TriangleIndexer<mpsVERTEX>(vertexes, triangles), pos);
+	}
 };
 typedef Object3D<tpsVERTEX> tObject3D;
 typedef Object3D<vbpsVERTEX> vbObject3D;

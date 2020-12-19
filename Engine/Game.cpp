@@ -44,7 +44,7 @@ void Game::Go()
 void Game::UpdateModel()
 {
 	const float time = Clock.GetEllapsed();
-	effect.VertexShader.UpdateTime(time);
+	//effect.VertexShader.UpdateTime(time);
 	zBuffer.Clear();
 	// Object Controls
 	if (wnd.kbd.KeyIsPressed('Q')) {
@@ -84,7 +84,7 @@ void Game::UpdateModel()
 	if (wnd.kbd.KeyIsPressed(VK_NUMPAD6)) {
 		Object0.Move({ 0.5f * time,0,0 });
 	}
-	
+
 	// Lighting Controls
 	if (wnd.kbd.KeyIsPressed('1')) {
 		effect.GeometryShader.RotateLightX(angle_wrap(d_rot * time));

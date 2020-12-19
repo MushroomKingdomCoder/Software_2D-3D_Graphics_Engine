@@ -37,7 +37,7 @@ namespace GeometryShaders
 	{
 	private:
 		fVector3D lighting = { 1,1,1 };
-		fVector3D ambience = { 0.05f,0.05f,0.05f };
+		fVector3D ambience = { 0.1f,0.1f,0.1f };
 		fVector3D direction = { 0,0,1 };
 
 	public:
