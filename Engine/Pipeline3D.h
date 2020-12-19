@@ -156,6 +156,7 @@ typedef Pipeline3D<M_SW_EFFECT>			PIPE_M_SW;
 typedef Pipeline3D<CV_SW_EFFECT>		PIPE_CV_SW;
 // ***Pixel, Vertex, & Geometry Shaders***
 typedef Pipeline3D<CV_D_QC_EFFECT>		PIPE_CV_D_QC;
+		// ***Directional Lighting***
 typedef Pipeline3D<LT_D_DL_EFFECT>		PIPE_LT_D_DL;
 typedef Pipeline3D<LVB_D_DL_EFFECT>		PIPE_LVB_D_DL;
 typedef Pipeline3D<LM_D_DL_EFFECT>		PIPE_LM_D_DL;
@@ -165,4 +166,14 @@ typedef Pipeline3D<LVB_SW_DL_EFFECT>	PIPE_LVB_SW_DL;
 typedef Pipeline3D<LM_SW_DL_EFFECT>		PIPE_LM_SW_DL;
 typedef Pipeline3D<LCV_SW_DL_EFFECT>	PIPE_LCV_SW_DL;
 typedef Pipeline3D<LVB_P2C_DL_EFFECT>	PIPE_LVB_P2C_DL;
+		// ***Point Lighting***
+typedef Pipeline3D<LT_D_PL_EFFECT>		PIPE_LT_D_PL;
+typedef Pipeline3D<LVB_D_PL_EFFECT>		PIPE_LVB_D_PL;
+typedef Pipeline3D<LM_D_PL_EFFECT>		PIPE_LM_D_PL;
+typedef Pipeline3D<LCV_D_PL_EFFECT>		PIPE_LCV_D_PL;
+typedef Pipeline3D<LT_SW_PL_EFFECT>		PIPE_LT_SW_PL;
+typedef Pipeline3D<LVB_SW_PL_EFFECT>	PIPE_LVB_SW_PL;
+typedef Pipeline3D<LM_SW_PL_EFFECT>		PIPE_LM_SW_PL;
+typedef Pipeline3D<LCV_SW_PL_EFFECT>	PIPE_LCV_SW_PL;
+typedef Pipeline3D<LVB_P2C_PL_EFFECT>	PIPE_LVB_P2C_PL;
 

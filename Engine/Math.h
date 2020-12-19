@@ -37,19 +37,18 @@ inline TextureVector<type> tvec_abs(const TextureVector<type>& tvec)
 }
 
 template <typename vertex>
-void inline subdivide(const vertex& v1, const vertex& v2, const vertex& v3, std::vector<vertex>& sphere_points, std::vector<Triangle<int>>& triangles, const unsigned int depth) {
+inline void subdivide(const fVector3D& v1, const fVector3D& v2, const fVector3D& v3, std::vector<vertex>& sphere_points, std::vector<Triangle<int>>& triangles, const unsigned int depth) {
     if (depth == 0) {
         sphere_points.emplace_back(v1);
         sphere_points.emplace_back(v2);
         sphere_points.emplace_back(v3);
         unsigned int next_index = unsigned int(sphere_points.size());
-        triangles.emplace_back(next_index - 2, next_index - 1, next_index - 3);
         triangles.emplace_back(next_index - 2, next_index - 3, next_index - 1);
         return;
     }
-    const vertex v12 = (v1 + v2).pos.Normalized();
-    const vertex v23 = (v2 + v3).pos.Normalized();
-    const vertex v31 = (v3 + v1).pos.Normalized();
+    const fVector3D v12 = (v1 + v2).Normalized();
+    const fVector3D v23 = (v2 + v3).Normalized();
+    const fVector3D v31 = (v3 + v1).Normalized();
     const unsigned int next_depth = depth - 1;
     subdivide(v1, v12, v31, sphere_points, triangles, next_depth);
     subdivide(v2, v23, v12, sphere_points, triangles, next_depth);
@@ -58,10 +57,10 @@ void inline subdivide(const vertex& v1, const vertex& v2, const vertex& v3, std:
 }
 
 template <typename vertex>
-void inline initialize_sphere(std::vector<vertex>& sphere_points, std::vector<Triangle<int>>& triangles, const unsigned int depth) {
+inline void initialize_sphere(std::vector<vertex>& sphere_points, std::vector<Triangle<int>>& triangles, const unsigned int depth) {
     const double X = 0.525731112119133606;
     const double Z = 0.850650808352039932;
-    const std::vector<vertex> vdata = {
+    const std::vector<fVector3D> vdata = {
         {-X, 0.0, Z}, { X, 0.0, Z }, { -X, 0.0, -Z }, { X, 0.0, -Z },
         { 0.0, Z, X }, { 0.0, Z, -X }, { 0.0, -Z, X }, { 0.0, -Z, -X },
         { Z, X, 0.0 }, { -Z, X, 0.0 }, { Z, -X, 0.0 }, { -Z, -X, 0.0 }

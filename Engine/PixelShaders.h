@@ -105,6 +105,10 @@ namespace PixelShaders
 			fVector3D pos;
 			fVector3D color;
 		public:
+			Vertex(fVector3D vec3)
+				:
+				pos(vec3)
+			{}
 			Vertex(float x, float y, float z, Color color)
 				:
 				Vertex({ x,y,z }, fVector3D(float(color.GetR()), float(color.GetG()), float(color.GetB())))
