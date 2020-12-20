@@ -36,17 +36,23 @@ namespace GeometryShaders
 	class DirectionalLighting
 	{
 	private:
+		const bool isGoraud = true;
 		fVector3D lighting = { 1,1,1 };
 		fVector3D ambience = { 0.1f,0.1f,0.1f };
 		fVector3D direction = { 0,0,1 };
 
 	public:
 		DirectionalLighting() = default;
-		DirectionalLighting(fVector3D lighting, fVector3D ambience, fVector3D direction)
+		DirectionalLighting(bool isGoraud)
+			:
+			isGoraud(isGoraud)
+		{}
+		DirectionalLighting(fVector3D lighting, fVector3D ambience, fVector3D direction, bool isGoraud = true)
 			:
 			lighting(lighting),
 			ambience(ambience),
-			direction(direction)
+			direction(direction),
+			isGoraud(isGoraud)
 		{}
 		void RotateLightX(const float radians)
 		{
@@ -64,12 +70,22 @@ namespace GeometryShaders
 		typedef typename vertex VertexIn;
 		typedef typename vertex VertexOut;
 	public:
-		Triangle<VertexOut> operator ()(VertexIn v0, VertexIn v1, VertexIn v2, int id)
+		Triangle<VertexOut> operator ()(VertexIn v0, VertexIn v1, VertexIn v2, int id) const
 		{
-			const fVector3D face_normal = fVector3D((v1.pos - v0.pos) % (v2.pos - v0.pos)).Normalized();
-			fVector3D light = fVector3D((-lighting * direction.DotProduct(face_normal)).Saturated() + ambience).Saturated();
-			v0.light = light; v1.light = light; v2.light = light;
-			return Triangle<VertexOut>(v0, v1, v2);
+			if (isGoraud) {
+				const fVector3D v0n = v0.pos.Normalized(); const fVector3D v1n = v1.pos.Normalized(); const fVector3D v2n = v2.pos.Normalized();
+				const fVector3D v0light = fVector3D((lighting * direction.DotProduct(v0n)).Saturated() + ambience).Saturated();
+				const fVector3D v1light = fVector3D((lighting * direction.DotProduct(v1n)).Saturated() + ambience).Saturated();
+				const fVector3D v2light = fVector3D((lighting * direction.DotProduct(v2n)).Saturated() + ambience).Saturated();
+				v0.light = v0light; v1.light = v1light; v2.light = v2light;
+				return Triangle<VertexOut>(v0, v1, v2);
+			}
+			else {
+				const fVector3D face_normal = fVector3D((v1.pos - v0.pos) % (v2.pos - v0.pos)).Normalized();
+				fVector3D light = fVector3D((-lighting * direction.DotProduct(face_normal)).Saturated() + ambience).Saturated();
+				v0.light = light; v1.light = light; v2.light = light;
+				return Triangle<VertexOut>(v0, v1, v2);
+			}
 		}
 	};
 
@@ -78,6 +94,7 @@ namespace GeometryShaders
 	class PointLighting
 	{
 	private:
+		const bool isGoraud = true;
 		fVector3D lighting = { 1,1,1 };
 		fVector3D ambience = { 0.1f,0.1f,0.1f };
 		fVector3D position = { 0,0,1 };
@@ -90,30 +107,38 @@ namespace GeometryShaders
 		typedef typename vertex VertexOut; 
 	public:
 		PointLighting() = default;
-		PointLighting(fVector3D pos)
+		PointLighting(bool isGoraud)
 			:
-			position(pos)
+			isGoraud(isGoraud)
 		{}
-		PointLighting(float ca, float la, float qa)
+		PointLighting(fVector3D pos, bool isGoraud = true)
+			:
+			position(pos),
+			isGoraud(isGoraud)
+		{}
+		PointLighting(float ca, float la, float qa, bool isGoraud = true)
 			:
 			constant_attenuation(ca),
 			linear_attenuation(la),
-			quadratic_attenuation(qa)
+			quadratic_attenuation(qa),
+			isGoraud(isGoraud)
 		{}
-		PointLighting(fVector3D l, fVector3D a, fVector3D pos)
+		PointLighting(fVector3D l, fVector3D a, fVector3D pos, bool isGoraud = true)
 			:
 			lighting(l),
 			ambience(a),
-			position(pos)
+			position(pos),
+			isGoraud(isGoraud)
 		{}
-		PointLighting(fVector3D l, fVector3D a, fVector3D pos, float ca, float la, float qa)
+		PointLighting(fVector3D l, fVector3D a, fVector3D pos, float ca, float la, float qa, bool isGoraud = true)
 			:
 			lighting(l),
 			ambience(a),
 			position(pos),
 			constant_attenuation(ca),
 			linear_attenuation(la),
-			quadratic_attenuation(qa)
+			quadratic_attenuation(qa),
+			isGoraud(isGoraud)
 		{}
 		void Move(const fVector3D& translation)
 		{
@@ -128,15 +153,32 @@ namespace GeometryShaders
 			return position;
 		}
 	public:
-		Triangle<VertexOut> operator ()(VertexIn v0, VertexIn v1, VertexIn v2, int id)
+		Triangle<VertexOut> operator ()(VertexIn v0, VertexIn v1, VertexIn v2, int id) const
 		{
-			fVector3D midpoint = (v1.pos + v0.pos) / 2.0f; midpoint = (v2.pos + midpoint) / 2.0f;
-			const float distance = vec3_abs(position - midpoint).Length();
-			const float attenuation = 1 / (quadratic_attenuation * sq(distance) + linear_attenuation * distance + constant_attenuation);
-			const fVector3D ldirection = (position - midpoint).Normalized();
-			const fVector3D light = ((-lighting * attenuation * ldirection.DotProduct(midpoint)).Saturated() + ambience).Saturated();
-			v0.light = light; v1.light = light; v2.light = light;
-			return Triangle<VertexOut>(v0, v1, v2);
+			if (isGoraud) {
+				const fVector3D v0n = v0.pos.Normalized(); const fVector3D v1n = v1.pos.Normalized(); const fVector3D v2n = v2.pos.Normalized();
+				const fVector3D v0DD = position - v0.pos; const fVector3D v1DD = position - v1.pos; const fVector3D v2DD = position - v2.pos;
+				const float v0d = v0DD.Length(); const float v1d = v1DD.Length(); const float v2d = v2DD.Length();
+				const float v0att = 1 / (quadratic_attenuation * sq(v0d) + linear_attenuation * v0d + constant_attenuation);
+				const float v1att = 1 / (quadratic_attenuation * sq(v1d) + linear_attenuation * v1d + constant_attenuation);
+				const float v2att = 1 / (quadratic_attenuation * sq(v2d) + linear_attenuation * v2d + constant_attenuation);
+				const fVector3D v0LN = v0DD.Normalized(); const fVector3D v1LN = v1DD.Normalized(); const fVector3D v2LN = v2DD.Normalized();
+				const fVector3D v0light = ((-lighting * v0att * v0LN.DotProduct(v0n)).Saturated() + ambience).Saturated();
+				const fVector3D v1light = ((-lighting * v1att * v1LN.DotProduct(v1n)).Saturated() + ambience).Saturated();
+				const fVector3D v2light = ((-lighting * v2att * v2LN.DotProduct(v2n)).Saturated() + ambience).Saturated();
+				v0.light = v0light; v1.light = v1light; v2.light = v2light;
+				return Triangle<VertexOut>(v0, v1, v2);
+			}
+			else {
+				const fVector3D face_normal = fVector3D((v1.pos - v0.pos) % (v2.pos - v0.pos)).Normalized();
+				fVector3D midpoint = (v1.pos + v0.pos) / 2.0f; midpoint = (v2.pos + midpoint) / 2.0f;
+				const float distance = (position - midpoint).Length();
+				const float attenuation = 1 / (quadratic_attenuation * sq(distance) + linear_attenuation * distance + constant_attenuation);
+				const fVector3D ldirection = (position - midpoint).Normalized();
+				const fVector3D light = ((lighting * attenuation * ldirection.DotProduct(face_normal)).Saturated() + ambience).Saturated();
+				v0.light = light; v1.light = light; v2.light = light;
+				return Triangle<VertexOut>(v0, v1, v2);
+			}
 		}
 	};
 }

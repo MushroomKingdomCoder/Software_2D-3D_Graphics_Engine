@@ -28,7 +28,8 @@ Game::Game(MainWindow& wnd)
 	wnd(wnd),
 	gfx(wnd),
 	zBuffer(Graphics::ScreenWidth, Graphics::ScreenHeight),
-	pipe3d(gfx, ndc, effect, zBuffer)
+	pipe3d(gfx, ndc, effect, zBuffer),
+	pipe3dL(gfx, ndc, effectL, zBuffer)
 {
 	Clock.Start();
 }
@@ -44,7 +45,7 @@ void Game::Go()
 void Game::UpdateModel()
 {
 	const float time = Clock.GetEllapsed();
-	//effect.VertexShader.UpdateTime(time);
+	effect.VertexShader.UpdateTime(time);
 	zBuffer.Clear();
 	// Object Controls
 	if (wnd.kbd.KeyIsPressed('Q')) {
@@ -85,21 +86,43 @@ void Game::UpdateModel()
 		Object0.Move({ 0.5f * time,0,0 });
 	}
 
-	// Lighting Controls
-	if (wnd.kbd.KeyIsPressed('1')) {
-		effect.GeometryShader.RotateLightX(angle_wrap(d_rot * time));
+	// Directional Lighting Controls
+	//if (wnd.kbd.KeyIsPressed('1')) {
+	//	effect.GeometryShader.RotateLightX(angle_wrap(d_rot * time));
+	//}
+	//if (wnd.kbd.KeyIsPressed('2')) {
+	//	effect.GeometryShader.RotateLightY(angle_wrap(d_rot * time));
+	//}
+	//if (wnd.kbd.KeyIsPressed('3')) {
+	//	effect.GeometryShader.RotateLightZ(angle_wrap(d_rot * time));
+	//}
+
+	// Point Lighting Controls
+	if (wnd.kbd.KeyIsPressed('T')) {
+		effect.GeometryShader.Move({ 0,0.5f * time,0 });
 	}
-	if (wnd.kbd.KeyIsPressed('2')) {
-		effect.GeometryShader.RotateLightY(angle_wrap(d_rot * time));
+	if (wnd.kbd.KeyIsPressed('F')) {
+		effect.GeometryShader.Move({ -0.5f * time,0,0 });
 	}
-	if (wnd.kbd.KeyIsPressed('3')) {
-		effect.GeometryShader.RotateLightZ(angle_wrap(d_rot * time));
+	if (wnd.kbd.KeyIsPressed('G')) {
+		effect.GeometryShader.Move({ 0,-0.5f * time,0 });
 	}
+	if (wnd.kbd.KeyIsPressed('H')) {
+		effect.GeometryShader.Move({ 0.5f * time,0,0 });
+	}
+	if (wnd.kbd.KeyIsPressed('R')) {
+		effect.GeometryShader.Move({ 0,0,-0.5f * time });
+	}
+	if (wnd.kbd.KeyIsPressed('Y')) {
+		effect.GeometryShader.Move({ 0,0,0.5f * time });
+	}
+	Light.SetPosition(effect.GeometryShader.GetPosition());
 }
 
 void Game::ComposeFrame()
 {
 	pipe3d.ProcessObject3D(Object0.GetTriangleModel());
+	pipe3dL.ProcessObject3D(Light.GetTriangleModel());
 }
 
 

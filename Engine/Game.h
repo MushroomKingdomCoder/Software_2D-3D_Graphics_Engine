@@ -66,10 +66,13 @@ private:
 	Timer Clock;
 	ZBuffer zBuffer;
 	NDCBuffer ndc;
-	vbObject3D Object0 = vbObject3D::MakeBlendingSphere(1, 2, {Colors::Red,Colors::White,Colors::Blue}, { 0,0,3 });
-	LVB_D_DL_EFFECT effect{ {},{Object0.GetRotationMatrix(), Object0.GetPosition()},{} };
-	PIPE_LVB_D_DL pipe3d;
-
+	mObject3D Object0 = mObject3D::MakeSphere(1, 4, { 0,0,3 });
+	LM_SW_PL_EFFECT effect{ {Colors::Cyan},{Object0.GetRotationMatrix(), Object0.GetPosition(), 0.01f, 10, 30},{false} };
+	PIPE_LM_SW_PL pipe3d;
+	
+	mObject3D Light = mObject3D::MakeSphere(0.05f, 1, { 0,0,1 });
+	mEFFECT_ONLY effectL{ {Colors::White},{Light.GetRotationMatrix(),Light.GetPosition()},{} };
+	PIPE_mONLY pipe3dL;
 	// control vars
 	static constexpr float d_rot = M_PI;
 };

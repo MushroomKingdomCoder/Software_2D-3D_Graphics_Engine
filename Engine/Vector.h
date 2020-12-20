@@ -133,7 +133,7 @@ public:
 		const float alpha = end.Y - Y != 0 ? (point.Y - Y) / (end.Y - Y) : 0;
 		return (*this + (end - *this) * alpha);
 	}
-	Vector2D Normalized()
+	Vector2D Normalized() const
 	{
 		const type len = Length();
 		if (len != (type)0.0f) {
@@ -145,11 +145,11 @@ public:
 	{
 		return *this = Normalized();
 	}
-	float Length()
+	float Length() const
 	{
 		return float(sqrt(pow(X, 2) + pow(Y, 2)));
 	}
-	float LengthSq()
+	float LengthSq() const
 	{
 		return float(pow(X, 2) + pow(Y, 2));
 	}
@@ -358,24 +358,24 @@ public:
 			((X * vec3.Y) - (Y * vec3.X))
 		);
 	}
-	Vector3D InterpolatedTo(const Vector3D& end, const float alpha)
+	Vector3D InterpolatedTo(const Vector3D& end, const float alpha) const
 	{
 		return (*this + (end - *this) * alpha);
 	}
-	Vector3D InterpolatedTo(const Vector3D& point, const Vector3D& end)
+	Vector3D InterpolatedTo(const Vector3D& point, const Vector3D& end) const
 	{
 		const float alpha = end.Y - Y != 0 ? (point.Y - Y) / (end.Y - Y) : 0;
 		return (*this + (end - *this) * alpha);
 	}
-	type Length()
+	type Length() const
 	{
 		return (type)sqrt(LengthSq());
 	}
-	type LengthSq()
+	type LengthSq() const
 	{
 		return type(pow(X, 2) + pow(Y, 2) + pow(Z, 2));
 	}
-	Vector3D Normalized()
+	Vector3D Normalized() const
 	{
 		const type len = Length();
 		if (len != (type)0.0f) {
