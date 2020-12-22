@@ -112,7 +112,43 @@ namespace EffectDefaults
 		}
  	};
 
-	// default geometry shader, calculates simple vertex flat shading for lighting
+	// default vertex shader, no special effects (assumes per-pixel lighted verticies)
+	template <class vertex>
+	class VertexShader_PPS
+	{
+	private:
+		fMatrix3D const* pRotation;
+		fVector3D const* pTranslation;
+
+	public:
+		typedef typename vertex VertexIn;
+		typedef typename vertex VertexOut;
+	public:
+		VertexShader_PPS(const fMatrix3D& rotation, const fVector3D& translation)
+			:
+			pRotation(&rotation),
+			pTranslation(&translation)
+		{}
+		VertexOut operator ()(VertexIn vtx_in)
+		{
+			vtx_in.pos = *pRotation * vtx_in.pos;
+			vtx_in.normal = *pRotation * vtx_in.normal;
+			vtx_in.pos += *pTranslation;
+			vtx_in.normal += *pTranslation;
+			vtx_in.World_Pos = vtx_in.pos;
+			return VertexOut(vtx_in);
+		}
+		void BindRotation(const fMatrix3D& rotation)
+		{
+			pRotation = &rotation;
+		}
+		void BindTranslation(const fVector3D translation)
+		{
+			pTranslation = &translation;
+		}
+	};
+
+	// default geometry shader, exports triangle of verticies
 	template <class vertex>
 	class GeometryShader
 	{

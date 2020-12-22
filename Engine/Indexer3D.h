@@ -11,6 +11,15 @@ struct TriangleIndexer
 	std::vector<Triangle<int>> Triangles;
 public:
 	TriangleIndexer() = default;
+	template <typename mVertex>  
+	TriangleIndexer(TriangleIndexer<mVertex> t_model)
+		:
+		Triangles(t_model.Triangles)
+	{
+		for (const auto& v : t_model.Verticies) {
+			Verticies.emplace_back(vertex(v));
+		}
+	}
 	TriangleIndexer(std::vector<vertex> verticies, std::vector<Triangle<int>> triangles)
 		:
 		Verticies(std::move(verticies)),

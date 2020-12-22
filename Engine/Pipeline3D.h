@@ -176,4 +176,10 @@ typedef Pipeline3D<LVB_SW_PL_EFFECT>	PIPE_LVB_SW_PL;
 typedef Pipeline3D<LM_SW_PL_EFFECT>		PIPE_LM_SW_PL;
 typedef Pipeline3D<LCV_SW_PL_EFFECT>	PIPE_LCV_SW_PL;
 typedef Pipeline3D<LVB_P2C_PL_EFFECT>	PIPE_LVB_P2C_PL;
+		// ***Per-Pixel Lighting***
+typedef Pipeline3D<pptEFFECT_ONLY>		PIPE_pptONLY;
+typedef Pipeline3D<PPT_SW_EFFECT>		PIPE_PPT_SW;
+typedef Pipeline3D<ppmEFFECT_ONLY>		PIPE_ppmONLY; 
+typedef Pipeline3D<PPM_SW_EFFECT>		PIPE_PPM_SW;
+
 

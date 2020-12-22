@@ -151,6 +151,7 @@
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Indexer3D.h" />
     <ClInclude Include="Keyboard.h" />
+    <ClInclude Include="Lighting.h" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Matrix.h" />

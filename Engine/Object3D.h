@@ -29,6 +29,16 @@ private:
 	}
 
 public:
+	template <typename object_type>
+	Object3D(Object3D<object_type> obj)
+		:
+		TriangleModel(TriangleIndexer<vertex>(obj.GetTriangleModel())),
+		rot_x(obj.GetXRotation()),
+		rot_y(obj.GetYRotation()),
+		rot_z(obj.GetZRotation()),
+		Position(obj.GetPosition()),
+		Rotation(obj.GetRotationMatrix())
+	{}
 	Object3D(TriangleIndexer<vertex> triangle_model, fVector3D pos = { 0,0,0 })
 		:
 		TriangleModel(triangle_model),
@@ -56,15 +66,27 @@ public:
 		rot_x = angle_wrap(rot_x + radians);
 		Rotation = RotationMatrix();
 	}
+	float GetXRotation() const
+	{
+		return rot_x;
+	}
 	void RotateY(const float radians)
 	{
 		rot_y = angle_wrap(rot_y + radians);
 		Rotation = RotationMatrix();
 	}
+	float GetYRotation() const
+	{
+		return rot_y;
+	}
 	void RotateZ(const float radians)
 	{
 		rot_z = angle_wrap(rot_z + radians);
 		Rotation = RotationMatrix();
+	}
+	float GetZRotation() const
+	{
+		return rot_z;
 	}
 	const fMatrix3D& GetRotationMatrix()
 	{
@@ -242,10 +264,37 @@ public:
 		}
 		return mObject3D(TriangleIndexer<mpsVERTEX>(vertexes, triangles), pos);
 	}
+	public:
+		template <typename nVertex>
+		static inline Object3D<nVertex> GetObjectModelWithNormals(Object3D<nVertex> obj)
+		{
+			auto& t_model = obj.GetTriangleModel();
+			for (auto& v : t_model.Verticies) {
+				std::vector<Triangle<nVertex>> vtriangles;
+				for (const auto& t : t_model.Triangles) {
+					const auto& v0 = t_model.Verticies[t.v0];
+					const auto& v1 = t_model.Verticies[t.v1];
+					const auto& v2 = t_model.Verticies[t.v2];
+					if (v0 == v || v1 == v || v2 == v) {
+						vtriangles.emplace_back(v0, v1, v2);
+						if (vtriangles.size() == 3u) {
+							break;
+						}
+					}
+				}
+				fVector3D total_faces_unnormal = { 0,0,0 };
+				for (const auto& vt : vtriangles) {
+					total_faces_unnormal += fVector3D((vt.v1.pos - vt.v0.pos) % (vt.v2.pos - vt.v0.pos));
+				}
+				v.normal = total_faces_unnormal.Normalized();
+			}
+			return obj;
+		}
 };
 typedef Object3D<tpsVERTEX> tObject3D;
 typedef Object3D<vbpsVERTEX> vbObject3D;
 typedef Object3D<mpsVERTEX> mObject3D;
-
+typedef Object3D<pptpsVERTEX> pptObject3D;
+typedef Object3D<ppmpsVERTEX> ppmObject3D;
 
 

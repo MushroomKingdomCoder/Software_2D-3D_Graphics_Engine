@@ -31,7 +31,7 @@ namespace GeometryShaders
 		}
 	};
 
-	// 2. vertex flat directional lighting
+	// 2. directional lighting (vertex flat or goraud)
 	template <typename vertex>
 	class DirectionalLighting
 	{
@@ -89,7 +89,7 @@ namespace GeometryShaders
 		}
 	};
 
-	// 3. vertex flat point lighting
+	// 3. point lighting (vertex flat or goraud)
 	template <typename vertex>
 	class PointLighting
 	{

@@ -37,6 +37,8 @@
 #include "Object3D.h"
 #include "PixelShaders.h"
 #include "VertexShaders.h"
+#include "GeometryShaders.h"
+#include "Lighting.h"
 #include "Effect3D.h"
 #include "Pipeline3D.h"
 #include "ZBuffer.h"
@@ -66,9 +68,11 @@ private:
 	Timer Clock;
 	ZBuffer zBuffer;
 	NDCBuffer ndc;
-	mObject3D Object0 = mObject3D::MakeSphere(1, 4, { 0,0,3 });
-	LM_SW_PL_EFFECT effect{ {Colors::Cyan},{Object0.GetRotationMatrix(), Object0.GetPosition(), 0.01f, 10, 30},{false} };
-	PIPE_LM_SW_PL pipe3d;
+	mObject3D _Object0 = mObject3D::MakeSphere(1, 2, { 0,0,3 });
+	ppmObject3D Object0 = ppmObject3D::GetObjectModelWithNormals<ppmpsVERTEX>(_Object0);
+	PointLight<ppmpsVERTEX> light;
+	PPM_SW_EFFECT effect{ {Colors::Blue,light},{Object0.GetRotationMatrix(), Object0.GetPosition(),0.01f,10,30},{} };
+	PIPE_PPM_SW pipe3d;
 	
 	mObject3D Light = mObject3D::MakeSphere(0.05f, 1, { 0,0,1 });
 	mEFFECT_ONLY effectL{ {Colors::White},{Light.GetRotationMatrix(),Light.GetPosition()},{} };

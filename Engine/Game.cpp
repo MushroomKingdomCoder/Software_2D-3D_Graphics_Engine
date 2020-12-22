@@ -88,35 +88,35 @@ void Game::UpdateModel()
 
 	// Directional Lighting Controls
 	//if (wnd.kbd.KeyIsPressed('1')) {
-	//	effect.GeometryShader.RotateLightX(angle_wrap(d_rot * time));
+	//	light.RotateLightX(angle_wrap(d_rot * time));
 	//}
 	//if (wnd.kbd.KeyIsPressed('2')) {
-	//	effect.GeometryShader.RotateLightY(angle_wrap(d_rot * time));
+	//	light.RotateLightY(angle_wrap(d_rot * time));
 	//}
 	//if (wnd.kbd.KeyIsPressed('3')) {
-	//	effect.GeometryShader.RotateLightZ(angle_wrap(d_rot * time));
+	//	light.RotateLightZ(angle_wrap(d_rot * time));
 	//}
 
 	// Point Lighting Controls
 	if (wnd.kbd.KeyIsPressed('T')) {
-		effect.GeometryShader.Move({ 0,0.5f * time,0 });
+		light.Move({ 0,0.5f * time,0 });
 	}
 	if (wnd.kbd.KeyIsPressed('F')) {
-		effect.GeometryShader.Move({ -0.5f * time,0,0 });
+		light.Move({ -0.5f * time,0,0 });
 	}
 	if (wnd.kbd.KeyIsPressed('G')) {
-		effect.GeometryShader.Move({ 0,-0.5f * time,0 });
+		light.Move({ 0,-0.5f * time,0 });
 	}
 	if (wnd.kbd.KeyIsPressed('H')) {
-		effect.GeometryShader.Move({ 0.5f * time,0,0 });
+		light.Move({ 0.5f * time,0,0 });
 	}
 	if (wnd.kbd.KeyIsPressed('R')) {
-		effect.GeometryShader.Move({ 0,0,-0.5f * time });
+		light.Move({ 0,0,-0.5f * time });
 	}
 	if (wnd.kbd.KeyIsPressed('Y')) {
-		effect.GeometryShader.Move({ 0,0,0.5f * time });
+		light.Move({ 0,0,0.5f * time });
 	}
-	Light.SetPosition(effect.GeometryShader.GetPosition());
+	Light.SetPosition(light.GetPosition());
 }
 
 void Game::ComposeFrame()

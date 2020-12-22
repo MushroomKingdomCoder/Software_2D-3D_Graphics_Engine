@@ -3,6 +3,8 @@
 #include "Colors.h"
 #include "Vector.h"
 #include "Effect3D.h"
+#include "Lighting.h"
+#include "Math.h"
 #include <functional>
 
 namespace PixelShaders
@@ -73,6 +75,10 @@ namespace PixelShaders
 					fVector3D(pos).InterpolatedTo(end.pos, alpha),
 					fVector2D(tpos).InterpolatedTo(end.tpos, alpha)
 				);
+			}
+			bool operator ==(const Vertex& vtx) 
+			{
+				return (pos == vtx.pos && tpos == vtx.tpos);
 			}
 		};
 	public:
@@ -247,11 +253,11 @@ namespace PixelShaders
 
 	/*
 	
-		***LIGHTED EFFECTS***
+		***LIGHTED EFFECTS (w/Geometry Shader)***
 	
 	*/
 
-	// 1. textured (lighted)
+	// 5. textured (lighted)
 	class lTexture
 	{
 	private:
@@ -349,7 +355,7 @@ namespace PixelShaders
 		}
 	};
 
-	// 2. vertex color blending shader (lighted)
+	// 6. vertex color blending shader (lighted)
 	class lVertexBlend
 	{
 	public:
@@ -423,7 +429,7 @@ namespace PixelShaders
 		}
 	};
 
-	// 3. monochrome shading (lighted)
+	// 7. monochrome shading (lighted)
 	class lMonochrome
 	{
 	private:
@@ -499,7 +505,7 @@ namespace PixelShaders
 		}
 	};
 
-	// 4. Simple color (lighted)
+	// 8. Simple color (lighted)
 	class lColoredVertex
 	{
 	public:
@@ -571,6 +577,201 @@ namespace PixelShaders
 			return fVector3D(vtx.color.GetR(), vtx.color.GetG(), vtx.color.GetB()).GetHadamardProduct(vtx.light);
 		}
 	};
+
+	/*
+
+		***PER-PIXEL LIGHTED EFFECTS***
+
+	*/
+
+	// 9. textured (per-pixel lighting)
+	class Texture_PPL
+	{
+	private:
+		Sprite texture;
+		const int twidth;
+		const int theight;
+		bool isNegative;
+
+	public:
+		class Vertex
+		{
+		public:
+			fVector3D pos;
+			fVector2D tpos;
+			fVector3D normal;
+			fVector3D World_Pos;
+		public:
+			Vertex() = default;
+			Vertex(Texture::Vertex vtx)
+				:
+				pos(vtx.pos),
+				tpos(vtx.tpos),
+				normal({ 0,0,0 }),
+				World_Pos({ 0,0,0 })
+			{}
+			Vertex(fVector3D pos, fVector2D tpos, fVector3D n, fVector3D wpos)
+				:
+				pos(pos),
+				tpos(tpos),
+				normal(n),
+				World_Pos(wpos)
+			{}
+			Vertex operator +(const Vertex& tvec) const
+			{
+				return Vertex(pos + tvec.pos, tpos + tvec.tpos, normal + tvec.normal, World_Pos + tvec.World_Pos);
+			}
+			Vertex& operator +=(const Vertex& tvec)
+			{
+				return *this = *this + tvec;
+			}
+			Vertex operator -(const Vertex& tvec) const
+			{
+				return Vertex(pos - tvec.pos, tpos - tvec.tpos, normal - tvec.normal, World_Pos - tvec.World_Pos);
+			}
+			Vertex& operator -=(const Vertex& tvec)
+			{
+				return *this = *this - tvec;
+			}
+			Vertex operator *(const float scale) const
+			{
+				return Vertex(pos * scale, tpos * scale, normal * scale, World_Pos * scale);
+			}
+			Vertex& operator *=(const float scale)
+			{
+				return *this = *this * scale;
+			}
+			Vertex operator /(const float scale) const
+			{
+				return Vertex(pos / scale, tpos / scale, normal / scale, World_Pos / scale);
+			}
+			Vertex& operator /=(const float scale)
+			{
+				return *this = *this / scale;
+			}
+			Vertex InterpolatedTo(const Vertex& end, const float alpha) const
+			{
+				return Vertex(
+					pos.InterpolatedTo(end.pos, alpha),
+					tpos.InterpolatedTo(end.tpos, alpha),
+					normal.InterpolatedTo(end.normal, alpha),
+					World_Pos.InterpolatedTo(end.World_Pos, alpha)
+				);
+			}
+			bool operator ==(const Vertex& vtx) const
+			{
+				return (pos == vtx.pos && tpos == vtx.tpos && normal == vtx.normal && World_Pos == vtx.World_Pos);
+			}
+		};
+	private:
+		Light<Vertex>& light;
+	public:
+		Texture_PPL() = delete;
+		Texture_PPL(std::string file, Light<Vertex>& light, bool isN = false)
+			:
+			texture(file),
+			twidth(texture.getWidth()),
+			theight(texture.getHeight()),
+			isNegative(isN),
+			light(light)
+		{}
+		Color operator ()(const Vertex& vtx)
+		{
+			Color color = texture.GetPixel(int(vtx.tpos.X * twidth) % twidth, int(vtx.tpos.Y * texture.getHeight()) % theight);
+			fVector3D vcolor = { (float)color.GetR(),(float)color.GetG(),(float)color.GetB() };
+			if (!isNegative) {
+				return light.Illumination(vtx, vcolor);
+			}
+			else {
+				return -light.Illumination(vtx, vcolor);
+			}
+		}
+	};
+
+	// 10. monochrome shading (per-pixel lighting)
+	class Monochrome_PPL
+	{
+	private:
+		Color color;
+
+	public:
+		class Vertex
+		{
+		public:
+			fVector3D pos;
+			fVector3D normal;
+			fVector3D World_Pos;
+		public:
+			Vertex(const Monochrome::Vertex& vtx)
+				:
+				pos(vtx.pos),
+				normal({0,0,0}),
+				World_Pos({0,0,0})
+			{}
+			Vertex(fVector3D vec3, fVector3D normal, fVector3D wpos)
+				:
+				pos(vec3),
+				normal(normal),
+				World_Pos(wpos)
+			{}
+			Vertex operator +(const Vertex& vtx) const
+			{
+				return Vertex(pos + vtx.pos, normal + vtx.normal, World_Pos + vtx.World_Pos);
+			}
+			Vertex& operator +=(const Vertex& vtx)
+			{
+				return *this = *this + vtx;
+			}
+			Vertex operator -(const Vertex& vtx) const
+			{
+				return Vertex(pos - vtx.pos, normal - vtx.normal, World_Pos - vtx.World_Pos);
+			}
+			Vertex& operator -=(const Vertex& vtx)
+			{
+				return *this = *this - vtx;
+			}
+			Vertex operator *(const float scale) const
+			{
+				return Vertex(pos * scale, normal * scale, World_Pos * scale);
+			}
+			Vertex& operator *=(const float scale)
+			{
+				return *this = *this * scale;
+			}
+			Vertex operator /(const float scale) const
+			{
+				return Vertex(pos / scale, normal / scale, World_Pos / scale);
+			}
+			Vertex& operator /=(const float scale)
+			{
+				return *this = *this / scale;
+			}
+			Vertex InterpolatedTo(const Vertex& vtx, const float alpha)
+			{
+				return Vertex( 
+					pos.InterpolatedTo(vtx.pos, alpha), 
+					normal.InterpolatedTo(vtx.normal, alpha),
+					World_Pos.InterpolatedTo(vtx.World_Pos, alpha)
+				);
+			}
+			bool operator ==(const Vertex& vtx) const
+			{
+				return (pos == vtx.pos && normal == vtx.normal && World_Pos == vtx.World_Pos);
+			}
+		};
+	private:
+		Light<Vertex>& light;
+	public:
+		Monochrome_PPL(Color color, Light<Vertex>& light)
+			:
+			color(color),
+			light(light)
+		{}
+		Color operator ()(const Vertex& vtx)
+		{
+			return light.Illumination(vtx, fVector3D( color.GetR(),color.GetG(),color.GetB() ));
+		}
+	};
 }
 typedef PixelShaders::Texture					tPIXELSHADER;
 typedef PixelShaders::Texture::Vertex			tpsVERTEX;
@@ -589,12 +790,17 @@ typedef PixelShaders::lMonochrome				lmPIXELSHADER;
 typedef PixelShaders::lMonochrome::Vertex		lmpsVERTEX;
 typedef PixelShaders::lColoredVertex			lcvPIXELSHADER;
 typedef PixelShaders::lColoredVertex::Vertex	lcvpsVERTEX;
+typedef PixelShaders::Texture_PPL				pptPIXELSHADER;
+typedef PixelShaders::Texture_PPL::Vertex		pptpsVERTEX;
+typedef PixelShaders::Monochrome_PPL			ppmPIXELSHADER;
+typedef PixelShaders::Monochrome_PPL::Vertex	ppmpsVERTEX;
 
 
-typedef Effect3D<tPIXELSHADER, EffectDefaults::VertexShader<tpsVERTEX>, EffectDefaults::GeometryShader<tpsVERTEX>>			tEFFECT_ONLY;
-typedef Effect3D<vbPIXELSHADER, EffectDefaults::VertexShader<vbpsVERTEX>, EffectDefaults::GeometryShader<vbpsVERTEX>>		vbEFFECT_ONLY;
-typedef Effect3D<mPIXELSHADER, EffectDefaults::VertexShader<mpsVERTEX>, EffectDefaults::GeometryShader<mpsVERTEX>>			mEFFECT_ONLY;
-typedef Effect3D<cvPIXELSHADER, EffectDefaults::VertexShader<cvpsVERTEX>, EffectDefaults::GeometryShader<cvpsVERTEX>>		cvEFFECT_ONLY;
+typedef Effect3D<tPIXELSHADER, EffectDefaults::VertexShader<tpsVERTEX>, EffectDefaults::GeometryShader<tpsVERTEX>>				tEFFECT_ONLY;
+typedef Effect3D<vbPIXELSHADER, EffectDefaults::VertexShader<vbpsVERTEX>, EffectDefaults::GeometryShader<vbpsVERTEX>>			vbEFFECT_ONLY;
+typedef Effect3D<mPIXELSHADER, EffectDefaults::VertexShader<mpsVERTEX>, EffectDefaults::GeometryShader<mpsVERTEX>>				mEFFECT_ONLY;
+typedef Effect3D<cvPIXELSHADER, EffectDefaults::VertexShader<cvpsVERTEX>, EffectDefaults::GeometryShader<cvpsVERTEX>>			cvEFFECT_ONLY;
+typedef Effect3D<pptPIXELSHADER, EffectDefaults::VertexShader_PPS<pptpsVERTEX>, EffectDefaults::GeometryShader<pptpsVERTEX>>	pptEFFECT_ONLY;
+typedef Effect3D<ppmPIXELSHADER, EffectDefaults::VertexShader_PPS<ppmpsVERTEX>, EffectDefaults::GeometryShader<ppmpsVERTEX>>	ppmEFFECT_ONLY;
 // Cannot create stand-alone lighted effects, need a corresponding geometry shader
 // ...make sense? ;)
-

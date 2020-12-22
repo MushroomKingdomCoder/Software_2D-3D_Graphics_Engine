@@ -294,19 +294,19 @@ public:
 		:
 		Vector3D(tvec.pos)
 	{}
-	Vector3D operator+(const Vector3D& addend) const
+	Vector3D operator +(const Vector3D& addend) const
 	{
 		return { X + addend.X, Y + addend.Y, Z + addend.Z };
 	}
-	Vector3D& operator+=(const Vector3D& addend)
+	Vector3D& operator +=(const Vector3D& addend)
 	{
 		return *this = *this + addend;
 	}
-	Vector3D operator*(const type scale) const
+	Vector3D operator *(const type scale) const
 	{
 		return Vector3D(X * scale, Y * scale, Z * scale);
 	}
-	Vector3D& operator*=(const type scale)
+	Vector3D& operator *=(const type scale)
 	{
 		return *this = *this * scale;
 	}
@@ -318,11 +318,11 @@ public:
 	{
 		return *this = *this * vec3_scale;
 	}
-	Vector3D operator-(const Vector3D& dif) const
+	Vector3D operator -(const Vector3D& dif) const
 	{
 		return { X - dif.X, Y - dif.Y, Z - dif.Z };
 	}
-	Vector3D& operator-=(const Vector3D& dif)
+	Vector3D& operator -=(const Vector3D& dif)
 	{
 		return *this = *this - dif;
 	}
@@ -378,7 +378,7 @@ public:
 	Vector3D Normalized() const
 	{
 		const type len = Length();
-		if (len != (type)0.0f) {
+		if (len != (type)0) {
 			return *this / len;
 		}
 		return Vector3D( (type)0,(type)0,(type)0 );
