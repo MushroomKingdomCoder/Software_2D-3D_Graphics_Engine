@@ -68,9 +68,8 @@ private:
 	Timer Clock;
 	ZBuffer zBuffer;
 	NDCBuffer ndc;
-	mObject3D _Object0 = mObject3D::MakeSphere(1, 2, { 0,0,3 });
-	ppmObject3D Object0 = ppmObject3D::GetObjectModelWithNormals<ppmpsVERTEX>(_Object0);
-	PointLight<ppmpsVERTEX> light;
+	ppmObject3D Object0 = ppmObject3D::GetObjectModelWithNormals(mObject3D::MakeSphere(1, 2, { 0,0,3 }));
+	PointLight light;
 	PPM_SW_EFFECT effect{ {Colors::Blue,light},{Object0.GetRotationMatrix(), Object0.GetPosition(),0.01f,10,30},{} };
 	PIPE_PPM_SW pipe3d;
 	

@@ -664,10 +664,10 @@ namespace PixelShaders
 			}
 		};
 	private:
-		Light<Vertex>& light;
+		Light& light;
 	public:
 		Texture_PPL() = delete;
-		Texture_PPL(std::string file, Light<Vertex>& light, bool isN = false)
+		Texture_PPL(std::string file, Light& light, bool isN = false)
 			:
 			texture(file),
 			twidth(texture.getWidth()),
@@ -680,10 +680,10 @@ namespace PixelShaders
 			Color color = texture.GetPixel(int(vtx.tpos.X * twidth) % twidth, int(vtx.tpos.Y * texture.getHeight()) % theight);
 			fVector3D vcolor = { (float)color.GetR(),(float)color.GetG(),(float)color.GetB() };
 			if (!isNegative) {
-				return light.Illumination(vtx, vcolor);
+				return light.Illuminate(vtx, vcolor);
 			}
 			else {
-				return -light.Illumination(vtx, vcolor);
+				return -light.Illuminate(vtx, vcolor);
 			}
 		}
 	};
@@ -760,16 +760,16 @@ namespace PixelShaders
 			}
 		};
 	private:
-		Light<Vertex>& light;
+		Light& light;
 	public:
-		Monochrome_PPL(Color color, Light<Vertex>& light)
+		Monochrome_PPL(Color color, Light& light)
 			:
 			color(color),
 			light(light)
 		{}
 		Color operator ()(const Vertex& vtx)
 		{
-			return light.Illumination(vtx, fVector3D( color.GetR(),color.GetG(),color.GetB() ));
+			return light.Illuminate(vtx, fVector3D( color.GetR(),color.GetG(),color.GetB() ));
 		}
 	};
 }

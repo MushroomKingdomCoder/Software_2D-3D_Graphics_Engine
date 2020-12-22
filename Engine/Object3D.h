@@ -265,12 +265,12 @@ public:
 		return mObject3D(TriangleIndexer<mpsVERTEX>(vertexes, triangles), pos);
 	}
 	public:
-		template <typename nVertex>
-		static inline Object3D<nVertex> GetObjectModelWithNormals(Object3D<nVertex> obj)
+		static inline Object3D GetObjectModelWithNormals(Object3D obj)
 		{
-			auto& t_model = obj.GetTriangleModel();
+			auto Object = obj;
+			auto& t_model = Object.GetTriangleModel();
 			for (auto& v : t_model.Verticies) {
-				std::vector<Triangle<nVertex>> vtriangles;
+				std::vector<Triangle<vertex>> vtriangles;
 				for (const auto& t : t_model.Triangles) {
 					const auto& v0 = t_model.Verticies[t.v0];
 					const auto& v1 = t_model.Verticies[t.v1];
@@ -288,7 +288,7 @@ public:
 				}
 				v.normal = total_faces_unnormal.Normalized();
 			}
-			return obj;
+			return Object;
 		}
 };
 typedef Object3D<tpsVERTEX> tObject3D;

@@ -5,7 +5,22 @@
 #include "Math.h"
 #include <functional>
 
-template <typename vertex>
+class PerPixelLightingVertex
+{
+public:
+	fVector3D normal;
+	fVector3D World_Pos;
+public:
+	// construct from any per-pixel lighted vertex class
+	template <typename vertex>
+	PerPixelLightingVertex(vertex vtx)
+		:
+		normal(vtx.normal),
+		World_Pos(vtx.World_Pos)
+	{}
+};
+
+
 class Light
 {
 protected:
@@ -13,23 +28,22 @@ protected:
 	fVector3D ambience = { 0.1f,0.1f,0.1f };
 
 public:
-	std::function<Color(const vertex&, const fVector3D&)> Illumination;
+	virtual Color Illuminate(PerPixelLightingVertex pxl, const fVector3D& color) const = 0;
 };
 
-template <typename vertex>
-class DirectionalLight : public Light<vertex>
+class DirectionalLight : public Light
 {
 private:
 	fVector3D direction = { 0,0,1 };
 
 public:
-	DirectionalLight()
+	DirectionalLight() = default;
+	DirectionalLight(fVector3D l, fVector3D a, fVector3D d)
+		:
+		direction(d) 
 	{
-		Illumination = [&](const vertex& pxl, const fVector3D& color) -> Color
-		{
-			fVector3D light = fVector3D((-lighting * direction.DotProduct(pxl.normal.Normalized())).Saturated() + ambience).Saturated();
-			return color.GetHadamardProduct(light);
-		};
+		lighting = l;
+		ambience = a;
 	}
 	void RotateLightX(const float radians)
 	{
@@ -43,10 +57,14 @@ public:
 	{
 		direction = (fMatrix3D::RotationZ(radians) * direction).Normalized();
 	}
+	Color Illuminate(PerPixelLightingVertex pxl, const fVector3D& color) const override
+	{
+		fVector3D light = fVector3D((-lighting * direction.DotProduct(pxl.normal.Normalized())).Saturated() + ambience).Saturated();
+		return color.GetHadamardProduct(light);
+	}
 };
 
-template <typename vertex>
-class PointLight : public Light<vertex>
+class PointLight : public Light
 {
 private:
 	const float quadratic_attenuation = 0.75f;
@@ -56,17 +74,16 @@ private:
 	fVector3D position = { 0,0,1 };
 
 public: 
-	PointLight()
+	PointLight() = default;
+	PointLight(fVector3D l, fVector3D a, float qa, float la, float ca, fVector3D pos)
+		:
+		quadratic_attenuation(qa),
+		linear_attenuation(la),
+		constant_attenuation(ca),
+		position(pos)
 	{
-		Illumination = [&](const vertex& pxl, const fVector3D& color) -> Color
-		{
-			const fVector3D delta_dist = position - pxl.World_Pos;
-			const float distance = delta_dist.Length();
-			const float attenuation = 1.0f / (quadratic_attenuation * sq(distance) + linear_attenuation * distance + constant_attenuation);
-			const fVector3D ldirection = delta_dist.Normalized();
-			const fVector3D light = ((-lighting * attenuation * ldirection.DotProduct(pxl.normal.Normalized())).Saturated() + ambience).Saturated();
-			return color.GetHadamardProduct(light);
-		};
+		lighting = l;
+		ambience = a;
 	}
 	void Move(const fVector3D& translation)
 	{
@@ -75,6 +92,15 @@ public:
 	const fVector3D& GetPosition() const
 	{
 		return position;
+	}
+	Color Illuminate(PerPixelLightingVertex pxl, const fVector3D& color) const override
+	{
+		const fVector3D delta_dist = position - pxl.World_Pos;
+		const float distance = delta_dist.Length();
+		const float attenuation = 1.0f / (quadratic_attenuation * sq(distance) + linear_attenuation * distance + constant_attenuation);
+		const fVector3D ldirection = delta_dist.Normalized();
+		const fVector3D light = ((-lighting * attenuation * ldirection.DotProduct(pxl.normal.Normalized())).Saturated() + ambience).Saturated();
+		return color.GetHadamardProduct(light);
 	}
 };
 
