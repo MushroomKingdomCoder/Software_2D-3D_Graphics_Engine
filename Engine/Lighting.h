@@ -59,8 +59,8 @@ public:
 	}
 	Color Illuminate(PerPixelLightingVertex pxl, const fVector3D& color) const override
 	{
-		fVector3D light = fVector3D((-lighting * direction.DotProduct(pxl.normal.Normalized())).Saturated() + ambience).Saturated();
-		return color.GetHadamardProduct(light);
+		fVector3D light = lighting * std::max(-direction.DotProduct(pxl.normal.Normalized()), 0.0f);
+		return color.GetHadamardProduct((light + ambience).Saturated());
 	}
 };
 
@@ -98,9 +98,9 @@ public:
 		const fVector3D delta_dist = position - pxl.World_Pos;
 		const float distance = delta_dist.Length();
 		const float attenuation = 1.0f / (quadratic_attenuation * sq(distance) + linear_attenuation * distance + constant_attenuation);
-		const fVector3D ldirection = delta_dist.Normalized();
-		const fVector3D light = ((-lighting * attenuation * ldirection.DotProduct(pxl.normal.Normalized())).Saturated() + ambience).Saturated();
-		return color.GetHadamardProduct(light);
+		const fVector3D ldirection = delta_dist / distance;
+		const fVector3D light = lighting * attenuation * std::max(ldirection.DotProduct(pxl.normal.Normalized()), 0.0f);
+		return color.GetHadamardProduct((light + ambience).Saturated());
 	}
 };
 

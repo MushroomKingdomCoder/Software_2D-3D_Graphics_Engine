@@ -134,7 +134,6 @@ namespace EffectDefaults
 			vtx_in.pos = *pRotation * vtx_in.pos;
 			vtx_in.normal = *pRotation * vtx_in.normal;
 			vtx_in.pos += *pTranslation;
-			vtx_in.normal += *pTranslation;
 			vtx_in.World_Pos = vtx_in.pos;
 			return VertexOut(vtx_in);
 		}

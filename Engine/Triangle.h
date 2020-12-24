@@ -9,6 +9,12 @@ public:
 	type v1;
 	type v2;
 public:
+	Triangle()
+		:
+		v0(type(0)),
+		v1(type(0)),
+		v2(type(0))
+	{}
 	Triangle(type v0, type v1, type v2)
 		:
 		v0(std::move(v0)),

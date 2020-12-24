@@ -44,21 +44,13 @@ public:
 		TriangleModel(triangle_model),
 		Position(pos)
 	{}
-	TriangleIndexer<vertex> GetTriangleModel() const
+	const TriangleIndexer<vertex>& GetTriangleModel() const
 	{
 		return TriangleModel;
 	}
-	std::vector<fVector3D> Object3D::GetVerticies() const
+	TriangleIndexer<vertex>& GetTriangleModel()
 	{
-		std::vector<fVector3D> pos_verts;
-		for (const auto& tv : TriangleModel.Verticies) {
-			pos_verts.emplace_back(tv.pos);
-		}
-		return pos_verts;
-	}
-	std::vector<fTextureVector> Object3D::GetTextureVerticies() const
-	{
-		return TriangleModel.Verticies;
+		return TriangleModel;
 	}
 public:
 	void RotateX(const float radians)
@@ -198,6 +190,7 @@ public:
 		std::vector<Triangle<int>> triangles;
 		const float delta_w = width / teselations.X;
 		const float delta_d = depth / teselations.Y;
+		// topside
 		float cur_d = 0.0f;
 		for (int y = 0; y < teselations.Y - 1; ++y, cur_d += delta_d) {
 			float cur_w = 0.0f;
@@ -206,15 +199,28 @@ public:
 				const int cur_vtx = y * teselations.X + x;
 				triangles.emplace_back(cur_vtx + 1, cur_vtx + teselations.X + 1, cur_vtx);
 				triangles.emplace_back(cur_vtx + teselations.X, cur_vtx, cur_vtx + teselations.X + 1);
-				triangles.emplace_back(cur_vtx + 1, cur_vtx, cur_vtx + teselations.X + 1);
-				triangles.emplace_back(cur_vtx + teselations.X, cur_vtx + teselations.X + 1, cur_vtx);
-			}
+			} cur_w += delta_w;
 			vtxes.emplace_back(mpsVERTEX(cur_w, 0, cur_d));
 		} cur_d += delta_d;
 		float cur_w = 0.0f;
-		for (int x = 0; x <= teselations.X; ++x, cur_w += delta_w) {
+		for (int x = 0; x < teselations.X - 1; ++x, cur_w += delta_w) {
 			vtxes.emplace_back(mpsVERTEX(cur_w, 0, cur_d));
+		} cur_w += delta_w;
+		vtxes.emplace_back(mpsVERTEX(cur_w, 0, cur_d));
+
+		// underside
+		for (auto v : vtxes) {
+			vtxes.emplace_back(v);
 		}
+		const unsigned int vStart = teselations.X * teselations.Y;
+		for (int y = 0; y < teselations.Y - 1; ++y, cur_d += delta_d) {
+			for (int x = 0; x < teselations.X - 1; ++x, cur_w += delta_w) {
+				const int cur_vtx = vStart + (y * teselations.X + x);
+				triangles.emplace_back(cur_vtx + 1, cur_vtx, cur_vtx + teselations.X + 1);
+				triangles.emplace_back(cur_vtx + teselations.X, cur_vtx + teselations.X + 1, cur_vtx);
+			}
+		}
+
 		for (auto& v : vtxes) {
 			v.pos -= fVector3D(width / 2, 0, depth / 2);
 		}
@@ -229,6 +235,7 @@ public:
 		std::vector<Triangle<int>> triangles;
 		const float delta_w = width / teselations.X;
 		const float delta_d = depth / teselations.Y;
+		// topside
 		float cur_d = 0.0f;
 		for (int y = 0; y < teselations.Y - 1; ++y, cur_d += delta_d) {
 			float cur_w = 0.0f;
@@ -237,15 +244,28 @@ public:
 				const int cur_vtx = y * teselations.X + x;
 				triangles.emplace_back(cur_vtx + 1, cur_vtx + teselations.X + 1, cur_vtx);
 				triangles.emplace_back(cur_vtx + teselations.X, cur_vtx, cur_vtx + teselations.X + 1);
-				triangles.emplace_back(cur_vtx + 1, cur_vtx, cur_vtx + teselations.X + 1);
-				triangles.emplace_back(cur_vtx + teselations.X, cur_vtx + teselations.X + 1, cur_vtx);
-			}
+			} cur_w += delta_w;
 			vtxes.emplace_back(tpsVERTEX(cur_w, 0, cur_d, cur_w / width, 1.0f - (cur_d / depth)));
 		} cur_d += delta_d;
 		float cur_w = 0.0f;
-		for (int x = 0; x <= teselations.X; ++x, cur_w += delta_w) {
+		for (int x = 0; x < teselations.X - 1; ++x, cur_w += delta_w) {
 			vtxes.emplace_back(tpsVERTEX(cur_w, 0, cur_d, cur_w / width, 1.0f - (cur_d / depth)));
+		} cur_w += delta_w;
+		vtxes.emplace_back(tpsVERTEX(cur_w, 0, cur_d, cur_w / width, 1.0f - (cur_d / depth)));
+
+		// underside
+		for (auto v : vtxes) {
+			vtxes.emplace_back(v);
 		}
+		const unsigned int vStart = teselations.X * teselations.Y;
+		for (int y = 0; y < teselations.Y - 1; ++y, cur_d += delta_d) {
+			for (int x = 0; x < teselations.X - 1; ++x, cur_w += delta_w) {
+				const int cur_vtx = vStart + (y * teselations.X + x);
+				triangles.emplace_back(cur_vtx + 1, cur_vtx, cur_vtx + teselations.X + 1);
+				triangles.emplace_back(cur_vtx + teselations.X, cur_vtx + teselations.X + 1, cur_vtx);
+			}
+		}
+
 		for (auto& v : vtxes) {
 			v.pos -= fVector3D(width / 2, 0, depth / 2);
 		}
@@ -267,26 +287,26 @@ public:
 	public:
 		static inline Object3D GetObjectModelWithNormals(Object3D obj)
 		{
-			auto Object = obj;
-			auto& t_model = Object.GetTriangleModel();
-			for (auto& v : t_model.Verticies) {
+			Object3D<vertex> Object = obj;
+			TriangleIndexer<vertex>& t_model = Object.GetTriangleModel();
+			for (vertex& v : t_model.Verticies) {
 				std::vector<Triangle<vertex>> vtriangles;
 				for (const auto& t : t_model.Triangles) {
-					const auto& v0 = t_model.Verticies[t.v0];
-					const auto& v1 = t_model.Verticies[t.v1];
-					const auto& v2 = t_model.Verticies[t.v2];
+					const vertex& v0 = t_model.Verticies[t.v0];
+					const vertex& v1 = t_model.Verticies[t.v1];
+					const vertex& v2 = t_model.Verticies[t.v2];
 					if (v0 == v || v1 == v || v2 == v) {
 						vtriangles.emplace_back(v0, v1, v2);
 						if (vtriangles.size() == 3u) {
+							fVector3D total_faces_unnormal = { 0,0,0 };
+							for (const Triangle<vertex>& vt : vtriangles) {
+								total_faces_unnormal += fVector3D((vt.v1.pos - vt.v0.pos) % (vt.v2.pos - vt.v0.pos));
+							}
+							v.normal = total_faces_unnormal.Normalized();
 							break;
 						}
 					}
 				}
-				fVector3D total_faces_unnormal = { 0,0,0 };
-				for (const auto& vt : vtriangles) {
-					total_faces_unnormal += fVector3D((vt.v1.pos - vt.v0.pos) % (vt.v2.pos - vt.v0.pos));
-				}
-				v.normal = total_faces_unnormal.Normalized();
 			}
 			return Object;
 		}
