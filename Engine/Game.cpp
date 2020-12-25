@@ -45,7 +45,7 @@ void Game::Go()
 void Game::UpdateModel()
 {
 	const float time = Clock.GetEllapsed();
-	effect.VertexShader.UpdateTime(time);
+	//effect.VertexShader.UpdateTime(time);
 	zBuffer.Clear();
 	// Object Controls
 	if (wnd.kbd.KeyIsPressed('Q')) {

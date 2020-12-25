@@ -297,16 +297,13 @@ public:
 					const vertex& v2 = t_model.Verticies[t.v2];
 					if (v0 == v || v1 == v || v2 == v) {
 						vtriangles.emplace_back(v0, v1, v2);
-						if (vtriangles.size() == 3u) {
-							fVector3D total_faces_unnormal = { 0,0,0 };
-							for (const Triangle<vertex>& vt : vtriangles) {
-								total_faces_unnormal += fVector3D((vt.v1.pos - vt.v0.pos) % (vt.v2.pos - vt.v0.pos));
-							}
-							v.normal = total_faces_unnormal.Normalized();
-							break;
-						}
 					}
 				}
+				fVector3D total_faces_unnormal = { 0,0,0 };
+				for (const Triangle<vertex>& vt : vtriangles) {
+					total_faces_unnormal += fVector3D((vt.v1.pos - vt.v0.pos) % (vt.v2.pos - vt.v0.pos));
+				}
+				v.normal = total_faces_unnormal.Normalized();
 			}
 			return Object;
 		}

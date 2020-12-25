@@ -26,6 +26,8 @@ class Light
 protected:
 	fVector3D lighting = { 1,1,1 };
 	fVector3D ambience = { 0.1f,0.1f,0.1f };
+	float specular = 0.4f;
+	unsigned int specular_power = 100;
 
 public:
 	virtual Color Illuminate(PerPixelLightingVertex pxl, const fVector3D& color) const = 0;
@@ -38,12 +40,14 @@ private:
 
 public:
 	DirectionalLight() = default;
-	DirectionalLight(fVector3D l, fVector3D a, fVector3D d)
+	DirectionalLight(fVector3D l, fVector3D a, float s, unsigned int sp, fVector3D d)
 		:
 		direction(d) 
 	{
 		lighting = l;
 		ambience = a;
+		specular = s;
+		specular_power = sp;
 	}
 	void RotateLightX(const float radians)
 	{
@@ -59,23 +63,26 @@ public:
 	}
 	Color Illuminate(PerPixelLightingVertex pxl, const fVector3D& color) const override
 	{
-		fVector3D light = lighting * std::max(-direction.DotProduct(pxl.normal.Normalized()), 0.0f);
-		return color.GetHadamardProduct((light + ambience).Saturated());
+		const fVector3D normal = pxl.normal.Normalized();
+		const fVector3D diffuse = lighting * std::max(-direction.DotProduct(normal), 0.0f);
+		const fVector3D reflected = normal * (direction.DotProduct(normal)) - direction;
+		const fVector3D specular_light = diffuse * specular * (float)pow(std::max(pxl.World_Pos.Normalized().DotProduct(direction), 0.0f), specular_power);
+		return color.GetHadamardProduct((diffuse + ambience + specular_light).Saturated());
 	}
 };
 
 class PointLight : public Light
 {
 private:
-	const float quadratic_attenuation = 0.75f;
+	const float quadratic_attenuation = 0.25f;
 	const float linear_attenuation = 0.2f;
-	const float constant_attenuation = 0.05f;
+	const float constant_attenuation = 0.55f;
 private:
 	fVector3D position = { 0,0,1 };
 
 public: 
 	PointLight() = default;
-	PointLight(fVector3D l, fVector3D a, float qa, float la, float ca, fVector3D pos)
+	PointLight(fVector3D l, fVector3D a, float s, unsigned int sp, float qa, float la, float ca, fVector3D pos)
 		:
 		quadratic_attenuation(qa),
 		linear_attenuation(la),
@@ -84,6 +91,8 @@ public:
 	{
 		lighting = l;
 		ambience = a;
+		specular = s;
+		specular_power = sp;
 	}
 	void Move(const fVector3D& translation)
 	{
@@ -95,12 +104,15 @@ public:
 	}
 	Color Illuminate(PerPixelLightingVertex pxl, const fVector3D& color) const override
 	{
+		const fVector3D normal = pxl.normal.Normalized();
 		const fVector3D delta_dist = position - pxl.World_Pos;
 		const float distance = delta_dist.Length();
 		const float attenuation = 1.0f / (quadratic_attenuation * sq(distance) + linear_attenuation * distance + constant_attenuation);
 		const fVector3D ldirection = delta_dist / distance;
-		const fVector3D light = lighting * attenuation * std::max(ldirection.DotProduct(pxl.normal.Normalized()), 0.0f);
-		return color.GetHadamardProduct((light + ambience).Saturated());
+		const fVector3D diffuse = lighting * attenuation * std::max(ldirection.DotProduct(normal), 0.0f);
+		const fVector3D reflected = normal * (2 * delta_dist.DotProduct(normal)) - delta_dist;
+		const fVector3D specular_light = diffuse * specular * (float)pow(std::max(-pxl.World_Pos.Normalized().DotProduct(reflected / distance), 0.0f), specular_power);
+		return color.GetHadamardProduct((diffuse + ambience + specular_light).Saturated());
 	}
 };
 

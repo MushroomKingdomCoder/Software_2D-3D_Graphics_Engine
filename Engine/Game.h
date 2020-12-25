@@ -68,10 +68,10 @@ private:
 	Timer Clock;
 	ZBuffer zBuffer;
 	NDCBuffer ndc;
-	pptObject3D Object0 = pptObject3D::GetObjectModelWithNormals(tObject3D::MakeTeselatedSkinnedPlane({20,8}, 2.5f, 1, { 0,0,3 }));
+	pptObject3D Object0 = pptObject3D::GetObjectModelWithNormals(tObject3D::MakeSkinnedCube( 1, { 0,0,3 }));
 	PointLight light;
-	PPT_SW_EFFECT effect{ {"USflag1.bmp",light},{Object0.GetRotationMatrix(),Object0.GetPosition(),0.1f,5,10},{} };
-	PIPE_PPT_SW pipe3d;
+	pptEFFECT_ONLY effect{ {"gold0.bmp",light},{Object0.GetRotationMatrix(),Object0.GetPosition()},{} };
+	PIPE_pptONLY pipe3d;
 	
 	mObject3D Light = mObject3D::MakeSphere(0.05f, 1, { 0,0,1 });
 	mEFFECT_ONLY effectL{ {Colors::White},{Light.GetRotationMatrix(),Light.GetPosition()},{} };
