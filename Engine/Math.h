@@ -30,11 +30,6 @@ inline Vector3D<type> vec3_abs(const Vector3D<type>& vec3)
 {
 	return Vector3D<type>(abs(vec3.X), abs(vec3.Y), abs(vec3.Z));
 }
-template <typename type>
-inline TextureVector<type> tvec_abs(const TextureVector<type>& tvec)
-{
-	return TextureVector<type>(vec3_abs(tvec.pos), vec2_abs(tvec.tpos));
-}
 
 template <typename vertex>
 inline void subdivide(const fVector3D& v1, const fVector3D& v2, const fVector3D& v3, std::vector<vertex>& sphere_points, std::vector<Triangle<int>>& triangles, const unsigned int depth) {

@@ -22,4 +22,3 @@ public:
 		v2(std::move(v2))
 	{}
 };
-using tTriangle = Triangle<fTextureVector>;

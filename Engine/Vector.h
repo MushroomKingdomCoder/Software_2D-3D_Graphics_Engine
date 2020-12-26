@@ -8,9 +8,9 @@ template <typename type>
 class Vector3D;
 // ------------------------------
 
-// ***Forward Declare TextureVector***
+// ***Forward Declare Vector4D***
 template <typename type>
-class TextureVector;
+class Vector4D;
 // ------------------------------
 
 
@@ -34,35 +34,36 @@ public:
 		X = x; Y = y;
 	}
 	template <typename sType>
-	Vector2D(Vector2D<sType> S)
+	Vector2D(const Vector2D<sType>& S)
 		:
 		X((type)S.X),
 		Y((type)S.Y)
 	{}
 	template <typename vType>
-	Vector2D(Vector3D<vType> vec3)
+	Vector2D(const Vector3D<vType>& vec3)
 		:
 		X((type)vec3.X),
 		Y((type)vec3.Y)
 	{}
-	template <typename tType>
-	Vector2D(TextureVector<tType> tvec)
+	template <typename vType>
+	Vector2D(const Vector4D<vType>& vec4)
 		:
-		Vector2D(tvec.pos)
+		X((type)vec4.X),
+		Y((type)vec4.Y)
 	{}
-	Vector2D operator+(const Vector2D& addend) const
+	Vector2D operator +(const Vector2D& addend) const
 	{
 		return { X + addend.X, Y + addend.Y };
 	}
-	Vector2D& operator+=(const Vector2D& addend)
+	Vector2D& operator +=(const Vector2D& addend)
 	{
 		return *this = *this + addend;
 	}
-	Vector2D operator*(const type scale) const
+	Vector2D operator *(const type scale) const
 	{
 		return Vector2D( X * scale, Y * scale );
 	}
-	Vector2D& operator*=(const type scale)
+	Vector2D& operator *=(const type scale)
 	{
 		return *this = *this * scale;
 	}
@@ -74,11 +75,11 @@ public:
 	{
 		return *this = *this * vec_scale;
 	}
-	Vector2D operator-(const Vector2D& dif) const
+	Vector2D operator -(const Vector2D& dif) const
 	{
 		return { X - dif.X, Y - dif.Y };
 	}
-	Vector2D& operator-=(const Vector2D& dif)
+	Vector2D& operator -=(const Vector2D& dif)
 	{
 		return *this = *this - dif;
 	}
@@ -153,9 +154,9 @@ public:
 	{
 		return float(pow(X, 2) + pow(Y, 2));
 	}
-	void ReboundOff(const Vector2D& vec)
+	Vector2D& ReboundOff(const Vector2D& vec)
 	{
-		*this = ((vec * (*this * vec)) * 2.0f) - *this;
+		return *this = ((vec * (*this * vec)) * 2.0f) - *this;
 	}
 	type DistanceBetweenLine(Vector2D p0, Vector2D p1)
 	{
@@ -225,30 +226,27 @@ public:
 		return !(*this == vec2);
 	}
 public:
-	const type& operator [](int i) const
+	const type& operator [](unsigned int i) const
 	{
 		i = i % 2;
 		if (i == 0) {
 			return X;
 		}
-		else if (i == 1) {
+		else {
 			return Y;
 		}
-		return X;
 	}
-	type& operator [](int i)
+	type& operator [](unsigned int i)
 	{
 		i = i % 2;
 		if (i == 0) {
 			return X;
 		}
-		else if (i == 1) {
+		else {
 			return Y;
 		}
-		return X;
 	}
 };
-
 using fVector2D = Vector2D<float>;
 using dvector2D = Vector2D<double>;
 using iVector2D = Vector2D<int>;
@@ -276,23 +274,25 @@ public:
 		X = x; Y = y; Z = z;
 	}
 	template <typename sType>
-	Vector3D(Vector3D<sType> S)
+	Vector3D(const Vector3D<sType>& S)
 		:
 		X((type)S.X),
 		Y((type)S.Y),
 		Z((type)S.Z)
 	{}
 	template <typename vType>
-	Vector3D(Vector2D<vType> vec2)
+	Vector3D(const Vector2D<vType>& vec2)
 		:
 		X((type)vec2.X),
 		Y((type)vec2.Y),
 		Z(type(1))
 	{}
-	template <typename tType>
-	Vector3D(TextureVector<tType> tvec)
+	template <typename vType>
+	Vector3D(const Vector4D<vType>& vec4)
 		:
-		Vector3D(tvec.pos)
+		X((type)vec4.X),
+		Y((type)vec4.Y),
+		Z((type)vec4.Z)
 	{}
 	Vector3D operator +(const Vector3D& addend) const
 	{
@@ -418,7 +418,7 @@ public:
 		return !(*this == vec3);
 	}
 public:
-	const type& operator [](int i) const
+	const type& operator [](unsigned int i) const
 	{
 		i = i % 3;
 		if (i == 0) {
@@ -427,12 +427,11 @@ public:
 		else if (i == 1) {
 			return Y;
 		}
-		else if (i == 2) {
+		else {
 			return Z;
 		}
-		return X;
 	}
-	type& operator [](int i)
+	type& operator [](unsigned int i)
 	{
 		i = i % 3;
 		if (i == 0) {
@@ -441,13 +440,11 @@ public:
 		else if (i == 1) {
 			return Y;
 		}
-		else if (i == 2) {
+		else {
 			return Z;
 		}
-		return X;
 	}
 };
-
 using fVector3D = Vector3D<float>;
 using dVector3D = Vector3D<double>;
 using iVector3D = Vector3D<int>;
@@ -455,109 +452,146 @@ using iVector3D = Vector3D<int>;
 
 /*
 
-	TextureVector
+	Vector4D
 
 */
 
 
 template <typename type>
-class TextureVector
+class Vector4D
 {
 public:
-	Vector3D<type> pos;
-	Vector2D<type> tpos;
+	type X;
+	type Y;
+	type Z;
+	type W;
 public:
-	TextureVector() = default;
-	TextureVector(type x, type y, type z, type tx, type ty)
+	Vector4D(type x, type y, type z, type w)
 		:
-		pos(x,y,z),
-		tpos(tx,ty)
-	{}
-	TextureVector(Vector3D<type> pos, Vector2D<type> tpos)
-		:
-		pos(pos),
-		tpos(tpos)
+		X(x),
+		Y(y),
+		Z(z),
+		W(w)
 	{}
 	template <typename vType>
-	TextureVector(Vector2D<vType> vec2)
+	Vector4D(const Vector4D<vType> vec4)
 		:
-		pos(vec2),
-		tpos(type(1),type(1))
+		X((type)vec4.X),
+		Y((type)vec4.Y),
+		Z((type)vec4.Z),
+		W((type)vec4.W)
 	{}
 	template <typename vType>
-	TextureVector(Vector3D<vType> vec3)
+	Vector4D(const Vector2D<vType>& vec2)
 		:
-		pos(vec3),
-		tpos(type(1),type(0))
+		X((type)vec2.X),
+		Y((type)vec2.Y),
+		Z((type)0.0),
+		W((type)1.0)
 	{}
-	TextureVector operator +(const TextureVector& tvec) const
+	template <typename vType>
+	Vector4D(const Vector3D<vType>& vec3)
+		:
+		X((type)vec3.X),
+		Y((type)vec3.Y),
+		Z((type)vec3.Z),
+		W((type)1.0)
+	{}
+	Vector4D operator +(const Vector4D& addend) const
 	{
-		return TextureVector(pos + tvec.pos, tpos + tvec.tpos);
+		return Vector4D( X + addend.X, Y + addend.Y, Z + addend.Z, W + addend.W );
 	}
-	TextureVector& operator +=(const TextureVector& tvec)
+	Vector4D& operator +=(const Vector4D& addend)
 	{
-		return *this = *this + tvec;
+		return *this = *this + addend;
 	}
-	TextureVector operator -(const TextureVector& tvec) const
+	Vector4D operator *(const type scale) const
 	{
-		return TextureVector(pos - tvec.pos, tpos - tvec.tpos);
+		return Vector4D(X * scale, Y * scale, Z * scale, W * scale);
 	}
-	TextureVector& operator -=(const TextureVector& tvec)
-	{
-		return *this = *this - tvec;
-	}
-	TextureVector operator *(const type scale) const
-	{
-		return TextureVector(pos * scale, tpos * scale);
-	}
-	TextureVector& operator *=(const type scale)
+	Vector4D& operator *=(const type scale)
 	{
 		return *this = *this * scale;
 	}
-	TextureVector operator *(const TextureVector& tvec_scale) const
+	Vector4D operator -(const Vector4D& dif) const
 	{
-		return TextureVector(pos * tvec_scale.pos, tpos * tvec_scale.tpos);
+		return Vector4D( X - dif.X, Y - dif.Y, Z - dif.Z, W - dif.W);
 	}
-	TextureVector& operator *=(const TextureVector& tvec_scale)
+	Vector4D& operator -=(const Vector4D& dif)
 	{
-		return *this = *this * tvec_scale;
+		return *this = *this - dif;
 	}
-	TextureVector operator /(const type scale) const
+	Vector4D operator /(const type scale) const
 	{
-		return TextureVector(pos / scale, tpos / scale);
+		return Vector4D(X / scale, Y / scale, Z / scale, W / scale);
 	}
-	TextureVector& operator /=(const type scale)
+	Vector4D& operator /=(const type scale)
 	{
 		return *this = *this / scale;
 	}
-	TextureVector operator /(const TextureVector& tvec_scale) const
+	Vector4D operator -() const
 	{
-		return TextureVector(pos / tvec_scale.pos, tpos / tvec_scale.tpos);
+		return Vector4D(-X, -Y, -Z, -W);
 	}
-	TextureVector& operator /=(const TextureVector& tvec_scale)
+	type DotProduct(const Vector4D& vec) const
 	{
-		return *this = *this / tvec_scale;
+		return type(X * vec.X + Y * vec.Y + Z * vec.Z + W * vec.W);
 	}
-	TextureVector operator /(const Vector3D<type>& vec3_scale) const
+	Vector4D InterpolatedTo(const Vector4D& end, const float alpha) const
 	{
-		return TextureVector(pos / vec3_scale, tpos / Vector2D<type>(vec3_scale));
+		return Vector4D(*this + (end - *this) * alpha);
 	}
-	TextureVector InterpolatedTo(const TextureVector& point, const TextureVector& end) const
+	Vector4D InterpolatedTo(const Vector4D& point, const Vector4D& end) const
 	{
-		return TextureVector(
-			Vector3D<type>(pos).InterpolatedTo(point.pos, end.pos),
-			Vector2D<type>(tpos).InterpolatedTo(point.tpos, end.tpos)
-		);
+		const float alpha = end.Y - Y != 0 ? (point.Y - Y) / (end.Y - Y) : 0;
+		return Vector4D(*this + (end - *this) * alpha);
 	}
-	TextureVector InterpolatedTo(const TextureVector& end, const float alpha) const
+	bool operator ==(const Vector4D& vec4) const
 	{
-		return TextureVector(
-			Vector3D<type>(pos).InterpolatedTo(end.pos, alpha),
-			Vector2D<type>(tpos).InterpolatedTo(end.tpos, alpha)
-		);
+		return (X == vec4.X && Y == vec4.Y && Z == vec4.Z && W == vec4.W);
+	}
+	bool operator !=(const Vector4D& vec4) const
+	{
+		return !(*this == vec4);
+	}
+public:
+	const type& operator [](unsigned int i) const
+	{
+		i = i % 4;
+		if (i == 0) {
+			return X;
+		}
+		else if (i == 1) {
+			return Y;
+		}
+		else if (i == 2) {
+			return Z;
+		}
+		else {
+			return W;
+		}
+	}
+	type& operator [](unsigned int i)
+	{
+		i = i % 4;
+		if (i == 0) {
+			return X;
+		}
+		else if (i == 1) {
+			return Y;
+		}
+		else if (i == 2) {
+			return Z;
+		}
+		else {
+			return W;
+		}
 	}
 };
+using fVector4D = Vector4D<float>;
+using dVector4D = Vector4D<double>;
+using iVector4D = Vector4D<int>;
 
-using fTextureVector = TextureVector<float>;
-using dTextureVector = TextureVector<double>;
-using iTextureVector = TextureVector<int>;
+
+
+

@@ -3,7 +3,6 @@
 #include "Matrix.h"
 #include "Vector.h"
 #include "Math.h"
-#include <functional>
 
 class PerPixelLightingVertex
 {
@@ -74,9 +73,9 @@ public:
 class PointLight : public Light
 {
 private:
-	const float quadratic_attenuation = 0.25f;
-	const float linear_attenuation = 0.2f;
-	const float constant_attenuation = 0.55f;
+	const float quadratic_attenuation = 0.625f;
+	const float linear_attenuation = 0.250f;
+	const float constant_attenuation = 0.125f;
 private:
 	fVector3D position = { 0,0,1 };
 

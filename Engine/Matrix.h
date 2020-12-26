@@ -1,10 +1,6 @@
 #pragma once
 #include "Vector.h"
 
-// ***Forward Declare Matrix3D***
-template <typename type>
-class Matrix3D;
-// ------------------------------
 
 /*
 
@@ -18,15 +14,14 @@ class Matrix2D
 {
 public:
 	type Cell[2][2];
-
 public:
-	Vector2D<type> operator *(const Vector2D<type>& vec) const
+	Vector2D<type> operator *(const Vector2D<type> vec2) const
 	{
 		Vector2D<type> r_vec = { 0,0 };
 		for (int row = 0; row < 2; ++row) {
 			type sum = type(0);
 			for (int col = 0; col < 2; ++col) {
-				sum += Cell[row][col] * vec[col];
+				sum += Cell[row][col] * vec2[col];
 			}
 			r_vec[row] = sum;
 		}
@@ -77,7 +72,6 @@ public:
 		};
 	}
 };
-
 using fMatrix2D = Matrix2D<float>;
 using dMatrix2D = Matrix2D<double>;
 using iMatrix2D = Matrix2D<int>;
@@ -95,9 +89,8 @@ class Matrix2Dplus
 {
 public:
 	type Cell[3][3];
-
 public:
-	Vector3D<type> operator *(const Vector3D<type>& vec) const
+	Vector3D<type> operator *(const Vector3D<type> vec) const
 	{
 		Vector3D<type> r_vec = { 0,0 };
 		for (int row = 0; row < 3; ++row) {
@@ -108,10 +101,6 @@ public:
 			r_vec[row] = sum;
 		}
 		return r_vec;
-	}
-	Vector2D<type> operator *(const Vector2D<type> vec) const
-	{
-		return Vector2D<type>(*this * Vector3D<type>(vec));
 	}
 	Matrix2Dplus operator *(const Matrix2Dplus& mtx) const
 	{
@@ -125,6 +114,10 @@ public:
 			}
 		}
 		return r_mtx;
+	}
+	Matrix2Dplus operator *=(const Matrix2Dplus& mtx)
+	{
+		return *this = mtx * *this;
 	}
 	static Matrix2Dplus Scale(const type& scl)
 	{
@@ -173,7 +166,6 @@ public:
 		};
 	}
 };
-
 using fMatrix2Dplus = Matrix2Dplus<float>;
 using dMatrix2Dplus = Matrix2Dplus<double>;
 using iMatrix2Dplus = Matrix2Dplus<int>;
@@ -191,9 +183,8 @@ class Matrix3D
 {
 public:
 	type Cell[3][3];
-
 public:
-	Vector3D<type> operator *(const Vector3D<type>& vec) const
+	Vector3D<type> operator *(const Vector3D<type> vec) const
 	{
 		Vector3D<type> r_vec = { 0,0 };
 		for (int row = 0; row < 3; ++row) {
@@ -204,14 +195,6 @@ public:
 			r_vec[row] = sum;
 		}
 		return r_vec;
-	}
-	Vector2D<type> operator *(const Vector2D<type>& vec2) const
-	{
-		return Vector2D<type>(*this * Vector3D<type>(vec2));
-	}
-	TextureVector<type> operator *(const TextureVector<type>& tvec) const
-	{
-		return TextureVector<type>(*this * tvec.pos, tvec.tpos);
 	}
 	Matrix3D operator *(const Matrix3D& mtx) const
 	{
@@ -228,7 +211,7 @@ public:
 	}
 	Matrix3D& operator *=(const Matrix3D& mtx)
 	{
-		return *this = *this * mtx;
+		return *this = mtx * *this;
 	}
 	static Matrix3D Identity()
 	{
@@ -281,7 +264,133 @@ public:
 		};
 	}
 };
-
 using fMatrix3D = Matrix3D<float>;
 using dMatrix3D = Matrix3D<double>;
 using iMatrix3D = Matrix3D<int>;
+
+
+/*
+
+	Matrix3Dplus
+
+*/
+
+
+template <typename type>
+class Matrix3Dplus
+{
+public:
+	type Cell[4][4];
+public:
+	Vector4D<type> operator *(const Vector4D<type> vec4) const
+	{
+		Vector4D<type> r_vec = { 0,0,0,0 };
+		for (int row = 0; row < 4; ++row) {
+			type sum = type(0);
+			for (int col = 0; col < 4; ++col) {
+				sum += Cell[row][col] * vec4[col];
+			}
+			r_vec[row] = sum;
+		}
+		return r_vec;
+	}
+	Matrix3Dplus operator *(const Matrix3Dplus& mtx) const
+	{
+		Matrix3Dplus r_mtx;
+		for (int lrow = 0; lrow < 4; ++lrow) {
+			for (int rcol = 0; rcol < 4; ++rcol) {
+				r_mtx.Cell[lrow][rcol] = type(0);
+				for (int i = 0; i < 4; ++i) {
+					r_mtx.Cell[lrow][rcol] += Cell[lrow][i] * mtx.Cell[i][rcol];
+				}
+			}
+		}
+		return r_mtx;
+	}
+	Matrix3Dplus& operator *=(const Matrix3Dplus& mtx)
+	{
+		return *this = mtx * *this;
+	}
+	static Matrix3Dplus Identity()
+	{
+		return Scale(type(1));
+	}
+	static Matrix3Dplus Scale(const type& scl)
+	{
+		return Matrix3Dplus{
+			scl,		type(0),	type(0),	type(0),
+			type(0),	scl,		type(0),	type(0),
+			type(0),	type(0),	scl,		type(0),
+			type(0),	type(0),	type(0),	type(1)
+		};
+	}
+	static Matrix3Dplus ScaleIndependent(const type scl_x, const type scl_y, const type scl_z)
+	{
+		return Matrix3Dplus{
+			scl_x,		type(0),	type(0),	type(0),
+			type(0),	scl_y,		type(0),	type(0),
+			type(0),	type(0),	scl_z,		type(0),
+			type(0),	type(0),	type(0),	type(1)
+		};
+	}
+	static Matrix3Dplus ScaleIndependent(const Vector3D<type>& scl)
+	{
+		return Matrix3Dplus{
+			scl.X,		type(0),	type(0),	type(0),
+			type(0),	scl.Y,		type(0),	type(0),
+			type(0),	type(0),	scl.Y,		type(0),
+			type(0),	type(0),	type(0),	type(1)
+		};
+	}
+	static Matrix3Dplus RotationX(const float radians)
+	{
+		const float cosR = (float)cos(radians);
+		const float sinR = (float)sin(radians);
+		return Matrix3Dplus{
+			type(1),	type(0),	type(0),	type(0),
+			type(0),	cosR,		-sinR,		type(0),
+			type(0),	sinR,		cosR,		type(0),
+			type(0),	type(0),	type(0),	type(1)
+		};
+	}
+	static Matrix3Dplus RotationY(const float radians)
+	{
+		const float cosR = (float)cos(radians);
+		const float sinR = (float)sin(radians);
+		return Matrix3Dplus{
+			cosR,		type(0),	sinR,		type(0),
+			type(0),	type(1),	type(0),	type(0),
+			-sinR,		type(0),	cosR,		type(0),
+			type(0),	type(0),	type(0),	type(1)
+		};
+	}
+	static Matrix3Dplus RotationZ(const float radians)
+	{
+		const float cosR = (float)cos(radians);
+		const float sinR = (float)sin(radians);
+		return Matrix3Dplus{
+			cosR,		-sinR,		type(0),	type(0),
+			sinR,		cosR,		type(0),	type(0),
+			type(0),	type(0),	type(1),	type(0),
+			type(0),	type(0),	type(0),	type(1)
+		};
+	}
+	static Matrix3Dplus Translation(const type tx, const type ty, const type tz)
+	{
+		return Matrix3Dplus{
+			type(1),	type(0),	type(0),	tx,
+			type(0),	type(1),	type(0),	ty,
+			type(0),	type(0),	type(1),	tz,
+			type(0),	type(0),	type(0),	type(1)
+		};
+	}
+	static Matrix3Dplus Translation(const Vector3D<type>& t)
+	{
+		return Matrix3Dplus{
+			type(1),	type(0),	type(0),	t.X,
+			type(0),	type(1),	type(0),	t.Y,
+			type(0),	type(0),	type(1),	t.Z,
+			type(0),	type(0),	type(0),	type(1)
+		};
+	}
+};
