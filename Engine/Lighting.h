@@ -25,7 +25,7 @@ class Light
 protected:
 	fVector3D lighting = { 1,1,1 };
 	fVector3D ambience = { 0.1f,0.1f,0.1f };
-	float specular = 0.4f;
+	float specular = 0.5f;
 	unsigned int specular_power = 100;
 
 public:

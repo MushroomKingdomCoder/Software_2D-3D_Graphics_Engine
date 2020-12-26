@@ -27,6 +27,11 @@ namespace PixelShaders
 			fVector2D tpos;
 		public:
 			Vertex() = default;
+			Vertex(fVector3D pos, float tx, float ty)
+				:
+				pos(pos),
+				tpos(fVector2D(tx, ty))
+			{}
 			Vertex(float x, float y, float z, float tx, float ty)
 				:
 				pos(x, y, z),

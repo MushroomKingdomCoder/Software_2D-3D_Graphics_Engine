@@ -284,6 +284,62 @@ public:
 		}
 		return mObject3D(TriangleIndexer<mpsVERTEX>(vertexes, triangles), pos);
 	}
+	static Object3D MakeSkinnedSphere(float radius, unsigned int latDiv, unsigned int longDiv, fVector3D pos = { 0,0,0 })
+	{
+		const fVector3D base = { 0.0f,0.0f,radius };
+		const float lattitudeAngle = (float)M_PI / latDiv;
+		const float longitudeAngle = 2.0f * (float)M_PI / longDiv;
+		std::vector<tpsVERTEX> vertices;
+		for (unsigned int iLat = 0; iLat <= latDiv; iLat++) {
+			const auto latBase = fMatrix3D::RotationX(lattitudeAngle * iLat) * base;
+			for (unsigned int iLong = 0; iLong <= longDiv; iLong++) {
+				vertices.emplace_back(tpsVERTEX(fMatrix3D::RotationZ(longitudeAngle * iLong) * latBase, (float)iLong / float(longDiv), (float)iLat / float(latDiv)));
+			}
+		}
+		const auto calcIdx = [latDiv, longDiv](int iLat, int iLong) { return iLat * (longDiv + 1) + iLong; };
+		std::vector<Triangle<int>> triangles;
+		for (unsigned int iLat = 0; iLat < latDiv; iLat++) {
+			for (unsigned int iLong = 0; iLong < longDiv; iLong++) {
+				triangles.emplace_back(Triangle<int>(calcIdx(iLat, iLong), calcIdx(iLat + 1, iLong), calcIdx(iLat, iLong + 1)));
+				triangles.emplace_back(Triangle<int>(calcIdx(iLat, iLong + 1), calcIdx(iLat + 1, iLong), calcIdx(iLat + 1, iLong + 1)));
+			}
+		}
+		return tObject3D(TriangleIndexer<tpsVERTEX>(vertices, triangles), pos);
+	}
+	static Object3D MakeNonIcosphere(float radius, unsigned int latDiv, unsigned int longDiv, fVector3D pos = { 0,0,0 })
+	{
+		const fVector3D base = { 0.0f,0.0f,radius };
+		const float lattitudeAngle = (float)M_PI / latDiv;
+		const float longitudeAngle = 2.0f * (float)M_PI / longDiv;
+		std::vector<mpsVERTEX> vertices;
+		for (unsigned int iLat = 1; iLat < latDiv; iLat++) {
+			const auto latBase = fMatrix3D::RotationX(lattitudeAngle * iLat) * base;
+			for (unsigned int iLong = 0; iLong < longDiv; iLong++) {
+				vertices.emplace_back(mpsVERTEX(fMatrix3D::RotationZ(longitudeAngle * iLong) * latBase));
+			}
+		}
+		const int iNorthPole = (int)vertices.size();
+		vertices.emplace_back(mpsVERTEX(base));
+		const int iSouthPole = (int)vertices.size();
+		vertices.emplace_back(mpsVERTEX(-base));
+		const auto calcIdx = [latDiv, longDiv](int iLat, int iLong){ return iLat * longDiv + iLong; };
+		std::vector<Triangle<int>> triangles;
+		for (unsigned int iLat = 0; iLat < latDiv - 2; iLat++) {
+			for (unsigned int iLong = 0; iLong < longDiv - 1; iLong++) {
+				triangles.emplace_back(Triangle<int>(calcIdx(iLat, iLong), calcIdx(iLat + 1, iLong), calcIdx(iLat, iLong + 1)));
+				triangles.emplace_back(Triangle<int>(calcIdx(iLat, iLong + 1), calcIdx(iLat + 1, iLong), calcIdx(iLat + 1, iLong + 1)));
+			}
+			triangles.emplace_back(Triangle<int>(calcIdx(iLat, longDiv - 1), calcIdx(iLat + 1, longDiv - 1), calcIdx(iLat, 0)));
+			triangles.emplace_back(Triangle<int>(calcIdx(iLat, 0), calcIdx(iLat + 1, longDiv - 1), calcIdx(iLat + 1, 0)));
+		}
+		for (unsigned int iLong = 0; iLong < longDiv - 1; iLong++) {
+			triangles.emplace_back(Triangle<int>(iNorthPole, calcIdx(0, iLong), calcIdx(0, iLong + 1)));
+			triangles.emplace_back(Triangle<int>(calcIdx(latDiv - 2, iLong + 1), calcIdx(latDiv - 2, iLong), iSouthPole));
+		}
+		triangles.emplace_back(Triangle<int>(iNorthPole, calcIdx(0, longDiv - 1), calcIdx(0, 0)));
+		triangles.emplace_back(Triangle<int>(calcIdx(latDiv - 2, 0), calcIdx(latDiv - 2, longDiv - 1), iSouthPole));
+		return mObject3D(TriangleIndexer<mpsVERTEX>(vertices, triangles), pos);
+	}
 	public:
 		static inline Object3D GetObjectModelWithNormals(Object3D obj)
 		{
@@ -313,5 +369,6 @@ typedef Object3D<vbpsVERTEX> vbObject3D;
 typedef Object3D<mpsVERTEX> mObject3D;
 typedef Object3D<pptpsVERTEX> pptObject3D;
 typedef Object3D<ppmpsVERTEX> ppmObject3D;
+
 
 

@@ -68,9 +68,9 @@ private:
 	Timer Clock;
 	ZBuffer zBuffer;
 	NDCBuffer ndc;
-	pptObject3D Object0 = pptObject3D::GetObjectModelWithNormals(tObject3D::MakeSkinnedCube( 1, { 0,0,3 }));
+	pptObject3D Object0 = pptObject3D::GetObjectModelWithNormals(tObject3D::MakeSkinnedSphere( 1, 15, 15, { 0,0,3 }));
 	PointLight light;
-	pptEFFECT_ONLY effect{ {"gold0.bmp",light},{Object0.GetRotationMatrix(),Object0.GetPosition()},{} };
+	pptEFFECT_ONLY effect{ {"pokeball0.bmp",light},{Object0.GetRotationMatrix(),Object0.GetPosition()},{} };
 	PIPE_pptONLY pipe3d;
 	
 	mObject3D Light = mObject3D::MakeSphere(0.05f, 1, { 0,0,1 });
