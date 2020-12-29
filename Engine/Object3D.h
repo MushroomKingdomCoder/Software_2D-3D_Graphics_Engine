@@ -17,15 +17,18 @@ private:
 	float rot_y = 0.0f;
 	float rot_z = 0.0f;
 	fVector3D Position = { 0,0,0 };
-	fMatrix3D Rotation = fMatrix3D::Identity();
+	fMatrix3Dplus Rotation = fMatrix3Dplus::Identity();
+	fMatrix3Dplus Transformation = fMatrix3Dplus::Identity();
 private:
-	fMatrix3D RotationMatrix()
+	fMatrix3Dplus RotationMatrix()
 	{
-		return fMatrix3D(
-			fMatrix3D::RotationX(rot_x) *
-			fMatrix3D::RotationY(rot_y) *
-			fMatrix3D::RotationZ(rot_z) *
-			fMatrix3D::Identity());
+		const auto RMatrix = fMatrix3Dplus(
+			fMatrix3Dplus::RotationX(rot_x) *
+			fMatrix3Dplus::RotationY(rot_y) *
+			fMatrix3Dplus::RotationZ(rot_z) *
+			fMatrix3Dplus::Identity());
+		Transformation = fMatrix3Dplus::Translation(Position) * RMatrix * fMatrix3Dplus::Identity();
+		return RMatrix;
 	}
 
 public:
@@ -37,12 +40,18 @@ public:
 		rot_y(obj.GetYRotation()),
 		rot_z(obj.GetZRotation()),
 		Position(obj.GetPosition()),
-		Rotation(obj.GetRotationMatrix())
+		Rotation(obj.GetRotationMatrix()), 
+		Transformation(obj.GetTransformationMatrix())
 	{}
 	Object3D(TriangleIndexer<vertex> triangle_model, fVector3D pos = { 0,0,0 })
 		:
 		TriangleModel(triangle_model),
-		Position(pos)
+		Position(pos),
+		rot_x(0.0f),
+		rot_y(0.0f),
+		rot_z(0.0f),
+		Rotation(fMatrix3Dplus::Identity()),
+		Transformation(fMatrix3Dplus::Translation(Position) * Rotation * fMatrix3Dplus::Identity())
 	{}
 	const TriangleIndexer<vertex>& GetTriangleModel() const
 	{
@@ -80,21 +89,27 @@ public:
 	{
 		return rot_z;
 	}
-	const fMatrix3D& GetRotationMatrix()
+	const fMatrix3Dplus& GetRotationMatrix()
 	{
 		return Rotation;
 	}
 	void Move(const fVector3D& d_vec3)
 	{
 		Position += d_vec3;
+		Transformation = fMatrix3Dplus::Translation(Position) * Rotation * fMatrix3Dplus::Identity();
 	}
 	void SetPosition(const fVector3D& pos)
 	{
 		Position = pos;
+		Transformation = fMatrix3Dplus::Translation(Position) * Rotation * fMatrix3Dplus::Identity();
 	}
 	const fVector3D& GetPosition() const
 	{
 		return Position;
+	}
+	const fMatrix3Dplus& GetTransformationMatrix() const
+	{
+		return Transformation;
 	}
 public:
 	static Object3D MakeCube(float size, fVector3D pos = { 0,0,0 }) {

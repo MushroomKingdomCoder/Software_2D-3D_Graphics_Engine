@@ -9,22 +9,19 @@ namespace VertexShaders
 	class Pos2Color
 	{
 	private:
-		fMatrix3D const* pRotation;
-		fVector3D const* pTranslation;
+		fMatrix3Dplus const* pTransformation;
 
 	public:
 		typedef typename dVertex VertexIn;
 		typedef typename vbpsVERTEX VertexOut;
 	public:
-		Pos2Color(const fMatrix3D& rotation, const fVector3D& translation)
+		Pos2Color(const fMatrix3Dplus& transformation)
 			:
-			pRotation(&rotation),
-			pTranslation(&translation)
+			pTransformation(&transformation)
 		{}
 		VertexOut operator ()(VertexIn vtx_in)
 		{
-			vtx_in.pos = *pRotation * vtx_in.pos;
-			vtx_in.pos += *pTranslation;
+			vtx_in.pos = *pTransformation * fVector4D(vtx_in.pos);
 			return VertexOut(vtx_in.pos, vec3_abs(vtx_in.pos) * 255.0f);
 		}
 	};
@@ -34,8 +31,7 @@ namespace VertexShaders
 	class SineWave
 	{
 	private:
-		fMatrix3D const* pRotation;
-		fVector3D const* pTranslation;
+		fMatrix3Dplus const* pTransformation;
 	private:
 		float amplitude;
 		float time;
@@ -46,10 +42,9 @@ namespace VertexShaders
 		typedef typename vertex VertexIn;
 		typedef typename vertex VertexOut;
 	public:
-		SineWave(const fMatrix3D& rot, const fVector3D& trans, float ampl, float hz, float wv)
+		SineWave(const fMatrix3Dplus& transformation, float ampl, float hz, float wv)
 			:
-			pRotation(&rot),
-			pTranslation(&trans),
+			pTransformation(&transformation),
 			amplitude(ampl),
 			hz(hz),
 			wavelength(wv)
@@ -60,8 +55,7 @@ namespace VertexShaders
 		}
 		VertexOut operator ()(VertexIn vtx_in)
 		{
-			vtx_in.pos = *pRotation * vtx_in.pos;
-			vtx_in.pos += *pTranslation;
+			vtx_in.pos = *pTransformation * vtx_in.pos;
 			vtx_in.pos.Y += amplitude * sin(hz * time + vtx_in.pos.X * wavelength);
 			return VertexOut(vtx_in);
 		}
@@ -78,8 +72,7 @@ namespace VertexShaders
 	class SineWave_PPS
 	{
 	private:
-		fMatrix3D const* pRotation;
-		fVector3D const* pTranslation;
+		fMatrix3Dplus const* pTransformation;
 	private:
 		float amplitude;
 		float time;
@@ -90,10 +83,9 @@ namespace VertexShaders
 		typedef typename vertex VertexIn;
 		typedef typename vertex VertexOut;
 	public:
-		SineWave_PPS(const fMatrix3D& rot, const fVector3D& trans, float ampl, float hz, float wv)
+		SineWave_PPS(const fMatrix3Dplus& transformation, float ampl, float hz, float wv)
 			:
-			pRotation(&rot),
-			pTranslation(&trans),
+			pTransformation(&transformation),
 			amplitude(ampl),
 			hz(hz),
 			wavelength(wv)
@@ -104,9 +96,8 @@ namespace VertexShaders
 		}
 		VertexOut operator ()(VertexIn vtx_in)
 		{
-			vtx_in.pos = *pRotation * vtx_in.pos;
-			vtx_in.normal = *pRotation * vtx_in.normal;
-			vtx_in.pos += *pTranslation;
+			vtx_in.pos = *pTransformation * vtx_in.pos;
+			vtx_in.normal = *pTransformation * fVector4D(vtx_in.normal, 0.0f);
 			const float y_stretch = amplitude * sin(hz * time + vtx_in.pos.X * wavelength);
 			vtx_in.pos.Y += y_stretch;
 			vtx_in.normal.Y += y_stretch;

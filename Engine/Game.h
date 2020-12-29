@@ -70,11 +70,11 @@ private:
 	NDCBuffer ndc;
 	pptObject3D Object0 = pptObject3D::GetObjectModelWithNormals(tObject3D::MakeSkinnedSphere( 1, 15, 15, { 0,0,3 }));
 	PointLight light;
-	pptEFFECT_ONLY effect{ {"pokeball0.bmp",light},{Object0.GetRotationMatrix(),Object0.GetPosition()},{} };
+	pptEFFECT_ONLY effect{ {"pokeball0.bmp",light},{Object0.GetTransformationMatrix()},{} };
 	PIPE_pptONLY pipe3d;
 	
 	mObject3D Light = mObject3D::MakeSphere(0.05f, 1, { 0,0,1 });
-	mEFFECT_ONLY effectL{ {Colors::White},{Light.GetRotationMatrix(),Light.GetPosition()},{} };
+	mEFFECT_ONLY effectL{ {Colors::White},{Light.GetTransformationMatrix()},{} };
 	PIPE_mONLY pipe3dL;
 	// control vars
 	static constexpr float d_rot = M_PI;

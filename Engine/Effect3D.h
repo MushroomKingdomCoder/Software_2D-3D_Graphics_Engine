@@ -84,31 +84,20 @@ namespace EffectDefaults
 	class VertexShader
 	{
 	private:
-		fMatrix3D const* pRotation;
-		fVector3D const* pTranslation;
+		fMatrix3Dplus const* pTransformation;
 
 	public:
 		typedef typename vertex VertexIn;
 		typedef typename vertex VertexOut;
 	public:
-		VertexShader(const fMatrix3D& rotation, const fVector3D& translation)
+		VertexShader(const fMatrix3Dplus& transformation)
 			:
-			pRotation(&rotation),
-			pTranslation(&translation)
+			pTransformation(&transformation)
 		{}
 		VertexOut operator ()(VertexIn vtx_in)
 		{
-			vtx_in.pos = *pRotation * vtx_in.pos;
-			vtx_in.pos += *pTranslation;
+			vtx_in.pos = *pTransformation * vtx_in.pos;
 			return VertexOut(vtx_in);
-		}
-		void BindRotation(const fMatrix3D& rotation)
-		{
-			pRotation = &rotation;
-		}
-		void BindTranslation(const fVector3D translation)
-		{
-			pTranslation = &translation;
 		}
  	};
 
@@ -117,33 +106,22 @@ namespace EffectDefaults
 	class VertexShader_PPS
 	{
 	private:
-		fMatrix3D const* pRotation;
-		fVector3D const* pTranslation;
+		fMatrix3Dplus const* pTransformation;
 
 	public:
 		typedef typename vertex VertexIn;
 		typedef typename vertex VertexOut;
 	public:
-		VertexShader_PPS(const fMatrix3D& rotation, const fVector3D& translation)
+		VertexShader_PPS(const fMatrix3Dplus& transformation)
 			:
-			pRotation(&rotation),
-			pTranslation(&translation)
+			pTransformation(&transformation)
 		{}
 		VertexOut operator ()(VertexIn vtx_in)
 		{
-			vtx_in.pos = *pRotation * vtx_in.pos;
-			vtx_in.normal = *pRotation * vtx_in.normal;
-			vtx_in.pos += *pTranslation;
+			vtx_in.pos = *pTransformation * vtx_in.pos;
+			vtx_in.normal = *pTransformation * fVector4D(vtx_in.normal, 0.0f);
 			vtx_in.World_Pos = vtx_in.pos;
 			return VertexOut(vtx_in);
-		}
-		void BindRotation(const fMatrix3D& rotation)
-		{
-			pRotation = &rotation;
-		}
-		void BindTranslation(const fVector3D translation)
-		{
-			pTranslation = &translation;
 		}
 	};
 

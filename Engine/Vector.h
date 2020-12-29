@@ -464,7 +464,7 @@ public:
 	type X;
 	type Y;
 	type Z;
-	type W;
+	type W = (type)1;
 public:
 	Vector4D(type x, type y, type z, type w)
 		:
@@ -496,6 +496,14 @@ public:
 		Y((type)vec3.Y),
 		Z((type)vec3.Z),
 		W((type)1.0)
+	{}
+	template <typename vType>
+	Vector4D(const Vector3D<vType>& vec3, type w)
+		:
+		X((type)vec3.X),
+		Y((type)vec3.Y),
+		Z((type)vec3.Z),
+		W(w)
 	{}
 	Vector4D operator +(const Vector4D& addend) const
 	{
@@ -545,6 +553,29 @@ public:
 	{
 		const float alpha = end.Y - Y != 0 ? (point.Y - Y) / (end.Y - Y) : 0;
 		return Vector4D(*this + (end - *this) * alpha);
+	}
+	Vector4D GetHadamardProduct(const Vector4D& vec4) const
+	{
+		return Vector4D(
+			X * vec4.X, Y * vec4.Y, Z * vec4.Z, W * vec4.W;
+		);
+	}
+	Vector4D& Hadamard(const Vector4D& vec4)
+	{
+		return *this = GetHadamardProduct(vec4);
+	}
+	Vector4D Saturated() const
+	{
+		return Vector4D(
+			std::min(std::max(X, (type)0), (type)1),
+			std::min(std::max(Y, (type)0), (type)1),
+			std::min(std::max(Z, (type)0), (type)1),
+			std::min(std::max(W, (type)0), (type)1)
+		);
+	}
+	Vector4D& Saturate()
+	{
+		return *this = Saturated();
 	}
 	bool operator ==(const Vector4D& vec4) const
 	{

@@ -15,7 +15,7 @@ class Matrix2D
 public:
 	type Cell[2][2];
 public:
-	Vector2D<type> operator *(const Vector2D<type> vec2) const
+	Vector2D<type> operator *(const Vector2D<type>& vec2) const
 	{
 		Vector2D<type> r_vec = { 0,0 };
 		for (int row = 0; row < 2; ++row) {
@@ -184,7 +184,7 @@ class Matrix3D
 public:
 	type Cell[3][3];
 public:
-	Vector3D<type> operator *(const Vector3D<type> vec) const
+	Vector3D<type> operator *(const Vector3D<type>& vec) const
 	{
 		Vector3D<type> r_vec = { 0,0 };
 		for (int row = 0; row < 3; ++row) {
@@ -282,7 +282,7 @@ class Matrix3Dplus
 public:
 	type Cell[4][4];
 public:
-	Vector4D<type> operator *(const Vector4D<type> vec4) const
+	Vector4D<type> operator *(const Vector4D<type>& vec4) const
 	{
 		Vector4D<type> r_vec = { 0,0,0,0 };
 		for (int row = 0; row < 4; ++row) {
@@ -394,3 +394,6 @@ public:
 		};
 	}
 };
+using fMatrix3Dplus = Matrix3Dplus<float>;
+using dMatrix3Dplus = Matrix3Dplus<double>;
+using iMatrix3Dplus = Matrix3Dplus<int>;
