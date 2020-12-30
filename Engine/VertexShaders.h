@@ -21,8 +21,9 @@ namespace VertexShaders
 		{}
 		VertexOut operator ()(VertexIn vtx_in)
 		{
-			vtx_in.pos = *pTransformation * fVector4D(vtx_in.pos);
-			return VertexOut(vtx_in.pos, vec3_abs(vtx_in.pos) * 255.0f);
+			vtx_in.pos = *pTransformation * vtx_in.pos;
+			vtx_in.normal = *pTransformation * fVector4D(vtx_in.normal, 0.0f);
+			return VertexOut(vtx_in.pos, vec3_abs(vtx_in.pos) * 255.0f, vtx_in.normal);
 		}
 	};
 
@@ -56,7 +57,10 @@ namespace VertexShaders
 		VertexOut operator ()(VertexIn vtx_in)
 		{
 			vtx_in.pos = *pTransformation * vtx_in.pos;
-			vtx_in.pos.Y += amplitude * sin(hz * time + vtx_in.pos.X * wavelength);
+			vtx_in.normal = *pTransformation * fVector4D(vtx_in.normal, 0.0f);
+			const float y_stretch = amplitude * sinf(hz * time + vtx_in.pos.X * wavelength);
+			vtx_in.pos.Y += y_stretch;
+			vtx_in.normal.Y += y_stretch;
 			return VertexOut(vtx_in);
 		}
 	};
@@ -67,7 +71,7 @@ namespace VertexShaders
 		
 	*/
 
-	// 3. adds a sine wave effect to the model (assumes per-pixel lighted vertex type)
+	// 3. adds a sine wave effect to the model (assumes per-pixel lighted vertex type -> w/World_Pos member)
 	template <typename vertex>
 	class SineWave_PPS
 	{

@@ -25,8 +25,15 @@ namespace PixelShaders
 		public:
 			fVector3D pos;
 			fVector2D tpos;
+			fVector3D normal;
 		public:
 			Vertex() = default;
+			Vertex(const fVector3D& pos)
+				:
+				pos(pos),
+				tpos({0,0}),
+				normal({0,0,0})
+			{}
 			Vertex(fVector3D pos, float tx, float ty)
 				:
 				pos(pos),
@@ -37,14 +44,15 @@ namespace PixelShaders
 				pos(x, y, z),
 				tpos(tx, ty)
 			{}
-			Vertex(fVector3D pos, fVector2D tpos)
+			Vertex(const fVector3D& pos, const fVector2D& tpos, const fVector3D& normal)
 				:
 				pos(pos),
-				tpos(tpos)
+				tpos(tpos),
+				normal(normal)
 			{}
 			Vertex operator +(const Vertex & tvec) const
 			{
-				return Vertex(pos + tvec.pos, tpos + tvec.tpos);
+				return Vertex(pos + tvec.pos, tpos + tvec.tpos, normal);
 			}
 			Vertex& operator +=(const Vertex & tvec)
 			{
@@ -52,7 +60,7 @@ namespace PixelShaders
 			}
 			Vertex operator -(const Vertex & tvec) const
 			{
-				return Vertex(pos - tvec.pos, tpos - tvec.tpos);
+				return Vertex(pos - tvec.pos, tpos - tvec.tpos, normal);
 			}
 			Vertex& operator -=(const Vertex & tvec)
 			{
@@ -60,7 +68,7 @@ namespace PixelShaders
 			}
 			Vertex operator *(const float scale) const
 			{
-				return Vertex(pos * scale, tpos * scale);
+				return Vertex(pos * scale, tpos * scale, normal);
 			}
 			Vertex& operator *=(const float scale)
 			{
@@ -68,7 +76,7 @@ namespace PixelShaders
 			}
 			Vertex operator /(const float scale) const
 			{
-				return Vertex(pos / scale, tpos / scale);
+				return Vertex(pos / scale, tpos / scale, normal);
 			}
 			Vertex& operator /=(const float scale)
 			{
@@ -78,12 +86,16 @@ namespace PixelShaders
 			{
 				return Vertex(
 					fVector3D(pos).InterpolatedTo(end.pos, alpha),
-					fVector2D(tpos).InterpolatedTo(end.tpos, alpha)
+					fVector2D(tpos).InterpolatedTo(end.tpos, alpha), normal
 				);
 			}
-			bool operator ==(const Vertex& vtx) 
+			bool operator ==(const Vertex& vtx) const 
 			{
-				return (pos == vtx.pos && tpos == vtx.tpos);
+				return (pos == vtx.pos && tpos == vtx.tpos && normal == vtx.normal);
+			}
+			bool operator !=(const Vertex& vtx) const
+			{
+				return !(*this == vtx);
 			}
 		};
 	public:
@@ -115,23 +127,27 @@ namespace PixelShaders
 		public:
 			fVector3D pos;
 			fVector3D color;
+			fVector3D normal;
 		public:
-			Vertex(fVector3D vec3)
+			Vertex(const fVector3D& pos)
 				:
-				pos(vec3)
+				pos(pos),
+				color({0,0,0}),
+				normal({0,0,0})
 			{}
 			Vertex(float x, float y, float z, Color color)
 				:
-				Vertex({ x,y,z }, fVector3D(float(color.GetR()), float(color.GetG()), float(color.GetB())))
+				Vertex({ x,y,z }, fVector3D(float(color.GetR()), float(color.GetG()), float(color.GetB())), { 0,0,0 })
 			{}
-			Vertex(fVector3D vec3, fVector3D color)
+			Vertex(const fVector3D& vec3, const fVector3D& color, const fVector3D& normal)
 				:
 				pos(vec3),
-				color(color)
+				color(color),
+				normal(normal)
 			{}
 			Vertex operator +(const Vertex& vtx) const
 			{
-				return Vertex(pos + vtx.pos, color + vtx.color);
+				return Vertex(pos + vtx.pos, color + vtx.color, normal);
 			}
 			Vertex& operator +=(const Vertex& vtx)
 			{
@@ -139,7 +155,7 @@ namespace PixelShaders
 			}
 			Vertex operator -(const Vertex& vtx) const
 			{
-				return Vertex(pos - vtx.pos, color - vtx.color);
+				return Vertex(pos - vtx.pos, color - vtx.color, normal);
 			}
 			Vertex& operator -=(const Vertex& vtx)
 			{
@@ -147,7 +163,7 @@ namespace PixelShaders
 			}
 			Vertex operator *(const float scale) const
 			{
-				return Vertex(pos * scale, color * scale);
+				return Vertex(pos * scale, color * scale, normal);
 			}
 			Vertex& operator *=(const float scale)
 			{
@@ -155,7 +171,7 @@ namespace PixelShaders
 			}
 			Vertex operator /(const float scale) const
 			{
-				return Vertex(pos / scale, color / scale);
+				return Vertex(pos / scale, color / scale, normal);
 			}
 			Vertex& operator /=(const float scale)
 			{
@@ -163,7 +179,7 @@ namespace PixelShaders
 			}
 			Vertex InterpolatedTo(const Vertex& end, const float alpha)
 			{
-				return Vertex(pos.InterpolatedTo(end.pos, alpha), color.InterpolatedTo(end.color, alpha));
+				return Vertex(pos.InterpolatedTo(end.pos, alpha), color.InterpolatedTo(end.color, alpha), normal);
 			}
 		};
 	public:
@@ -201,11 +217,19 @@ namespace PixelShaders
 		public:
 			fVector3D pos;
 			Color color;
-		public:                                                    
-			Vertex(dVertex vec3, Color color)
+			fVector3D normal;
+		public:          
+			Vertex(const fVector3D& pos)
 				:
-				pos(vec3.pos),
-				color(color)
+				pos(pos),
+				color(Colors::White),
+				normal({0,0,0})
+			{}
+			Vertex(const fVector3D& pos, const Color& color, const fVector3D& normal)
+				:
+				pos(pos),
+				color(color),
+				normal(normal)
 			{}
 			Vertex(float x, float y, float z, Color color)
 				:
@@ -214,7 +238,7 @@ namespace PixelShaders
 			{}
 			Vertex operator +(const Vertex& vtx) const
 			{
-				return Vertex(pos + vtx.pos, color);
+				return Vertex(pos + vtx.pos, color, normal);
 			}
 			Vertex& operator +=(const Vertex& vtx)
 			{
@@ -222,7 +246,7 @@ namespace PixelShaders
 			}
 			Vertex operator -(const Vertex& vtx) const
 			{
-				return Vertex(pos - vtx.pos, color);
+				return Vertex(pos - vtx.pos, color, normal);
 			}
 			Vertex& operator -=(const Vertex& vtx)
 			{
@@ -230,7 +254,7 @@ namespace PixelShaders
 			}
 			Vertex operator *(const float scale) const
 			{
-				return Vertex(pos * scale, color);
+				return Vertex(pos * scale, color, normal);
 			}
 			Vertex& operator *=(const float scale)
 			{
@@ -238,7 +262,7 @@ namespace PixelShaders
 			}
 			Vertex operator /(const float scale) const
 			{
-				return Vertex(pos / scale, color);
+				return Vertex(pos / scale, color, normal);
 			}
 			Vertex& operator /=(const float scale)
 			{
@@ -246,7 +270,7 @@ namespace PixelShaders
 			}
 			Vertex InterpolatedTo(const Vertex& vtx, const float alpha)
 			{
-				return Vertex(pos.InterpolatedTo(vtx.pos, alpha), color);
+				return Vertex(pos.InterpolatedTo(vtx.pos, alpha), color, normal);
 			}
 		};
 	public:
@@ -279,12 +303,14 @@ namespace PixelShaders
 			fVector3D pos;
 			fVector2D tpos;
 			fVector3D light;
+			fVector3D normal;
 		public:
 			Vertex() = default;
 			Vertex(const Texture::Vertex& vtx)
 				:
 				pos(vtx.pos),
-				tpos(vtx.tpos)
+				tpos(vtx.tpos),
+				normal(vtx.normal)
 			{}
 			Vertex(float x, float y, float z, float tx, float ty, fVector3D light)
 				:
@@ -292,15 +318,16 @@ namespace PixelShaders
 				tpos(tx, ty),
 				light(light)
 			{}
-			Vertex(fVector3D pos, fVector2D tpos, fVector3D light)
+			Vertex(fVector3D pos, fVector2D tpos, fVector3D light, fVector3D normal)
 				:
 				pos(pos),
 				tpos(tpos),
-				light(light)
+				light(light),
+				normal(normal)
 			{}
 			Vertex operator +(const Vertex & tvec) const
 			{
-				return Vertex(pos + tvec.pos, tpos + tvec.tpos, light + tvec.light);
+				return Vertex(pos + tvec.pos, tpos + tvec.tpos, light + tvec.light, normal);
 			}
 			Vertex& operator +=(const Vertex & tvec)
 			{
@@ -308,7 +335,7 @@ namespace PixelShaders
 			}
 			Vertex operator -(const Vertex & tvec) const
 			{
-				return Vertex(pos - tvec.pos, tpos - tvec.tpos, light - tvec.light);
+				return Vertex(pos - tvec.pos, tpos - tvec.tpos, light - tvec.light, normal);
 			}
 			Vertex& operator -=(const Vertex & tvec)
 			{
@@ -316,7 +343,7 @@ namespace PixelShaders
 			}
 			Vertex operator *(const float scale) const
 			{
-				return Vertex(pos * scale, tpos * scale, light * scale);
+				return Vertex(pos * scale, tpos * scale, light * scale, normal);
 			}
 			Vertex& operator *=(const float scale)
 			{
@@ -324,7 +351,7 @@ namespace PixelShaders
 			}
 			Vertex operator /(const float scale) const
 			{
-				return Vertex(pos / scale, tpos / scale, light / scale);
+				return Vertex(pos / scale, tpos / scale, light / scale, normal);
 			}
 			Vertex& operator /=(const float scale)
 			{
@@ -335,7 +362,7 @@ namespace PixelShaders
 				return Vertex(
 					fVector3D(pos).InterpolatedTo(end.pos, alpha),
 					fVector2D(tpos).InterpolatedTo(end.tpos, alpha), 
-					fVector3D(light).InterpolatedTo(end.light, alpha)
+					fVector3D(light).InterpolatedTo(end.light, alpha), normal
 				);
 			}
 		};
@@ -370,26 +397,29 @@ namespace PixelShaders
 			fVector3D pos;
 			fVector3D color;
 			fVector3D light;
+			fVector3D normal;
 		public:
 			Vertex() = default;
 			Vertex(const VertexBlend::Vertex& vtx)
 				:
 				pos(vtx.pos),
-				color(vtx.color)
+				color(vtx.color),
+				normal(vtx.normal)
 			{}
 			Vertex(float x, float y, float z, Color color, fVector3D light)
 				:
-				Vertex({ x,y,z }, fVector3D(float(color.GetR()), float(color.GetG()), float(color.GetB())), light)
+				Vertex({ x,y,z }, fVector3D(float(color.GetR()), float(color.GetG()), float(color.GetB())), light, { 0,0,0 })
 			{}
-			Vertex(fVector3D vec3, fVector3D color, fVector3D light)
+			Vertex(fVector3D vec3, fVector3D color, fVector3D light, fVector3D normal)
 				:
 				pos(vec3),
 				color(color),
-				light(light)
+				light(light),
+				normal(normal)
 			{}
 			Vertex operator +(const Vertex& vtx) const
 			{
-				return Vertex(pos + vtx.pos, color + vtx.color, light + vtx.light);
+				return Vertex(pos + vtx.pos, color + vtx.color, light + vtx.light, normal);
 			}
 			Vertex& operator +=(const Vertex& vtx)
 			{
@@ -397,7 +427,7 @@ namespace PixelShaders
 			}
 			Vertex operator -(const Vertex& vtx) const
 			{
-				return Vertex(pos - vtx.pos, color - vtx.color, light - vtx.light);
+				return Vertex(pos - vtx.pos, color - vtx.color, light - vtx.light, normal);
 			}
 			Vertex& operator -=(const Vertex& vtx)
 			{
@@ -405,7 +435,7 @@ namespace PixelShaders
 			}
 			Vertex operator *(const float scale) const
 			{
-				return Vertex(pos * scale, color * scale, light * scale);
+				return Vertex(pos * scale, color * scale, light * scale, normal);
 			}
 			Vertex& operator *=(const float scale)
 			{
@@ -413,7 +443,7 @@ namespace PixelShaders
 			}
 			Vertex operator /(const float scale) const
 			{
-				return Vertex(pos / scale, color / scale, light / scale);
+				return Vertex(pos / scale, color / scale, light / scale, normal);
 			}
 			Vertex& operator /=(const float scale)
 			{
@@ -424,7 +454,7 @@ namespace PixelShaders
 				return Vertex(
 					pos.InterpolatedTo(end.pos, alpha), 
 					color.InterpolatedTo(end.color, alpha), 
-					light.InterpolatedTo(end.light, alpha));
+					light.InterpolatedTo(end.light, alpha), normal);
 			}
 		};
 	public:
@@ -446,16 +476,19 @@ namespace PixelShaders
 		public:
 			fVector3D pos;
 			fVector3D light;
+			fVector3D normal;
 		public:
 			Vertex() = default;
 			Vertex(const Monochrome::Vertex& vtx)
 				:
-				pos(vtx.pos)
+				pos(vtx.pos),
+				normal(vtx.normal)
 			{}
-			Vertex(fVector3D vec3, fVector3D light)
+			Vertex(fVector3D vec3, fVector3D light, fVector3D normal)
 				:
 				pos(vec3),
-				light(light)
+				light(light),
+				normal(normal)
 			{}
 			Vertex(float x, float y, float z, fVector3D light)
 				:
@@ -464,7 +497,7 @@ namespace PixelShaders
 			{}
 			Vertex operator +(const Vertex & vtx) const
 			{
-				return Vertex(pos + vtx.pos, light + vtx.light);
+				return Vertex(pos + vtx.pos, light + vtx.light, normal);
 			}
 			Vertex& operator +=(const Vertex & vtx)
 			{
@@ -472,7 +505,7 @@ namespace PixelShaders
 			}
 			Vertex operator -(const Vertex & vtx) const
 			{
-				return Vertex(pos - vtx.pos, light - vtx.light);
+				return Vertex(pos - vtx.pos, light - vtx.light, normal);
 			}
 			Vertex& operator -=(const Vertex & vtx)
 			{
@@ -480,7 +513,7 @@ namespace PixelShaders
 			}
 			Vertex operator *(const float scale) const
 			{
-				return Vertex(pos * scale, light * scale);
+				return Vertex(pos * scale, light * scale, normal);
 			}
 			Vertex& operator *=(const float scale)
 			{
@@ -488,7 +521,7 @@ namespace PixelShaders
 			}
 			Vertex operator /(const float scale) const
 			{
-				return Vertex(pos / scale, light / scale);
+				return Vertex(pos / scale, light / scale, normal);
 			}
 			Vertex& operator /=(const float scale)
 			{
@@ -496,7 +529,7 @@ namespace PixelShaders
 			}
 			Vertex InterpolatedTo(const Vertex & vtx, const float alpha)
 			{
-				return Vertex(pos.InterpolatedTo(vtx.pos, alpha), light.InterpolatedTo(vtx.light, alpha));
+				return Vertex(pos.InterpolatedTo(vtx.pos, alpha), light.InterpolatedTo(vtx.light, alpha), normal);
 			}
 		};
 	public:
@@ -520,16 +553,18 @@ namespace PixelShaders
 			fVector3D pos;
 			Color color;
 			fVector3D light;
+			fVector3D normal;
 		public:
 			Vertex() = default;
 			Vertex(const ColoredVertex::Vertex& vtx)
 				:
 				pos(vtx.pos),
-				color(vtx.color)
+				color(vtx.color),
+				normal(vtx.normal)
 			{}
-			Vertex(dVertex vec3, Color color, fVector3D light)
+			Vertex(fVector3D pos, Color color, fVector3D light, fVector3D normal)
 				:
-				pos(vec3.pos),
+				pos(pos),
 				color(color),
 				light(light)
 			{}
@@ -541,7 +576,7 @@ namespace PixelShaders
 			{}
 			Vertex operator +(const Vertex& vtx) const
 			{
-				return Vertex(pos + vtx.pos, color, light + vtx.light);
+				return Vertex(pos + vtx.pos, color, light + vtx.light, normal);
 			}
 			Vertex& operator +=(const Vertex& vtx)
 			{
@@ -549,7 +584,7 @@ namespace PixelShaders
 			}
 			Vertex operator -(const Vertex& vtx) const
 			{
-				return Vertex(pos - vtx.pos, color, light - vtx.light);
+				return Vertex(pos - vtx.pos, color, light - vtx.light, normal);
 			}
 			Vertex& operator -=(const Vertex& vtx)
 			{
@@ -557,7 +592,7 @@ namespace PixelShaders
 			}
 			Vertex operator *(const float scale) const
 			{
-				return Vertex(pos * scale, color, light * scale);
+				return Vertex(pos * scale, color, light * scale, normal);
 			}
 			Vertex& operator *=(const float scale)
 			{
@@ -565,7 +600,7 @@ namespace PixelShaders
 			}
 			Vertex operator /(const float scale) const
 			{
-				return Vertex(pos / scale, color, light / scale);
+				return Vertex(pos / scale, color, light / scale, normal);
 			}
 			Vertex& operator /=(const float scale)
 			{
@@ -573,7 +608,7 @@ namespace PixelShaders
 			}
 			Vertex InterpolatedTo(const Vertex& vtx, const float alpha)
 			{
-				return Vertex(pos.InterpolatedTo(vtx.pos, alpha), color, light.InterpolatedTo(vtx.light, alpha));
+				return Vertex(pos.InterpolatedTo(vtx.pos, alpha), color, light.InterpolatedTo(vtx.light, alpha), normal);
 			}
 		};
 	public:
@@ -608,11 +643,11 @@ namespace PixelShaders
 			fVector3D World_Pos;
 		public:
 			Vertex() = default;
-			Vertex(Texture::Vertex vtx)
+			Vertex(const Texture::Vertex& vtx)
 				:
 				pos(vtx.pos),
 				tpos(vtx.tpos),
-				normal({ 0,0,0 }),
+				normal(vtx.normal),
 				World_Pos({ 0,0,0 })
 			{}
 			Vertex(fVector3D pos, fVector2D tpos, fVector3D n, fVector3D wpos)
@@ -667,6 +702,10 @@ namespace PixelShaders
 			{
 				return (pos == vtx.pos && tpos == vtx.tpos && normal == vtx.normal && World_Pos == vtx.World_Pos);
 			}
+			bool operator !=(const Vertex& vtx) const
+			{
+				return !(*this == vtx);
+			}
 		};
 	private:
 		Light& light;
@@ -710,7 +749,7 @@ namespace PixelShaders
 			Vertex(const Monochrome::Vertex& vtx)
 				:
 				pos(vtx.pos),
-				normal({0,0,0}),
+				normal(vtx.normal),
 				World_Pos({0,0,0})
 			{}
 			Vertex(fVector3D vec3, fVector3D normal, fVector3D wpos)
@@ -763,6 +802,10 @@ namespace PixelShaders
 			{
 				return (pos == vtx.pos && normal == vtx.normal && World_Pos == vtx.World_Pos);
 			}
+			bool operator !=(const Vertex& vtx) const
+			{
+				return !(*this == vtx);
+			}
 		};
 	private:
 		Light& light;
@@ -807,5 +850,5 @@ typedef Effect3D<mPIXELSHADER, EffectDefaults::VertexShader<mpsVERTEX>, EffectDe
 typedef Effect3D<cvPIXELSHADER, EffectDefaults::VertexShader<cvpsVERTEX>, EffectDefaults::GeometryShader<cvpsVERTEX>>			cvEFFECT_ONLY;
 typedef Effect3D<pptPIXELSHADER, EffectDefaults::VertexShader_PPS<pptpsVERTEX>, EffectDefaults::GeometryShader<pptpsVERTEX>>	pptEFFECT_ONLY;
 typedef Effect3D<ppmPIXELSHADER, EffectDefaults::VertexShader_PPS<ppmpsVERTEX>, EffectDefaults::GeometryShader<ppmpsVERTEX>>	ppmEFFECT_ONLY;
-// Cannot create stand-alone lighted effects, need a corresponding geometry shader
-// ...make sense? ;)
+// Cannot create stand-alone lighted effects ( u can w/per-pxl ;) ), need a corresponding geometry shader
+// ...make sense? :P

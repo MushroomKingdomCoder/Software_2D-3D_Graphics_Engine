@@ -25,9 +25,9 @@ namespace GeometryShaders
 		Triangle<VertexOut> operator ()(const VertexIn& v0, const VertexIn& v1, const VertexIn& v2, int id)
 		{
 			return Triangle<VertexOut>(
-				VertexOut(v0, colors[int(id / 2)]),
-				VertexOut(v1, colors[int(id / 2)]),
-				VertexOut(v2, colors[int(id / 2)]));
+				VertexOut(v0.pos, colors[int(id / 2)], v0.normal),
+				VertexOut(v1.pos, colors[int(id / 2)], v1.normal),
+				VertexOut(v2.pos, colors[int(id / 2)], v2.normal));
 		}
 	};
 
@@ -73,7 +73,7 @@ namespace GeometryShaders
 		Triangle<VertexOut> operator ()(VertexIn v0, VertexIn v1, VertexIn v2, int id) const
 		{
 			if (isGoraud) {
-				const fVector3D v0n = v0.pos.Normalized(); const fVector3D v1n = v1.pos.Normalized(); const fVector3D v2n = v2.pos.Normalized();
+				const fVector3D v0n = v0.normal.Normalized(); const fVector3D v1n = v1.normal.Normalized(); const fVector3D v2n = v2.normal.Normalized();
 				const fVector3D v0light = fVector3D((lighting * direction.DotProduct(v0n)).Saturated() + ambience).Saturated();
 				const fVector3D v1light = fVector3D((lighting * direction.DotProduct(v1n)).Saturated() + ambience).Saturated();
 				const fVector3D v2light = fVector3D((lighting * direction.DotProduct(v2n)).Saturated() + ambience).Saturated();
@@ -156,7 +156,7 @@ namespace GeometryShaders
 		Triangle<VertexOut> operator ()(VertexIn v0, VertexIn v1, VertexIn v2, int id) const
 		{
 			if (isGoraud) {
-				const fVector3D v0n = v0.pos.Normalized(); const fVector3D v1n = v1.pos.Normalized(); const fVector3D v2n = v2.pos.Normalized();
+				const fVector3D v0n = v0.normal.Normalized(); const fVector3D v1n = v1.normal.Normalized(); const fVector3D v2n = v2.normal.Normalized();
 				const fVector3D v0DD = position - v0.pos; const fVector3D v1DD = position - v1.pos; const fVector3D v2DD = position - v2.pos;
 				const float v0d = v0DD.Length(); const float v1d = v1DD.Length(); const float v2d = v2DD.Length();
 				const float v0att = 1 / (quadratic_attenuation * sq(v0d) + linear_attenuation * v0d + constant_attenuation);

@@ -61,6 +61,26 @@ public:
 	{
 		return TriangleModel;
 	}
+	Object3D& AddNormals()
+	{
+		for (vertex& v : TriangleModel.Verticies) {
+			std::vector<Triangle<vertex>> vtriangles;
+			for (const auto& t : TriangleModel.Triangles) {
+				const vertex& v0 = TriangleModel.Verticies[t.v0];
+				const vertex& v1 = TriangleModel.Verticies[t.v1];
+				const vertex& v2 = TriangleModel.Verticies[t.v2];
+				if (v0 == v || v1 == v || v2 == v) {
+					vtriangles.emplace_back(v0, v1, v2);
+				}
+			}
+			fVector3D total_faces_unnormal = { 0,0,0 };
+			for (const Triangle<vertex>& vt : vtriangles) {
+				total_faces_unnormal += fVector3D((vt.v1.pos - vt.v0.pos) % (vt.v2.pos - vt.v0.pos));
+			}
+			v.normal = total_faces_unnormal.Normalized();
+		}
+		return *this;
+	}
 public:
 	void RotateX(const float radians)
 	{
@@ -119,7 +139,7 @@ public:
 			std::vector<mpsVERTEX>{
 				{-s, -s, s}, { s,-s,s }, { s,s,s }, { -s,s,s },
 				{ -s,-s,-s }, { s,-s,-s }, { s,s,-s }, { -s,s,-s } },
-				std::vector<Triangle<int>>{
+				std::vector<Triangle<size_t>>{
 					{1, 2, 0}, { 3,0,2 },
 					{ 0,3,4 }, { 7,4,3 },
 					{ 0,4,1 }, { 5,1,4 },
@@ -140,7 +160,7 @@ public:
 			{s,s,s,0,0},	{s,s,-s,1,0},	{s,-s,s,0,1},	{s,-s,-s,1,1},
 			{s,s,-s,0,0},	{-s,s,-s,1,0},	{s,-s,-s,0,1},	{-s,-s,-s,1,1},
 			{-s,s,-s,0,0},	{s,s,-s,1,0},	{-s,s,s,0,1},	{s,s,s,1,1} },
-			std::vector<Triangle<int>>{
+			std::vector<Triangle<size_t>>{
 			{0,2,1},	{3,1,2},
 			{5,4,7},	{6,7,4},
 			{8,10,9},	{11,9,10},
@@ -159,7 +179,7 @@ public:
 			{-s,s,s,0.0f,0.33f},{-s,-s,s,0.25f,0.33f},	{-s,-s,-s,0.50f,0.33f},	{-s,s,-s,0.75f,0.33f},	{-s,s,s,1.0f,0.33f},
 			{s,s,s,0.0f,0.66f},	{s,-s,s,0.25f,0.66f},	{s,-s,-s,0.50f,0.66f},	{s,s,-s,0.75f,0.66f},	{s,s,s,1.0f,0.66f},
 								{s,s,s,0.25f,1.0f},		{s,s,-s,0.50f,1.0f} },
-			std::vector<Triangle<int>>{
+			std::vector<Triangle<size_t>>{
 									{0,1,3},	{4,3,1},
 			{2,3,7},	{8,7,3},	{3,4,8},	{9,8,4},	{4,5,9},	{10,9,5},	{5,6,10},	{10,9,5},	{5,6,10},	{11,10,6},
 									{8,9,12},	{13,12,9} } },
@@ -176,7 +196,7 @@ public:
 			{-s,s,s,0,1},	{-s,-s,s,1,1},	{-s,-s,-s,2,1},	{-s,s,-s,3,1},	{-s,s,s,4,1},
 			{s,s,s,0,2},	{s,-s,s,1,2},	{s,-s,-s,2,2},	{s,s,-s,3,2},	{s,s,s,4,2},
 							{s,s,s,1,3},	{s,s,-s,2,3} },
-			std::vector<Triangle<int>>{
+			std::vector<Triangle<size_t>>{
 									{0,1,3},	{4,3,1},
 			{2,3,7},	{8,7,3},	{3,4,8},	{9,8,4},	{4,5,9},	{10,9,5},	{5,6,10},	{10,9,5},	{5,6,10},	{11,10,6},
 									{8,9,12},	{13,12,9} } },
@@ -190,7 +210,7 @@ public:
 		std::vector<vbpsVERTEX>{
 		{-s,-s,s,colors[0]},	{s,-s,s,colors[1]},		{s,s,s,colors[2]},		{-s,s,s,colors[3]},
 		{-s,-s,-s,colors[4]},	{s,-s,-s,colors[5]},	{s,s,-s,colors[6]},		{-s,s,-s,colors[7]} },
-		std::vector<Triangle<int>>{
+		std::vector<Triangle<size_t>>{
 		{1,2,0},	{3,0,2},
 		{0,3,4},	{7,4,3},
 		{0,4,1},	{5,1,4},
@@ -202,7 +222,7 @@ public:
 	static Object3D MakeTeselatedPlane(const iVector2D teselations, const float width, const float depth, fVector3D pos = { 0,0,0 })
 	{
 		std::vector<mpsVERTEX> vtxes;
-		std::vector<Triangle<int>> triangles;
+		std::vector<Triangle<size_t>> triangles;
 		const float delta_w = width / teselations.X;
 		const float delta_d = depth / teselations.Y;
 		// topside
@@ -247,7 +267,7 @@ public:
 	static Object3D MakeTeselatedSkinnedPlane(const iVector2D teselations, const float width, const float depth, fVector3D pos = { 0,0,0 })
 	{
 		std::vector<tpsVERTEX> vtxes;
-		std::vector<Triangle<int>> triangles;
+		std::vector<Triangle<size_t>> triangles;
 		const float delta_w = width / teselations.X;
 		const float delta_d = depth / teselations.Y;
 		// topside
@@ -292,7 +312,7 @@ public:
 	static Object3D MakeSphere(float radius, unsigned int depth, fVector3D pos = { 0,0,0 })
 	{
 		std::vector<mpsVERTEX> vertexes;
-		std::vector<Triangle<int>> triangles;
+		std::vector<Triangle<size_t>> triangles;
 		initialize_sphere(vertexes, triangles, depth);
 		for (auto& v : vertexes) {
 			v.pos *= radius;
@@ -312,11 +332,11 @@ public:
 			}
 		}
 		const auto calcIdx = [latDiv, longDiv](int iLat, int iLong) { return iLat * (longDiv + 1) + iLong; };
-		std::vector<Triangle<int>> triangles;
+		std::vector<Triangle<size_t>> triangles;
 		for (unsigned int iLat = 0; iLat < latDiv; iLat++) {
 			for (unsigned int iLong = 0; iLong < longDiv; iLong++) {
-				triangles.emplace_back(Triangle<int>(calcIdx(iLat, iLong), calcIdx(iLat + 1, iLong), calcIdx(iLat, iLong + 1)));
-				triangles.emplace_back(Triangle<int>(calcIdx(iLat, iLong + 1), calcIdx(iLat + 1, iLong), calcIdx(iLat + 1, iLong + 1)));
+				triangles.emplace_back(Triangle<size_t>(calcIdx(iLat, iLong), calcIdx(iLat + 1, iLong), calcIdx(iLat, iLong + 1)));
+				triangles.emplace_back(Triangle<size_t>(calcIdx(iLat, iLong + 1), calcIdx(iLat + 1, iLong), calcIdx(iLat + 1, iLong + 1)));
 			}
 		}
 		return tObject3D(TriangleIndexer<tpsVERTEX>(vertices, triangles), pos);
@@ -338,25 +358,25 @@ public:
 		const int iSouthPole = (int)vertices.size();
 		vertices.emplace_back(mpsVERTEX(-base));
 		const auto calcIdx = [latDiv, longDiv](int iLat, int iLong){ return iLat * longDiv + iLong; };
-		std::vector<Triangle<int>> triangles;
+		std::vector<Triangle<size_t>> triangles;
 		for (unsigned int iLat = 0; iLat < latDiv - 2; iLat++) {
 			for (unsigned int iLong = 0; iLong < longDiv - 1; iLong++) {
-				triangles.emplace_back(Triangle<int>(calcIdx(iLat, iLong), calcIdx(iLat + 1, iLong), calcIdx(iLat, iLong + 1)));
-				triangles.emplace_back(Triangle<int>(calcIdx(iLat, iLong + 1), calcIdx(iLat + 1, iLong), calcIdx(iLat + 1, iLong + 1)));
+				triangles.emplace_back(Triangle<size_t>(calcIdx(iLat, iLong), calcIdx(iLat + 1, iLong), calcIdx(iLat, iLong + 1)));
+				triangles.emplace_back(Triangle<size_t>(calcIdx(iLat, iLong + 1), calcIdx(iLat + 1, iLong), calcIdx(iLat + 1, iLong + 1)));
 			}
-			triangles.emplace_back(Triangle<int>(calcIdx(iLat, longDiv - 1), calcIdx(iLat + 1, longDiv - 1), calcIdx(iLat, 0)));
-			triangles.emplace_back(Triangle<int>(calcIdx(iLat, 0), calcIdx(iLat + 1, longDiv - 1), calcIdx(iLat + 1, 0)));
+			triangles.emplace_back(Triangle<size_t>(calcIdx(iLat, longDiv - 1), calcIdx(iLat + 1, longDiv - 1), calcIdx(iLat, 0)));
+			triangles.emplace_back(Triangle<size_t>(calcIdx(iLat, 0), calcIdx(iLat + 1, longDiv - 1), calcIdx(iLat + 1, 0)));
 		}
 		for (unsigned int iLong = 0; iLong < longDiv - 1; iLong++) {
-			triangles.emplace_back(Triangle<int>(iNorthPole, calcIdx(0, iLong), calcIdx(0, iLong + 1)));
-			triangles.emplace_back(Triangle<int>(calcIdx(latDiv - 2, iLong + 1), calcIdx(latDiv - 2, iLong), iSouthPole));
+			triangles.emplace_back(Triangle<size_t>(iNorthPole, calcIdx(0, iLong), calcIdx(0, iLong + 1)));
+			triangles.emplace_back(Triangle<size_t>(calcIdx(latDiv - 2, iLong + 1), calcIdx(latDiv - 2, iLong), iSouthPole));
 		}
-		triangles.emplace_back(Triangle<int>(iNorthPole, calcIdx(0, longDiv - 1), calcIdx(0, 0)));
-		triangles.emplace_back(Triangle<int>(calcIdx(latDiv - 2, 0), calcIdx(latDiv - 2, longDiv - 1), iSouthPole));
+		triangles.emplace_back(Triangle<size_t>(iNorthPole, calcIdx(0, longDiv - 1), calcIdx(0, 0)));
+		triangles.emplace_back(Triangle<size_t>(calcIdx(latDiv - 2, 0), calcIdx(latDiv - 2, longDiv - 1), iSouthPole));
 		return mObject3D(TriangleIndexer<mpsVERTEX>(vertices, triangles), pos);
 	}
 	public:
-		static inline Object3D GetObjectModelWithNormals(Object3D obj)
+		static inline Object3D GenerateModelWithNormals(Object3D obj)
 		{
 			Object3D<vertex> Object = obj;
 			TriangleIndexer<vertex>& t_model = Object.GetTriangleModel();
@@ -382,8 +402,6 @@ public:
 typedef Object3D<tpsVERTEX> tObject3D;
 typedef Object3D<vbpsVERTEX> vbObject3D;
 typedef Object3D<mpsVERTEX> mObject3D;
-typedef Object3D<pptpsVERTEX> pptObject3D;
-typedef Object3D<ppmpsVERTEX> ppmObject3D;
 
 
 

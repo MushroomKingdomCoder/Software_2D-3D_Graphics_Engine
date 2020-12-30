@@ -22,7 +22,7 @@ private:
 	Effect3D& Effect;
 	ZBuffer& zBuffer;
 private:
-	void ProcessVerticies(std::vector<Vertex> vtxes, std::vector<Triangle<int>> triangles)
+	void ProcessVerticies(std::vector<Vertex> vtxes, std::vector<Triangle<size_t>> triangles)
 	{
 		std::vector<VSOut> vtxes_out;
 		for (auto& v : vtxes) {
@@ -30,7 +30,7 @@ private:
 		}
 		ProcessTriangleModel(vtxes_out, triangles);
 	}
-	void ProcessTriangleModel(std::vector<VSOut>& vtxes, std::vector<Triangle<int>>& triangles)
+	void ProcessTriangleModel(std::vector<VSOut>& vtxes, std::vector<Triangle<size_t>>& triangles)
 	{
 		int id = 0;
 		for (const auto& t : triangles) {
@@ -138,7 +138,7 @@ public:
 		zBuffer(zbuf)
 	{}
 public:
-	void ProcessObject3D(const TriangleIndexer<Vertex>& tmodel)
+	void ProcessMesh(const TriangleIndexer<Vertex>& tmodel)
 	{
 		ProcessVerticies(tmodel.Verticies, tmodel.Triangles);
 	}

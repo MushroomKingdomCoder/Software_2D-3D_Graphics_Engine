@@ -121,8 +121,8 @@ void Game::UpdateModel()
 
 void Game::ComposeFrame()
 {
-	pipe3d.ProcessObject3D(Object0.GetTriangleModel());
-	pipe3dL.ProcessObject3D(Light.GetTriangleModel());
+	pipe3d.ProcessMesh(Object0.GetTriangleModel());
+	pipe3dL.ProcessMesh(Light.GetTriangleModel());
 }
 
 

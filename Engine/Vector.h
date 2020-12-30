@@ -67,14 +67,6 @@ public:
 	{
 		return *this = *this * scale;
 	}
-	Vector2D operator *(const Vector2D& vec_scale) const
-	{
-		return Vector2D(X * vec_scale.X, Y * vec_scale.Y);
-	}
-	Vector2D& operator *=(const Vector2D vec_scale)
-	{
-		return *this = *this * vec_scale;
-	}
 	Vector2D operator -(const Vector2D& dif) const
 	{
 		return { X - dif.X, Y - dif.Y };
@@ -90,14 +82,6 @@ public:
 	Vector2D& operator /=(const type scale)
 	{
 		return *this = *this / scale;
-	}
-	Vector2D operator /(const Vector2D& vec_scale) const
-	{
-		return Vector2D(X / vec_scale.X, Y / vec_scale.Y);
-	}
-	Vector2D& operator /=(const Vector2D& vec_scale)
-	{
-		return *this = *this / vec_scale;
 	}
 	Vector2D operator -() const
 	{
@@ -310,14 +294,6 @@ public:
 	{
 		return *this = *this * scale;
 	}
-	Vector3D operator *(const Vector3D& vec3_scale) const
-	{
-		return Vector3D(X * vec3_scale.X, Y * vec3_scale.Y, Z * vec3_scale.Z);
-	}
-	Vector3D& operator *=(const Vector3D& vec3_scale)
-	{
-		return *this = *this * vec3_scale;
-	}
 	Vector3D operator -(const Vector3D& dif) const
 	{
 		return { X - dif.X, Y - dif.Y, Z - dif.Z };
@@ -333,14 +309,6 @@ public:
 	Vector3D& operator /=(const type scale)
 	{
 		return *this = *this / scale;
-	}
-	Vector3D operator /(const Vector3D& vec3_scale) const
-	{
-		return Vector3D(X / vec3_scale.X, Y / vec3_scale.Y, Z / vec3_scale.Z);
-	}
-	Vector3D& operator /=(const Vector3D& vec3_scale)
-	{
-		return *this = *this / vec3_scale;
 	}
 	Vector3D operator -() const
 	{

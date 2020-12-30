@@ -31,11 +31,18 @@ namespace EffectDefaults
 	{
 	public:
 		fVector3D pos;
+		fVector3D normal;
 	public:
 		Vertex() = default;
-		Vertex(fVector3D vec3)
+		Vertex(const fVector3D& pos)
 			:
-			pos(vec3)
+			pos(pos),
+			normal({0,0,0})
+		{}
+		Vertex(const fVector3D& pos, const fVector3D& normal)
+			:
+			pos(pos),
+			normal(normal)
 		{}
 		Vertex(float x, float y, float z)
 			:
@@ -43,7 +50,7 @@ namespace EffectDefaults
 		{}
 		Vertex operator +(const Vertex& vtx) const
 		{
-			return Vertex(pos + vtx.pos);
+			return Vertex(pos + vtx.pos, normal);
 		}
 		Vertex& operator +=(const Vertex& vtx)
 		{
@@ -51,7 +58,7 @@ namespace EffectDefaults
 		}
 		Vertex operator -(const Vertex& vtx) const
 		{
-			return Vertex(pos - vtx.pos);
+			return Vertex(pos - vtx.pos, normal);
 		}
 		Vertex& operator -=(const Vertex& vtx)
 		{
@@ -59,7 +66,7 @@ namespace EffectDefaults
 		}
 		Vertex operator *(const float scale) const
 		{
-			return Vertex(pos * scale);
+			return Vertex(pos * scale, normal);
 		}
 		Vertex& operator *=(const float scale)
 		{
@@ -67,7 +74,7 @@ namespace EffectDefaults
 		}
 		Vertex operator /(const float scale) const
 		{
-			return Vertex(pos / scale);
+			return Vertex(pos / scale, normal);
 		}
 		Vertex& operator /=(const float scale)
 		{
@@ -75,7 +82,15 @@ namespace EffectDefaults
 		}
 		Vertex InterpolatedTo(const Vertex& vtx, const float alpha)
 		{
-			return Vertex(pos.InterpolatedTo(vtx.pos, alpha));
+			return Vertex(pos.InterpolatedTo(vtx.pos, alpha), normal);
+		}
+		bool operator ==(const Vertex& vtx) const
+		{
+			return (pos == vtx.pos && normal == vtx.normal);
+		}
+		bool operator !=(const Vertex& vtx) const
+		{
+			return !(*this == vtx);
 		}
 	};
 
@@ -97,6 +112,7 @@ namespace EffectDefaults
 		VertexOut operator ()(VertexIn vtx_in)
 		{
 			vtx_in.pos = *pTransformation * vtx_in.pos;
+			vtx_in.normal = *pTransformation * fVector4D(vtx_in.normal, 0.0f); 
 			return VertexOut(vtx_in);
 		}
  	};

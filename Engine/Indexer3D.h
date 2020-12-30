@@ -8,7 +8,7 @@ template <typename vertex>
 struct TriangleIndexer
 {
 	std::vector<vertex> Verticies;
-	std::vector<Triangle<int>> Triangles;
+	std::vector<Triangle<size_t>> Triangles;
 public:
 	TriangleIndexer() = default;
 	template <typename mVertex>  
@@ -20,7 +20,7 @@ public:
 			Verticies.emplace_back(vertex(v));
 		}
 	}
-	TriangleIndexer(std::vector<vertex> verticies, std::vector<Triangle<int>> triangles)
+	TriangleIndexer(std::vector<vertex> verticies, std::vector<Triangle<size_t>> triangles)
 		:
 		Verticies(std::move(verticies)),
 		Triangles(std::move(triangles))
@@ -32,10 +32,10 @@ template <typename vertex>
 struct LineIndexer
 {
 	std::vector<vertex> Verticies;
-	std::vector<std::pair<int, int>> Lines;
+	std::vector<std::pair<size_t, size_t>> Lines;
 public:
 	LineIndexer() = default;
-	LineIndexer(std::vector<vertex> verticies, std::vector<std::pair<int, int>> lines)
+	LineIndexer(std::vector<vertex> verticies, std::vector<std::pair<size_t, size_t>> lines)
 		:
 		Verticies(std::move(verticies)),
 		Lines(std::move(lines))

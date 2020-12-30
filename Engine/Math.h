@@ -32,13 +32,13 @@ inline Vector3D<type> vec3_abs(const Vector3D<type>& vec3)
 }
 
 template <typename vertex>
-inline void subdivide(const fVector3D& v1, const fVector3D& v2, const fVector3D& v3, std::vector<vertex>& sphere_points, std::vector<Triangle<int>>& triangles, const unsigned int depth) {
+inline void subdivide(const fVector3D& v1, const fVector3D& v2, const fVector3D& v3, std::vector<vertex>& sphere_points, std::vector<Triangle<size_t>>& triangles, const unsigned int depth) {
     if (depth == 0) {
-        sphere_points.emplace_back(v1);
-        sphere_points.emplace_back(v2);
-        sphere_points.emplace_back(v3);
+        sphere_points.emplace_back(vertex(v1));
+        sphere_points.emplace_back(vertex(v2));
+        sphere_points.emplace_back(vertex(v3));
         unsigned int next_index = unsigned int(sphere_points.size());
-        triangles.emplace_back(next_index - 2, next_index - 3, next_index - 1);
+        triangles.emplace_back(Triangle<size_t>(next_index - 2, next_index - 3, next_index - 1));
         return;
     }
     const fVector3D v12 = (v1 + v2).Normalized();
@@ -52,7 +52,7 @@ inline void subdivide(const fVector3D& v1, const fVector3D& v2, const fVector3D&
 }
 
 template <typename vertex>
-inline void initialize_sphere(std::vector<vertex>& sphere_points, std::vector<Triangle<int>>& triangles, const unsigned int depth) {
+inline void initialize_sphere(std::vector<vertex>& sphere_points, std::vector<Triangle<size_t>>& triangles, const unsigned int depth) {
     const double X = 0.525731112119133606;
     const double Z = 0.850650808352039932;
     const std::vector<fVector3D> vdata = {
@@ -60,7 +60,7 @@ inline void initialize_sphere(std::vector<vertex>& sphere_points, std::vector<Tr
         { 0.0, Z, X }, { 0.0, Z, -X }, { 0.0, -Z, X }, { 0.0, -Z, -X },
         { Z, X, 0.0 }, { -Z, X, 0.0 }, { Z, -X, 0.0 }, { -Z, -X, 0.0 }
     };
-    std::vector<Triangle<int>> tindices = {
+    std::vector<Triangle<size_t>> tindices = {
         { 0, 4, 1 }, { 0, 9, 4 }, { 9, 5, 4 }, { 4, 5, 8 }, { 4, 8, 1 },
         { 8, 10, 1 }, { 8, 3, 10 }, { 5, 3, 8 }, { 5, 2, 3 }, { 2, 7, 3 },
         { 7, 10, 3 }, { 7, 6, 10 }, { 7, 11, 6 }, { 11, 0, 6 }, { 0, 1, 6 },
