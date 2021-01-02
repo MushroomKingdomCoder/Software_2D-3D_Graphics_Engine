@@ -28,11 +28,12 @@ Game::Game(MainWindow& wnd)
 	wnd(wnd),
 	gfx(wnd),
 	zBuffer(Graphics::ScreenWidth, Graphics::ScreenHeight),
-	pipe3d(gfx, ndc, effect, zBuffer),
-	pipe3dL(gfx, ndc, effectL, zBuffer)
+	pipe3d0(gfx, ndc, effect0, zBuffer),
+	pipe3d1(gfx, ndc, effect1, zBuffer)
+	//pipe3dL(gfx, ndc, effectL, zBuffer)
 {
 	Clock.Start();
-	light.SetProjectionMatrix(Projection);
+	//light.SetProjectionMatrix(Projection);
 }
 
 void Game::Go()
@@ -86,46 +87,47 @@ void Game::UpdateModel()
 	if (wnd.kbd.KeyIsPressed(VK_NUMPAD6)) {
 		Object0.Move({ 0.5f * time,0,0 });
 	}
-	effect.VertexShader.SetWorldTransformationMatrix(Object0.GetTransformationMatrix());
+	effect0.VertexShader.SetWorldTransformationMatrix(Object0.GetTransformationMatrix());
 
 	// Directional Lighting Controls
-	//if (wnd.kbd.KeyIsPressed('1')) {
-	//	light.RotateLightX(angle_wrap(d_rot * time));
-	//}
-	//if (wnd.kbd.KeyIsPressed('2')) {
-	//	light.RotateLightY(angle_wrap(d_rot * time));
-	//}
-	//if (wnd.kbd.KeyIsPressed('3')) {
-	//	light.RotateLightZ(angle_wrap(d_rot * time));
-	//}
+	if (wnd.kbd.KeyIsPressed('1')) {
+		light.RotateLightX(angle_wrap(d_rot * time));
+	}
+	if (wnd.kbd.KeyIsPressed('2')) {
+		light.RotateLightY(angle_wrap(d_rot * time));
+	}
+	if (wnd.kbd.KeyIsPressed('3')) {
+		light.RotateLightZ(angle_wrap(d_rot * time));
+	}
 
 	// Point Lighting Controls
-	if (wnd.kbd.KeyIsPressed('T')) {
-		light.Move({ 0,0.5f * time,0 });
-	}
-	if (wnd.kbd.KeyIsPressed('F')) {
-		light.Move({ -0.5f * time,0,0 });
-	}
-	if (wnd.kbd.KeyIsPressed('G')) {
-		light.Move({ 0,-0.5f * time,0 });
-	}
-	if (wnd.kbd.KeyIsPressed('H')) {
-		light.Move({ 0.5f * time,0,0 });
-	}
-	if (wnd.kbd.KeyIsPressed('R')) {
-		light.Move({ 0,0,-0.5f * time });
-	}
-	if (wnd.kbd.KeyIsPressed('Y')) {
-		light.Move({ 0,0,0.5f * time });
-	}
-	Light.SetPosition(light.GetPosition());
-	effectL.VertexShader.SetWorldTransformationMatrix(Light.GetTransformationMatrix());
+	//if (wnd.kbd.KeyIsPressed('T')) {
+	//	light.Move({ 0,0.5f * time,0 });
+	//}
+	//if (wnd.kbd.KeyIsPressed('F')) {
+	//	light.Move({ -0.5f * time,0,0 });
+	//}
+	//if (wnd.kbd.KeyIsPressed('G')) {
+	//	light.Move({ 0,-0.5f * time,0 });
+	//}
+	//if (wnd.kbd.KeyIsPressed('H')) {
+	//	light.Move({ 0.5f * time,0,0 });
+	//}
+	//if (wnd.kbd.KeyIsPressed('R')) {
+	//	light.Move({ 0,0,-0.5f * time });
+	//}
+	//if (wnd.kbd.KeyIsPressed('Y')) {
+	//	light.Move({ 0,0,0.5f * time });
+	//}
+	//Light.SetPosition(light.GetPosition());
+	//effectL.VertexShader.SetWorldTransformationMatrix(Light.GetTransformationMatrix());
 }
 
 void Game::ComposeFrame()
 {
-	pipe3d.ProcessMesh(Object0.GetTriangleModel());
-	pipe3dL.ProcessMesh(Light.GetTriangleModel());
+	pipe3d0.ProcessMesh(Object0.GetTriangleModel());
+	pipe3d1.ProcessMesh(Object1.GetTriangleModel());
+	//pipe3dL.ProcessMesh(Light.GetTriangleModel());
 }
 
 

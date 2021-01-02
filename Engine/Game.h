@@ -69,14 +69,22 @@ private:
 	Timer Clock;
 	ZBuffer zBuffer;
 	NDCBuffer ndc;
+	DirectionalLight light;
+
+	// Object 0
 	tObject3D Object0 = tObject3D::MakeSkinnedSphere( 1, 15, 15, { 0,0,6 }).AddNormals();
-	PointLight light;
-	pptEFFECT_ONLY effect{ {"pokeball0.bmp",light},{Object0.GetTransformationMatrix(), Projection},{} };
-	PIPE_pptONLY pipe3d;
+	pptEFFECT_ONLY effect0{ {"pokeball0.bmp",light},{Object0.GetTransformationMatrix(), Projection},{} };
+	PIPE_pptONLY pipe3d0;
+
+	// Object 1
+	tObject3D Object1 = tObject3D::MakeSkinnedCube(2, { -4,0.25f,4 }).AddNormals();
+	pptEFFECT_ONLY effect1{ {"wood.bmp",light},{Object1.GetTransformationMatrix(), Projection}, {} };
+	PIPE_pptONLY pipe3d1;
 	
-	mObject3D Light = mObject3D::MakeSphere(0.05f, 1, { 0,0,3 });
-	mEFFECT_ONLY effectL{ {Colors::White},{Light.GetTransformationMatrix(), Projection},{} };
-	PIPE_mONLY pipe3dL;
+	// graphical point-light object
+	//mObject3D Light = mObject3D::MakeSphere(0.05f, 1, { 0,0,3 });
+	//mEFFECT_ONLY effectL{ {Colors::White},{Light.GetTransformationMatrix(), Projection},{} };
+	//PIPE_mONLY pipe3dL;
 	// control vars
 	static constexpr float d_rot = M_PI;
 };
