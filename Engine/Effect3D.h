@@ -156,9 +156,9 @@ namespace EffectDefaults
 		{}
 		VertexOut operator ()(VertexIn vtx_in)
 		{
+			vtx_in.World_Pos = WorldTransformation * vtx_in.pos;
 			vtx_in.pos = ScreenTransformation * vtx_in.pos;
 			vtx_in.normal = WorldTransformation * fVector4D(vtx_in.normal, 0.0f);
-			vtx_in.World_Pos = vtx_in.pos;
 			return vtx_in;
 		}
 		void SetProjectionMatrix(const fMatrix3Dplus& projection)

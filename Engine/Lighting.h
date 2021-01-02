@@ -77,9 +77,7 @@ private:
 	const float linear_attenuation = 0.250f;
 	const float constant_attenuation = 0.125f;
 private:
-	fVector3D Position = { 0,0,1 };
-	fMatrix3Dplus Projection = fMatrix3Dplus::Identity();
-	fVector3D position = Projection * Position;
+	fVector3D position = { 0,0,1 };
 
 public: 
 	PointLight() = default;
@@ -97,12 +95,15 @@ public:
 	}
 	void Move(const fVector3D& translation)
 	{
-		Position += translation;
-		position = Projection * Position;
+		position += translation;
+	}
+	void SetPosition(const fVector3D& pos)
+	{
+		position = pos;
 	}
 	const fVector3D& GetPosition() const
 	{
-		return Position;
+		return position;
 	}
 	Color Illuminate(PerPixelLightingVertex pxl, const fVector3D& color) const override
 	{
@@ -115,11 +116,6 @@ public:
 		const fVector3D reflected = normal * (2 * delta_dist.DotProduct(normal)) - delta_dist;
 		const fVector3D specular_light = lighting * specular * (float)pow(std::max(-pxl.World_Pos.Normalized().DotProduct(reflected / distance), 0.0f), specular_power);
 		return color.GetHadamardProduct((diffuse + ambience + specular_light).Saturated());
-	}
-	void SetProjectionMatrix(const fMatrix3Dplus& proj)
-	{
-		Projection = proj;
-		position = Projection * Position;
 	}
 };
 

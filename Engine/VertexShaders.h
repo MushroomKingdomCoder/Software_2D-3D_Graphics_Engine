@@ -143,9 +143,9 @@ namespace VertexShaders
 			const float y_stretch = amplitude * sin(hz * time + vtx_in.pos.X * wavelength);
 			vtx_in.pos.Y += y_stretch;
 			vtx_in.normal.Y += y_stretch;
+			vtx_in.World_Pos = WorldTransformation * vtx_in.pos;
 			vtx_in.pos = ScreenTransformation * vtx_in.pos;
 			vtx_in.normal = WorldTransformation * fVector4D(vtx_in.normal, 0.0f);
-			vtx_in.World_Pos = vtx_in.pos;
 			return vtx_in;
 		}
 		void SetProjectionMatrix(const fMatrix3Dplus& projection)

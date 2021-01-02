@@ -69,7 +69,7 @@ private:
 	Timer Clock;
 	ZBuffer zBuffer;
 	NDCBuffer ndc;
-	DirectionalLight light;
+	PointLight light;
 
 	// Object 0
 	tObject3D Object0 = tObject3D::MakeSkinnedSphere( 1, 15, 15, { 0,0,6 }).AddNormals();
@@ -82,9 +82,9 @@ private:
 	PIPE_pptONLY pipe3d1;
 	
 	// graphical point-light object
-	//mObject3D Light = mObject3D::MakeSphere(0.05f, 1, { 0,0,3 });
-	//mEFFECT_ONLY effectL{ {Colors::White},{Light.GetTransformationMatrix(), Projection},{} };
-	//PIPE_mONLY pipe3dL;
+	mObject3D Light = mObject3D::MakeSphere(0.05f, 1, { 0,0,3 });
+	mEFFECT_ONLY effectL{ {Colors::White},{Light.GetTransformationMatrix(), Projection},{} };
+	PIPE_mONLY pipe3dL;
 	// control vars
 	static constexpr float d_rot = M_PI;
 };
