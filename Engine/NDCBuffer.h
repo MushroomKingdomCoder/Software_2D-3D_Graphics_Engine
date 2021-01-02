@@ -1,5 +1,6 @@
 #pragma once
 #include "Graphics.h"
+#include "Matrix.h"
 #include "Vector.h"
 
 class NDCBuffer
@@ -30,16 +31,24 @@ public:
 	Vertex GetTransformed(const Vertex& vtx) const
 	{
 		auto Vtx = vtx;
-		const float zInv = 1.0f / Vtx.pos.Z;
+		const float zInv = 1.0f / Vtx.pos.W;
 		Vtx *= zInv;
 		Vtx.pos.X = (Vtx.pos.X + 1.0f) * xFactor;
 		Vtx.pos.Y = (-Vtx.pos.Y + 1.0f) * yFactor;
-		Vtx.pos.Z = zInv;
+		Vtx.pos.W = zInv;
 		return Vtx;
 	}
 	template <typename Vertex>
 	Vertex& Transform(Vertex& vtx)
 	{
-		return vtx = GetTransformed(vtx);
+		const float zInv = 1.0f / vtx.pos.W;
+		vtx *= zInv;
+		vtx.pos.X = (vtx.pos.X + 1.0f) * xFactor;
+		vtx.pos.Y = (-vtx.pos.Y + 1.0f) * yFactor;
+		vtx.pos.W = zInv;
+		return vtx;
 	}
 };
+
+
+

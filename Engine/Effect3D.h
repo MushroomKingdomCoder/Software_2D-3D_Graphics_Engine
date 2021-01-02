@@ -30,16 +30,16 @@ namespace EffectDefaults
 	class Vertex
 	{
 	public:
-		fVector3D pos;
+		fVector4D pos;
 		fVector3D normal;
 	public:
 		Vertex() = default;
-		Vertex(const fVector3D& pos)
+		Vertex(const fVector4D& pos)
 			:
 			pos(pos),
 			normal({0,0,0})
 		{}
-		Vertex(const fVector3D& pos, const fVector3D& normal)
+		Vertex(const fVector4D& pos, const fVector3D& normal)
 			:
 			pos(pos),
 			normal(normal)
@@ -99,21 +99,39 @@ namespace EffectDefaults
 	class VertexShader
 	{
 	private:
-		fMatrix3Dplus const* pTransformation;
+		fMatrix3Dplus WorldTransformation = fMatrix3Dplus::Identity();
+		fMatrix3Dplus Projection = fMatrix3Dplus::Projection(2, 2, 1, 100);
+		fMatrix3Dplus ScreenTransformation = Projection * WorldTransformation;
 
 	public:
 		typedef typename vertex VertexIn;
 		typedef typename vertex VertexOut;
 	public:
-		VertexShader(const fMatrix3Dplus& transformation)
+		VertexShader(const fMatrix3Dplus& w_transform, const fMatrix3Dplus& proj)
 			:
-			pTransformation(&transformation)
+			WorldTransformation(w_transform),
+			Projection(proj),
+			ScreenTransformation(Projection * WorldTransformation)
 		{}
 		VertexOut operator ()(VertexIn vtx_in)
 		{
-			vtx_in.pos = *pTransformation * vtx_in.pos;
-			vtx_in.normal = *pTransformation * fVector4D(vtx_in.normal, 0.0f); 
-			return VertexOut(vtx_in);
+			vtx_in.pos = ScreenTransformation * vtx_in.pos;
+			vtx_in.normal = WorldTransformation * fVector4D(vtx_in.normal, 0.0f); 
+			return vtx_in;
+		}
+		void SetProjectionMatrix(const fMatrix3Dplus& projection)
+		{
+			Projection = projection;
+			ScreenTransformation = Projection * WorldTransformation;
+		}
+		void SetWorldTransformationMatrix(const fMatrix3Dplus& w_transform)
+		{
+			WorldTransformation = w_transform;
+			ScreenTransformation = Projection * WorldTransformation;
+		}
+		const fMatrix3Dplus& GetProjectionMatrix() const
+		{
+			return Projection;
 		}
  	};
 
@@ -122,22 +140,40 @@ namespace EffectDefaults
 	class VertexShader_PPS
 	{
 	private:
-		fMatrix3Dplus const* pTransformation;
+		fMatrix3Dplus WorldTransformation = fMatrix3Dplus::Identity();
+		fMatrix3Dplus Projection = fMatrix3Dplus::Projection(2, 2, 1, 100);
+		fMatrix3Dplus ScreenTransformation = Projection * WorldTransformation;
 
 	public:
 		typedef typename vertex VertexIn;
 		typedef typename vertex VertexOut;
 	public:
-		VertexShader_PPS(const fMatrix3Dplus& transformation)
+		VertexShader_PPS(const fMatrix3Dplus& w_transform, const fMatrix3Dplus& proj)
 			:
-			pTransformation(&transformation)
+			WorldTransformation(w_transform),
+			Projection(proj),
+			ScreenTransformation(Projection * WorldTransformation)
 		{}
 		VertexOut operator ()(VertexIn vtx_in)
 		{
-			vtx_in.pos = *pTransformation * vtx_in.pos;
-			vtx_in.normal = *pTransformation * fVector4D(vtx_in.normal, 0.0f);
+			vtx_in.pos = ScreenTransformation * vtx_in.pos;
+			vtx_in.normal = WorldTransformation * fVector4D(vtx_in.normal, 0.0f);
 			vtx_in.World_Pos = vtx_in.pos;
-			return VertexOut(vtx_in);
+			return vtx_in;
+		}
+		void SetProjectionMatrix(const fMatrix3Dplus& projection)
+		{
+			Projection = projection;
+			ScreenTransformation = Projection * WorldTransformation;
+		}
+		void SetWorldTransformationMatrix(const fMatrix3Dplus& w_transform)
+		{
+			WorldTransformation = w_transform;
+			ScreenTransformation = Projection * WorldTransformation;
+		}
+		const fMatrix3Dplus& GetProjectionMatrix() const
+		{
+			return Projection;
 		}
 	};
 

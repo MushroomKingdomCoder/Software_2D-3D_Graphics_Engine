@@ -9,21 +9,39 @@ namespace VertexShaders
 	class Pos2Color
 	{
 	private:
-		fMatrix3Dplus const* pTransformation;
+		fMatrix3Dplus WorldTransformation = fMatrix3Dplus::Identity();
+		fMatrix3Dplus Projection = fMatrix3Dplus::Projection(2, 2, 1, 100);
+		fMatrix3Dplus ScreenTransformation = Projection * WorldTransformation;
 
 	public:
 		typedef typename dVertex VertexIn;
 		typedef typename vbpsVERTEX VertexOut;
 	public:
-		Pos2Color(const fMatrix3Dplus& transformation)
+		Pos2Color(const fMatrix3Dplus& w_transform, const fMatrix3Dplus& proj)
 			:
-			pTransformation(&transformation)
+			WorldTransformation(w_transform),
+			Projection(proj),
+			ScreenTransformation(Projection* WorldTransformation)
 		{}
 		VertexOut operator ()(VertexIn vtx_in)
 		{
-			vtx_in.pos = *pTransformation * vtx_in.pos;
-			vtx_in.normal = *pTransformation * fVector4D(vtx_in.normal, 0.0f);
-			return VertexOut(vtx_in.pos, vec3_abs(vtx_in.pos) * 255.0f, vtx_in.normal);
+			vtx_in.pos = ScreenTransformation * vtx_in.pos;
+			vtx_in.normal = WorldTransformation * fVector4D(vtx_in.normal, 0.0f);
+			return VertexOut(vtx_in.pos, vec3_abs(fVector3D(vtx_in.pos)) * 255.0f, vtx_in.normal);
+		}
+		void SetProjectionMatrix(const fMatrix3Dplus& projection)
+		{
+			Projection = projection;
+			ScreenTransformation = Projection * WorldTransformation;
+		}
+		void SetWorldTransformationMatrix(const fMatrix3Dplus& w_transform)
+		{
+			WorldTransformation = w_transform;
+			ScreenTransformation = Projection * WorldTransformation;
+		}
+		const fMatrix3Dplus& GetProjectionMatrix() const
+		{
+			return Projection;
 		}
 	};
 
@@ -32,7 +50,9 @@ namespace VertexShaders
 	class SineWave
 	{
 	private:
-		fMatrix3Dplus const* pTransformation;
+		fMatrix3Dplus WorldTransformation = fMatrix3Dplus::Identity();
+		fMatrix3Dplus Projection = fMatrix3Dplus::Projection(2, 2, 1, 100);
+		fMatrix3Dplus ScreenTransformation = Projection * WorldTransformation;
 	private:
 		float amplitude;
 		float time;
@@ -43,9 +63,11 @@ namespace VertexShaders
 		typedef typename vertex VertexIn;
 		typedef typename vertex VertexOut;
 	public:
-		SineWave(const fMatrix3Dplus& transformation, float ampl, float hz, float wv)
+		SineWave(const fMatrix3Dplus& w_transform, const fMatrix3Dplus& proj, float ampl, float hz, float wv)
 			:
-			pTransformation(&transformation),
+			WorldTransformation(w_transform),
+			Projection(proj),
+			ScreenTransformation(Projection * WorldTransformation),
 			amplitude(ampl),
 			hz(hz),
 			wavelength(wv)
@@ -56,12 +78,26 @@ namespace VertexShaders
 		}
 		VertexOut operator ()(VertexIn vtx_in)
 		{
-			vtx_in.pos = *pTransformation * vtx_in.pos;
-			vtx_in.normal = *pTransformation * fVector4D(vtx_in.normal, 0.0f);
 			const float y_stretch = amplitude * sinf(hz * time + vtx_in.pos.X * wavelength);
 			vtx_in.pos.Y += y_stretch;
 			vtx_in.normal.Y += y_stretch;
-			return VertexOut(vtx_in);
+			vtx_in.pos = ScreenTransformation * vtx_in.pos;
+			vtx_in.normal = WorldTransformation * fVector4D(vtx_in.normal, 0.0f);
+			return vtx_in;
+		}
+		void SetProjectionMatrix(const fMatrix3Dplus& projection)
+		{
+			Projection = projection;
+			ScreenTransformation = Projection * WorldTransformation;
+		}
+		void SetWorldTransformationMatrix(const fMatrix3Dplus& w_transform)
+		{
+			WorldTransformation = w_transform;
+			ScreenTransformation = Projection * WorldTransformation;
+		}
+		const fMatrix3Dplus& GetProjectionMatrix() const
+		{
+			return Projection;
 		}
 	};
 
@@ -76,7 +112,9 @@ namespace VertexShaders
 	class SineWave_PPS
 	{
 	private:
-		fMatrix3Dplus const* pTransformation;
+		fMatrix3Dplus WorldTransformation = fMatrix3Dplus::Identity();
+		fMatrix3Dplus Projection = fMatrix3Dplus::Projection(2, 2, 1, 100);
+		fMatrix3Dplus ScreenTransformation = Projection * WorldTransformation;
 	private:
 		float amplitude;
 		float time;
@@ -87,9 +125,11 @@ namespace VertexShaders
 		typedef typename vertex VertexIn;
 		typedef typename vertex VertexOut;
 	public:
-		SineWave_PPS(const fMatrix3Dplus& transformation, float ampl, float hz, float wv)
+		SineWave_PPS(const fMatrix3Dplus& w_transform, const fMatrix3Dplus& proj, float ampl, float hz, float wv)
 			:
-			pTransformation(&transformation),
+			WorldTransformation(w_transform),
+			Projection(proj),
+			ScreenTransformation(Projection * WorldTransformation),
 			amplitude(ampl),
 			hz(hz),
 			wavelength(wv)
@@ -100,13 +140,27 @@ namespace VertexShaders
 		}
 		VertexOut operator ()(VertexIn vtx_in)
 		{
-			vtx_in.pos = *pTransformation * vtx_in.pos;
-			vtx_in.normal = *pTransformation * fVector4D(vtx_in.normal, 0.0f);
 			const float y_stretch = amplitude * sin(hz * time + vtx_in.pos.X * wavelength);
 			vtx_in.pos.Y += y_stretch;
 			vtx_in.normal.Y += y_stretch;
+			vtx_in.pos = ScreenTransformation * vtx_in.pos;
+			vtx_in.normal = WorldTransformation * fVector4D(vtx_in.normal, 0.0f);
 			vtx_in.World_Pos = vtx_in.pos;
-			return VertexOut(vtx_in);
+			return vtx_in;
+		}
+		void SetProjectionMatrix(const fMatrix3Dplus& projection)
+		{
+			Projection = projection;
+			ScreenTransformation = Projection * WorldTransformation;
+		}
+		void SetWorldTransformationMatrix(const fMatrix3Dplus& w_transform)
+		{
+			WorldTransformation = w_transform;
+			ScreenTransformation = Projection * WorldTransformation;
+		}
+		const fMatrix3Dplus& GetProjectionMatrix() const
+		{
+			return Projection;
 		}
 	};
 }

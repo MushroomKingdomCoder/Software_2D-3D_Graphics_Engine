@@ -32,6 +32,7 @@ Game::Game(MainWindow& wnd)
 	pipe3dL(gfx, ndc, effectL, zBuffer)
 {
 	Clock.Start();
+	light.SetProjectionMatrix(Projection);
 }
 
 void Game::Go()
@@ -85,6 +86,7 @@ void Game::UpdateModel()
 	if (wnd.kbd.KeyIsPressed(VK_NUMPAD6)) {
 		Object0.Move({ 0.5f * time,0,0 });
 	}
+	effect.VertexShader.SetWorldTransformationMatrix(Object0.GetTransformationMatrix());
 
 	// Directional Lighting Controls
 	//if (wnd.kbd.KeyIsPressed('1')) {
@@ -117,6 +119,7 @@ void Game::UpdateModel()
 		light.Move({ 0,0,0.5f * time });
 	}
 	Light.SetPosition(light.GetPosition());
+	effectL.VertexShader.SetWorldTransformationMatrix(Light.GetTransformationMatrix());
 }
 
 void Game::ComposeFrame()

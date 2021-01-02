@@ -97,7 +97,9 @@ namespace GeometryShaders
 		const bool isGoraud = true;
 		fVector3D lighting = { 1,1,1 };
 		fVector3D ambience = { 0.1f,0.1f,0.1f };
-		fVector3D position = { 0,0,1 };
+		fVector3D Position = { 0,0,1 };
+		fMatrix3Dplus Projection = fMatrix3Dplus::Identity();
+		fVector3D position = Projection * position;
 		const float constant_attenuation = 0.4f;
 		const float linear_attenuation = 0.1f;
 		const float quadratic_attenuation = 0.5f;
@@ -142,15 +144,22 @@ namespace GeometryShaders
 		{}
 		void Move(const fVector3D& translation)
 		{
-			position += translation;
+			Position += translation;
+			position = Projection * Position;
 		}
 		void SetPosition(const fVector3D& pos)
 		{
-			position = pos;
+			Position = pos;
+			position = Projection * Position;
 		}
 		const fVector3D& GetPosition() const
 		{
-			return position;
+			return Position;
+		}
+		void SetProjectionMatrix(const fMatrix3Dplus& proj)
+		{
+			Projection = proj;
+			position = Projection * Position;
 		}
 	public:
 		Triangle<VertexOut> operator ()(VertexIn v0, VertexIn v1, VertexIn v2, int id) const

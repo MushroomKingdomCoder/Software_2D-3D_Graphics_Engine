@@ -65,16 +65,17 @@ private:
 	/********************************/
 	/*  User Variables              */
 	/********************************/
+	const fMatrix3Dplus Projection = fMatrix3Dplus::Projection(4, 2.25f, 1, 10);
 	Timer Clock;
 	ZBuffer zBuffer;
 	NDCBuffer ndc;
-	tObject3D Object0 = tObject3D::MakeSkinnedSphere( 1, 15, 15, { 0,0,3 }).AddNormals();
+	tObject3D Object0 = tObject3D::MakeSkinnedSphere( 1, 15, 15, { 0,0,6 }).AddNormals();
 	PointLight light;
-	pptEFFECT_ONLY effect{ {"pokeball0.bmp",light},{Object0.GetTransformationMatrix()},{} };
+	pptEFFECT_ONLY effect{ {"pokeball0.bmp",light},{Object0.GetTransformationMatrix(), Projection},{} };
 	PIPE_pptONLY pipe3d;
 	
-	mObject3D Light = mObject3D::MakeSphere(0.05f, 1, { 0,0,1 });
-	mEFFECT_ONLY effectL{ {Colors::White},{Light.GetTransformationMatrix()},{} };
+	mObject3D Light = mObject3D::MakeSphere(0.05f, 1, { 0,0,3 });
+	mEFFECT_ONLY effectL{ {Colors::White},{Light.GetTransformationMatrix(), Projection},{} };
 	PIPE_mONLY pipe3dL;
 	// control vars
 	static constexpr float d_rot = M_PI;

@@ -22,6 +22,8 @@ private:
 	Effect3D& Effect;
 	ZBuffer& zBuffer;
 private:
+	const fVector4D eye_pos = Effect.VertexShader.GetProjectionMatrix() * fVector4D(0, 0, 0, 1);
+private:
 	void ProcessVerticies(std::vector<Vertex> vtxes, std::vector<Triangle<size_t>> triangles)
 	{
 		std::vector<VSOut> vtxes_out;
@@ -37,7 +39,7 @@ private:
 			const auto& p0 = vtxes[t.v0];
 			const auto& p1 = vtxes[t.v1];
 			const auto& p2 = vtxes[t.v2];
-			if ((((p1.pos - p0.pos) % (p2.pos - p0.pos)).DotProduct(p0.pos) < 0.0f)) {
+			if (((fVector3D(p1.pos - p0.pos) % fVector3D(p2.pos - p0.pos)).DotProduct(fVector3D(p0.pos - eye_pos)) < 0.0f)) {
 				ProcessTriangle(Effect.GeometryShader(p0, p1, p2, id));
 			}
 			++id;
@@ -118,8 +120,8 @@ private:
 			GSOut ipos = edge0 + dvl * (float(xStart) + 0.5f - edge0.pos.X);
 			for (int x = xStart; x < xEnd; ++x, ipos += dvl) {
 				if (gfx.ScreenRect().ContainsPoint(iVector2D{ x,y })) {
-					const float zCorrection = 1.0f / ipos.pos.Z;
-					if (zBuffer.TestAndSet(x, y, zCorrection)) {
+					if (zBuffer.TestAndSet(x, y, ipos.pos.Z)) {
+						const float zCorrection = 1.0f / ipos.pos.W;
 						const GSOut pCorrectionVtx = ipos * zCorrection;
 						gfx.PutPixel(x, y, Effect.PixelShader(pCorrectionVtx));
 					}
@@ -135,7 +137,8 @@ public:
 		gfx(gfx),
 		ndc(ndc),
 		Effect(effect3d),
-		zBuffer(zbuf)
+		zBuffer(zbuf),
+		eye_pos(Effect.VertexShader.GetProjectionMatrix() * fVector4D(0, 0, 0, 1))
 	{}
 public:
 	void ProcessMesh(const TriangleIndexer<Vertex>& tmodel)

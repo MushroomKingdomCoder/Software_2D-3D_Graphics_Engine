@@ -23,18 +23,18 @@ namespace PixelShaders
 		class Vertex
 		{
 		public:
-			fVector3D pos;
+			fVector4D pos;
 			fVector2D tpos;
 			fVector3D normal;
 		public:
 			Vertex() = default;
-			Vertex(const fVector3D& pos)
+			Vertex(const fVector4D& pos)
 				:
 				pos(pos),
 				tpos({0,0}),
 				normal({0,0,0})
 			{}
-			Vertex(fVector3D pos, float tx, float ty)
+			Vertex(fVector4D pos, float tx, float ty)
 				:
 				pos(pos),
 				tpos(fVector2D(tx, ty))
@@ -44,21 +44,21 @@ namespace PixelShaders
 				pos(x, y, z),
 				tpos(tx, ty)
 			{}
-			Vertex(const fVector3D& pos, const fVector2D& tpos, const fVector3D& normal)
+			Vertex(const fVector4D& pos, const fVector2D& tpos, const fVector3D& normal)
 				:
 				pos(pos),
 				tpos(tpos),
 				normal(normal)
 			{}
-			Vertex operator +(const Vertex & tvec) const
+			Vertex operator +(const Vertex& tvec) const
 			{
 				return Vertex(pos + tvec.pos, tpos + tvec.tpos, normal);
 			}
-			Vertex& operator +=(const Vertex & tvec)
+			Vertex& operator +=(const Vertex& tvec)
 			{
 				return *this = *this + tvec;
 			}
-			Vertex operator -(const Vertex & tvec) const
+			Vertex operator -(const Vertex& tvec) const
 			{
 				return Vertex(pos - tvec.pos, tpos - tvec.tpos, normal);
 			}
@@ -82,7 +82,7 @@ namespace PixelShaders
 			{
 				return *this = *this / scale;
 			}
-			Vertex InterpolatedTo(const Vertex & end, const float alpha) const
+			Vertex InterpolatedTo(const Vertex& end, const float alpha) const
 			{
 				return Vertex(
 					fVector3D(pos).InterpolatedTo(end.pos, alpha),
@@ -125,11 +125,11 @@ namespace PixelShaders
 		class Vertex
 		{
 		public:
-			fVector3D pos;
+			fVector4D pos;
 			fVector3D color;
 			fVector3D normal;
 		public:
-			Vertex(const fVector3D& pos)
+			Vertex(const fVector4D& pos)
 				:
 				pos(pos),
 				color({0,0,0}),
@@ -139,9 +139,9 @@ namespace PixelShaders
 				:
 				Vertex({ x,y,z }, fVector3D(float(color.GetR()), float(color.GetG()), float(color.GetB())), { 0,0,0 })
 			{}
-			Vertex(const fVector3D& vec3, const fVector3D& color, const fVector3D& normal)
+			Vertex(const fVector4D& pos, const fVector3D& color, const fVector3D& normal)
 				:
-				pos(vec3),
+				pos(pos),
 				color(color),
 				normal(normal)
 			{}
@@ -215,17 +215,17 @@ namespace PixelShaders
 		class Vertex
 		{
 		public:
-			fVector3D pos;
+			fVector4D pos;
 			Color color;
 			fVector3D normal;
 		public:          
-			Vertex(const fVector3D& pos)
+			Vertex(const fVector4D& pos)
 				:
 				pos(pos),
 				color(Colors::White),
 				normal({0,0,0})
 			{}
-			Vertex(const fVector3D& pos, const Color& color, const fVector3D& normal)
+			Vertex(const fVector4D& pos, const Color& color, const fVector3D& normal)
 				:
 				pos(pos),
 				color(color),
@@ -300,7 +300,7 @@ namespace PixelShaders
 		class Vertex
 		{
 		public:
-			fVector3D pos;
+			fVector4D pos;
 			fVector2D tpos;
 			fVector3D light;
 			fVector3D normal;
@@ -318,7 +318,7 @@ namespace PixelShaders
 				tpos(tx, ty),
 				light(light)
 			{}
-			Vertex(fVector3D pos, fVector2D tpos, fVector3D light, fVector3D normal)
+			Vertex(fVector4D pos, fVector2D tpos, fVector3D light, fVector3D normal)
 				:
 				pos(pos),
 				tpos(tpos),
@@ -394,7 +394,7 @@ namespace PixelShaders
 		class Vertex
 		{
 		public:
-			fVector3D pos;
+			fVector4D pos;
 			fVector3D color;
 			fVector3D light;
 			fVector3D normal;
@@ -410,9 +410,9 @@ namespace PixelShaders
 				:
 				Vertex({ x,y,z }, fVector3D(float(color.GetR()), float(color.GetG()), float(color.GetB())), light, { 0,0,0 })
 			{}
-			Vertex(fVector3D vec3, fVector3D color, fVector3D light, fVector3D normal)
+			Vertex(fVector4D pos, fVector3D color, fVector3D light, fVector3D normal)
 				:
-				pos(vec3),
+				pos(pos),
 				color(color),
 				light(light),
 				normal(normal)
@@ -474,7 +474,7 @@ namespace PixelShaders
 		class Vertex
 		{
 		public:
-			fVector3D pos;
+			fVector4D pos;
 			fVector3D light;
 			fVector3D normal;
 		public:
@@ -484,9 +484,9 @@ namespace PixelShaders
 				pos(vtx.pos),
 				normal(vtx.normal)
 			{}
-			Vertex(fVector3D vec3, fVector3D light, fVector3D normal)
+			Vertex(const fVector4D& pos, const fVector3D& light, const fVector3D& normal)
 				:
-				pos(vec3),
+				pos(pos),
 				light(light),
 				normal(normal)
 			{}
@@ -550,7 +550,7 @@ namespace PixelShaders
 		class Vertex
 		{
 		public:
-			fVector3D pos;
+			fVector4D pos;
 			Color color;
 			fVector3D light;
 			fVector3D normal;
@@ -562,7 +562,7 @@ namespace PixelShaders
 				color(vtx.color),
 				normal(vtx.normal)
 			{}
-			Vertex(fVector3D pos, Color color, fVector3D light, fVector3D normal)
+			Vertex(const fVector4D& pos, const Color& color, const fVector3D& light, const fVector3D& normal)
 				:
 				pos(pos),
 				color(color),
@@ -637,7 +637,7 @@ namespace PixelShaders
 		class Vertex
 		{
 		public:
-			fVector3D pos;
+			fVector4D pos;
 			fVector2D tpos;
 			fVector3D normal;
 			fVector3D World_Pos;
@@ -650,7 +650,7 @@ namespace PixelShaders
 				normal(vtx.normal),
 				World_Pos({ 0,0,0 })
 			{}
-			Vertex(fVector3D pos, fVector2D tpos, fVector3D n, fVector3D wpos)
+			Vertex(const fVector4D& pos, const fVector2D& tpos, const fVector3D& n, const fVector3D& wpos)
 				:
 				pos(pos),
 				tpos(tpos),
@@ -742,7 +742,7 @@ namespace PixelShaders
 		class Vertex
 		{
 		public:
-			fVector3D pos;
+			fVector4D pos;
 			fVector3D normal;
 			fVector3D World_Pos;
 		public:
@@ -752,9 +752,9 @@ namespace PixelShaders
 				normal(vtx.normal),
 				World_Pos({0,0,0})
 			{}
-			Vertex(fVector3D vec3, fVector3D normal, fVector3D wpos)
+			Vertex(const fVector4D& pos, const fVector3D& normal, const fVector3D& wpos)
 				:
-				pos(vec3),
+				pos(pos),
 				normal(normal),
 				World_Pos(wpos)
 			{}

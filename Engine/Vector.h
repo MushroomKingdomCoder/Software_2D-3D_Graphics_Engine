@@ -434,7 +434,7 @@ public:
 	type Z;
 	type W = (type)1;
 public:
-	Vector4D(type x, type y, type z, type w)
+	Vector4D(type x, type y, type z, type w = (type)1.0)
 		:
 		X(x),
 		Y(y),
@@ -508,6 +508,10 @@ public:
 	Vector4D operator -() const
 	{
 		return Vector4D(-X, -Y, -Z, -W);
+	}
+	Vector4D operator %(const Vector4D& vec4) const
+	{
+		return Vector4D(Vector3D<type>(*this) % Vector3D<type>(vec4), W);
 	}
 	type DotProduct(const Vector4D& vec) const
 	{

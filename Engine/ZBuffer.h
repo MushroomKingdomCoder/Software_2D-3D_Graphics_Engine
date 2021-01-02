@@ -4,8 +4,8 @@
 class ZBuffer
 {
 private:
-	const std::size_t Width;
-	const std::size_t Height;
+	const size_t Width;
+	const size_t Height;
 	std::unique_ptr<float[]> pZBuffer;
 
 public:

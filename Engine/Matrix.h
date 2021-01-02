@@ -44,25 +44,25 @@ public:
 	{
 		return *this = *this * mtx;
 	}
-	static Matrix2D Scale(const type& scl)
+	static constexpr Matrix2D Scale(const type& scl)
 	{
 		return Matrix2D{
 			scl,		type(0),
 			type(0),	scl
 		};
 	}
-	static Matrix2D Identity()
+	static constexpr Matrix2D Identity()
 	{
 		return Scale(type(1));
 	}
-	static Matrix2D FlipY()
+	static constexpr Matrix2D FlipY()
 	{
 		return Matrix2D{
 			type(1),	type(0),
 			type(0),	type(-1)
 		};
 	}
-	static Matrix2D Rotation(const type& radians)
+	static constexpr Matrix2D Rotation(const type& radians)
 	{
 		const auto cosR = type(cos(radians));
 		const auto sinR = type(sin(radians));
@@ -119,7 +119,7 @@ public:
 	{
 		return *this = mtx * *this;
 	}
-	static Matrix2Dplus Scale(const type& scl)
+	static constexpr Matrix2Dplus Scale(const type& scl)
 	{
 		return Matrix2Dplus{
 			scl,		type(0),	type(0),
@@ -127,11 +127,11 @@ public:
 			type(0),	type(0),	type(1)
 		};
 	}
-	static Matrix2Dplus Identity()
+	static constexpr Matrix2Dplus Identity()
 	{
 		return Scale(type(1));
 	}
-	static Matrix2Dplus FlipY()
+	static constexpr Matrix2Dplus FlipY()
 	{
 		return Matrix2Dplus{
 			type(1),	type(0),	type(0),
@@ -139,7 +139,7 @@ public:
 			type(0),	type(0),	type(1)
 		};
 	}
-	static Matrix2Dplus Rotation(const type& radians)
+	static constexpr Matrix2Dplus Rotation(const type& radians)
 	{
 		const auto cosR = type(cos(radians));
 		const auto sinR = type(sin(radians));
@@ -149,7 +149,7 @@ public:
 			type(0), type(0), type(1)
 		};
 	}
-	static Matrix2Dplus Translation(const type x, const type y)
+	static constexpr Matrix2Dplus Translation(const type x, const type y)
 	{
 		return Matrix2Dplus{
 			type(1),	type(0),	x,
@@ -157,7 +157,7 @@ public:
 			type(0),	type(0),	type(1)
 		};
 	}
-	static Matrix2Dplus Translation(const Vector2D<type>& tvec)
+	static constexpr Matrix2Dplus Translation(const Vector2D<type>& tvec)
 	{
 		return Matrix2Dplus{
 			type(1),	type(0),	tvec.X,
@@ -213,11 +213,11 @@ public:
 	{
 		return *this = mtx * *this;
 	}
-	static Matrix3D Identity()
+	static constexpr Matrix3D Identity()
 	{
 		return Scale(type(1));
 	}
-	static Matrix3D Scale(const type& scl)
+	static constexpr Matrix3D Scale(const type& scl)
 	{
 		return Matrix3D{
 			scl,		type(0),	type(0),
@@ -225,7 +225,7 @@ public:
 			type(0),	type(0),	scl
 		};
 	}
-	static Matrix3D ScaleIndependent(const type scl_x, const type scl_y, const type scl_z)
+	static constexpr Matrix3D ScaleIndependent(const type scl_x, const type scl_y, const type scl_z)
 	{
 		return Matrix3D{
 			scl_x,		type(0),	type(0),
@@ -233,7 +233,7 @@ public:
 			type(0),	type(0),	scl_z
 		};
 	}
-	static Matrix3D RotationX(const float radians)
+	static constexpr Matrix3D RotationX(const float radians)
 	{
 		const float cosR = (float)cos(radians);
 		const float sinR = (float)sin(radians);
@@ -243,7 +243,7 @@ public:
 			type(0),	sinR,		cosR
 		};
 	}
-	static Matrix3D RotationY(const float radians)
+	static constexpr Matrix3D RotationY(const float radians)
 	{
 		const float cosR = (float)cos(radians);
 		const float sinR = (float)sin(radians);
@@ -253,7 +253,7 @@ public:
 			-sinR,		type(0),	cosR
 		};
 	}
-	static Matrix3D RotationZ(const float radians)
+	static constexpr Matrix3D RotationZ(const float radians)
 	{
 		const float cosR = (float)cos(radians);
 		const float sinR = (float)sin(radians);
@@ -311,11 +311,11 @@ public:
 	{
 		return *this = mtx * *this;
 	}
-	static Matrix3Dplus Identity()
+	static constexpr Matrix3Dplus Identity()
 	{
 		return Scale(type(1));
 	}
-	static Matrix3Dplus Scale(const type& scl)
+	static constexpr Matrix3Dplus Scale(const type& scl)
 	{
 		return Matrix3Dplus{
 			scl,		type(0),	type(0),	type(0),
@@ -324,7 +324,7 @@ public:
 			type(0),	type(0),	type(0),	type(1)
 		};
 	}
-	static Matrix3Dplus ScaleIndependent(const type scl_x, const type scl_y, const type scl_z)
+	static constexpr Matrix3Dplus ScaleIndependent(const type scl_x, const type scl_y, const type scl_z)
 	{
 		return Matrix3Dplus{
 			scl_x,		type(0),	type(0),	type(0),
@@ -333,7 +333,7 @@ public:
 			type(0),	type(0),	type(0),	type(1)
 		};
 	}
-	static Matrix3Dplus ScaleIndependent(const Vector3D<type>& scl)
+	static constexpr Matrix3Dplus ScaleIndependent(const Vector3D<type>& scl)
 	{
 		return Matrix3Dplus{
 			scl.X,		type(0),	type(0),	type(0),
@@ -342,7 +342,7 @@ public:
 			type(0),	type(0),	type(0),	type(1)
 		};
 	}
-	static Matrix3Dplus RotationX(const float radians)
+	static constexpr Matrix3Dplus RotationX(const float radians)
 	{
 		const float cosR = (float)cos(radians);
 		const float sinR = (float)sin(radians);
@@ -353,7 +353,7 @@ public:
 			type(0),	type(0),	type(0),	type(1)
 		};
 	}
-	static Matrix3Dplus RotationY(const float radians)
+	static constexpr Matrix3Dplus RotationY(const float radians)
 	{
 		const float cosR = (float)cos(radians);
 		const float sinR = (float)sin(radians);
@@ -364,7 +364,7 @@ public:
 			type(0),	type(0),	type(0),	type(1)
 		};
 	}
-	static Matrix3Dplus RotationZ(const float radians)
+	static constexpr Matrix3Dplus RotationZ(const float radians)
 	{
 		const float cosR = (float)cos(radians);
 		const float sinR = (float)sin(radians);
@@ -375,7 +375,7 @@ public:
 			type(0),	type(0),	type(0),	type(1)
 		};
 	}
-	static Matrix3Dplus Translation(const type tx, const type ty, const type tz)
+	static constexpr Matrix3Dplus Translation(const type tx, const type ty, const type tz)
 	{
 		return Matrix3Dplus{
 			type(1),	type(0),	type(0),	tx,
@@ -384,7 +384,7 @@ public:
 			type(0),	type(0),	type(0),	type(1)
 		};
 	}
-	static Matrix3Dplus Translation(const Vector3D<type>& t)
+	static constexpr Matrix3Dplus Translation(const Vector3D<type>& t)
 	{
 		return Matrix3Dplus{
 			type(1),	type(0),	type(0),	t.X,
@@ -393,7 +393,20 @@ public:
 			type(0),	type(0),	type(0),	type(1)
 		};
 	}
+	static constexpr Matrix3Dplus Projection(type w, type h, type n, type f)
+	{
+		const type Q = f / (f - n);
+		return Matrix3Dplus{
+			(type)2 * n / w,	(type)0,			(type)0,			(type)0,
+			(type)0,			(type)2 * n / h,	(type)0,			(type)0,
+			(type)0,			(type)0,			Q,					-Q * n,
+			(type)0,			(type)0,			(type)1,			(type)0
+		};
+	}
 };
 using fMatrix3Dplus = Matrix3Dplus<float>;
 using dMatrix3Dplus = Matrix3Dplus<double>;
 using iMatrix3Dplus = Matrix3Dplus<int>;
+
+
+

@@ -65,7 +65,7 @@ public:
 		const fVector3D normal = pxl.normal.Normalized();
 		const fVector3D diffuse = lighting * std::max(-direction.DotProduct(normal), 0.0f);
 		const fVector3D reflected = normal * (direction.DotProduct(normal)) - direction;
-		const fVector3D specular_light = diffuse * specular * (float)pow(std::max(pxl.World_Pos.Normalized().DotProduct(direction), 0.0f), specular_power);
+		const fVector3D specular_light = lighting * specular * (float)pow(std::max(pxl.World_Pos.Normalized().DotProduct(direction), 0.0f), specular_power);
 		return color.GetHadamardProduct((diffuse + ambience + specular_light).Saturated());
 	}
 };
@@ -77,7 +77,9 @@ private:
 	const float linear_attenuation = 0.250f;
 	const float constant_attenuation = 0.125f;
 private:
-	fVector3D position = { 0,0,1 };
+	fVector3D Position = { 0,0,1 };
+	fMatrix3Dplus Projection = fMatrix3Dplus::Identity();
+	fVector3D position = Projection * Position;
 
 public: 
 	PointLight() = default;
@@ -95,11 +97,12 @@ public:
 	}
 	void Move(const fVector3D& translation)
 	{
-		position += translation;
+		Position += translation;
+		position = Projection * Position;
 	}
 	const fVector3D& GetPosition() const
 	{
-		return position;
+		return Position;
 	}
 	Color Illuminate(PerPixelLightingVertex pxl, const fVector3D& color) const override
 	{
@@ -110,8 +113,13 @@ public:
 		const fVector3D ldirection = delta_dist / distance;
 		const fVector3D diffuse = lighting * attenuation * std::max(ldirection.DotProduct(normal), 0.0f);
 		const fVector3D reflected = normal * (2 * delta_dist.DotProduct(normal)) - delta_dist;
-		const fVector3D specular_light = diffuse * specular * (float)pow(std::max(-pxl.World_Pos.Normalized().DotProduct(reflected / distance), 0.0f), specular_power);
+		const fVector3D specular_light = lighting * specular * (float)pow(std::max(-pxl.World_Pos.Normalized().DotProduct(reflected / distance), 0.0f), specular_power);
 		return color.GetHadamardProduct((diffuse + ambience + specular_light).Saturated());
+	}
+	void SetProjectionMatrix(const fMatrix3Dplus& proj)
+	{
+		Projection = proj;
+		position = Projection * Position;
 	}
 };
 

@@ -17,18 +17,14 @@ private:
 	float rot_y = 0.0f;
 	float rot_z = 0.0f;
 	fVector3D Position = { 0,0,0 };
-	fMatrix3Dplus Rotation = fMatrix3Dplus::Identity();
-	fMatrix3Dplus Transformation = fMatrix3Dplus::Identity();
 private:
-	fMatrix3Dplus RotationMatrix()
+	fMatrix3Dplus RotationMatrix() const
 	{
-		const auto RMatrix = fMatrix3Dplus(
+		return fMatrix3Dplus(
 			fMatrix3Dplus::RotationX(rot_x) *
 			fMatrix3Dplus::RotationY(rot_y) *
 			fMatrix3Dplus::RotationZ(rot_z) *
 			fMatrix3Dplus::Identity());
-		Transformation = fMatrix3Dplus::Translation(Position) * RMatrix * fMatrix3Dplus::Identity();
-		return RMatrix;
 	}
 
 public:
@@ -39,9 +35,7 @@ public:
 		rot_x(obj.GetXRotation()),
 		rot_y(obj.GetYRotation()),
 		rot_z(obj.GetZRotation()),
-		Position(obj.GetPosition()),
-		Rotation(obj.GetRotationMatrix()), 
-		Transformation(obj.GetTransformationMatrix())
+		Position(obj.GetPosition())
 	{}
 	Object3D(TriangleIndexer<vertex> triangle_model, fVector3D pos = { 0,0,0 })
 		:
@@ -49,9 +43,7 @@ public:
 		Position(pos),
 		rot_x(0.0f),
 		rot_y(0.0f),
-		rot_z(0.0f),
-		Rotation(fMatrix3Dplus::Identity()),
-		Transformation(fMatrix3Dplus::Translation(Position) * Rotation * fMatrix3Dplus::Identity())
+		rot_z(0.0f)
 	{}
 	const TriangleIndexer<vertex>& GetTriangleModel() const
 	{
@@ -85,7 +77,6 @@ public:
 	void RotateX(const float radians)
 	{
 		rot_x = angle_wrap(rot_x + radians);
-		Rotation = RotationMatrix();
 	}
 	float GetXRotation() const
 	{
@@ -94,7 +85,6 @@ public:
 	void RotateY(const float radians)
 	{
 		rot_y = angle_wrap(rot_y + radians);
-		Rotation = RotationMatrix();
 	}
 	float GetYRotation() const
 	{
@@ -103,33 +93,30 @@ public:
 	void RotateZ(const float radians)
 	{
 		rot_z = angle_wrap(rot_z + radians);
-		Rotation = RotationMatrix();
 	}
 	float GetZRotation() const
 	{
 		return rot_z;
 	}
-	const fMatrix3Dplus& GetRotationMatrix()
+	fMatrix3Dplus GetRotationMatrix()
 	{
-		return Rotation;
+		return RotationMatrix();
 	}
 	void Move(const fVector3D& d_vec3)
 	{
 		Position += d_vec3;
-		Transformation = fMatrix3Dplus::Translation(Position) * Rotation * fMatrix3Dplus::Identity();
 	}
 	void SetPosition(const fVector3D& pos)
 	{
 		Position = pos;
-		Transformation = fMatrix3Dplus::Translation(Position) * Rotation * fMatrix3Dplus::Identity();
 	}
 	const fVector3D& GetPosition() const
 	{
 		return Position;
 	}
-	const fMatrix3Dplus& GetTransformationMatrix() const
+	fMatrix3Dplus GetTransformationMatrix() const
 	{
-		return Transformation;
+		return fMatrix3Dplus::Translation(Position) * RotationMatrix();
 	}
 public:
 	static Object3D MakeCube(float size, fVector3D pos = { 0,0,0 }) {
@@ -311,11 +298,12 @@ public:
 	}
 	static Object3D MakeSphere(float radius, unsigned int depth, fVector3D pos = { 0,0,0 })
 	{
-		std::vector<mpsVERTEX> vertexes;
+		std::vector<dVertex> vertexes;
 		std::vector<Triangle<size_t>> triangles;
 		initialize_sphere(vertexes, triangles, depth);
 		for (auto& v : vertexes) {
 			v.pos *= radius;
+			v.pos.W = 1.0f;
 		}
 		return mObject3D(TriangleIndexer<mpsVERTEX>(vertexes, triangles), pos);
 	}
