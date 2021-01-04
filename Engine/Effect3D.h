@@ -26,7 +26,7 @@ public:
 
 namespace EffectDefaults
 {
-	// default vertex class, just a pos vector
+	// default vertex class, just a pos vector & a normal
 	class Vertex
 	{
 	public:

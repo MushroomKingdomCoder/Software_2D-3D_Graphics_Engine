@@ -76,7 +76,7 @@ private:
 			DrawFlatBottomTriangle(*pV0, *pV1, *pV2);
 		}
 		else {
-			// Find Splitting GSOut
+			// Find Splitting Vertex
 			const float alpha = (pV1->pos.Y - pV0->pos.Y) / (pV2->pos.Y - pV0->pos.Y);
 			const GSOut s_vtx = GSOut(*pV0).InterpolatedTo(*pV2, alpha);
 
