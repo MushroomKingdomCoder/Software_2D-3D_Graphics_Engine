@@ -142,7 +142,7 @@ public:
 	{
 		return *this = ((vec * (*this * vec)) * 2.0f) - *this;
 	}
-	type DistanceBetweenLine(Vector2D p0, Vector2D p1)
+	type DistanceBetweenLine(Vector2D p0, Vector2D p1) const
 	{
 		const type a = p0.Y - p1.Y;
 		const type b = -(p0.X - p1.X);
@@ -150,13 +150,13 @@ public:
 		const type distance = abs(a * X + b * Y + c) / sqrt(pow(a, 2) + pow(b, 2));
 		return distance;
 	}
-	Vector2D GetLineNormal(std::pair<Vector2D, Vector2D> Line)
+	Vector2D GetLineNormal(std::pair<Vector2D, Vector2D> Line) const
 	{
 		Vector2D v = Vector2D(Line.second - Line.first).Normalize();
 		v.RotateN90();
 		return v;
 	}
-	std::vector<Vector2D> GetPointsBetween(Vector2D p1)
+	std::vector<Vector2D> GetPointsBetween(Vector2D p1) const
 	{
 		std::vector<Vector2D> LinePoints;
 		Vector2D p0 = *this;
@@ -232,7 +232,7 @@ public:
 	}
 };
 using fVector2D = Vector2D<float>;
-using dvector2D = Vector2D<double>;
+using dVector2D = Vector2D<double>;
 using iVector2D = Vector2D<int>;
 
 

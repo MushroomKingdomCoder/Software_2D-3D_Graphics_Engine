@@ -26,7 +26,7 @@ public:
 
 namespace EffectDefaults
 {
-	// default vertex class, just a pos vector
+	// default vertex class, just a pos vector & a normal
 	class Vertex
 	{
 	public:
@@ -80,7 +80,7 @@ namespace EffectDefaults
 		{
 			return *this = *this / scale;
 		}
-		Vertex InterpolatedTo(const Vertex& vtx, const float alpha)
+		Vertex InterpolatedTo(const Vertex& vtx, const float alpha) const
 		{
 			return Vertex(pos.InterpolatedTo(vtx.pos, alpha), normal);
 		}
@@ -135,7 +135,7 @@ namespace EffectDefaults
 		}
  	};
 
-	// default vertex shader, no special effects (assumes per-pixel lighted verticies)
+	// default vertex shader, no special effects (assumes per-pixel lighted verticies w/World_Pos storage)
 	template <class vertex>
 	class VertexShader_PPS
 	{
