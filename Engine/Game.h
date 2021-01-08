@@ -65,7 +65,7 @@ private:
 	/********************************/
 	/*  User Variables              */
 	/********************************/
-	const fMatrix3Dplus Projection = fMatrix3Dplus::Projection(4, 2.25f, 1, 10);
+	const fMatrix3Dplus Projection = fMatrix3Dplus::Projection(2, 1.125f, 0.5f, 25);
 	Timer Clock;
 	ZBuffer zBuffer;
 	NDCBuffer ndc;

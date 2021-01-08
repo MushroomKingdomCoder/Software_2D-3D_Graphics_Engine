@@ -40,9 +40,84 @@ private:
 			const auto& p1 = vtxes[t.v1];
 			const auto& p2 = vtxes[t.v2];
 			if (((fVector3D(p1.pos - p0.pos) % fVector3D(p2.pos - p0.pos)).DotProduct(fVector3D(p0.pos - eye_pos)) < 0.0f)) {
-				ProcessTriangle(Effect.GeometryShader(p0, p1, p2, id));
+				CullAndClipTriangle(Effect.GeometryShader(p0, p1, p2, id));
 			}
 			++id;
+		}
+	}
+	void CullAndClipTriangle(Triangle<GSOut>& triangle)
+	{
+		if (triangle.v0.pos.X > triangle.v0.pos.W &&
+			triangle.v1.pos.X > triangle.v1.pos.W &&
+			triangle.v2.pos.X > triangle.v2.pos.W) {
+			return;
+		}
+		if (triangle.v0.pos.X < -triangle.v0.pos.W &&
+			triangle.v1.pos.X < -triangle.v1.pos.W &&
+			triangle.v2.pos.X < -triangle.v2.pos.W) {
+			return;
+		}
+		if (triangle.v0.pos.Y > triangle.v0.pos.W &&
+			triangle.v1.pos.Y > triangle.v1.pos.W &&
+			triangle.v2.pos.Y > triangle.v2.pos.W) {
+			return;
+		}
+		if (triangle.v0.pos.Y < -triangle.v0.pos.W &&
+			triangle.v1.pos.Y < -triangle.v1.pos.W &&
+			triangle.v2.pos.Y < -triangle.v2.pos.W) {
+			return;
+		}
+		if (triangle.v0.pos.Z > triangle.v0.pos.W &&
+			triangle.v1.pos.Z > triangle.v1.pos.W &&
+			triangle.v2.pos.Z > triangle.v2.pos.W) {
+			return;
+		}
+		if (triangle.v0.pos.Z < 0.0f &&
+			triangle.v1.pos.Z < 0.0f &&
+			triangle.v2.pos.Z < 0.0f) {
+			return;
+		}
+		const auto ClipCaseOne = [this](const GSOut& v0, const GSOut& v1, const GSOut& v2)
+		{
+			const float alpha0 = (-v0.pos.Z) / (v2.pos.Z - v0.pos.Z);
+			const float alpha1 = (-v1.pos.Z) / (v2.pos.Z - v1.pos.Z);
+			const GSOut nv0 = v0.InterpolatedTo(v2, alpha0);
+			const GSOut nv1 = v1.InterpolatedTo(v2, alpha1);
+			ProcessTriangle(Triangle<GSOut>(nv0, nv1, v2));
+		};
+		const auto ClipCaseTwo = [this](const GSOut& v0, const GSOut& v1, const GSOut& v2)
+		{
+			const float alpha0 = (-v0.pos.Z) / (v1.pos.Z - v0.pos.Z);
+			const float alpha1 = (-v0.pos.Z) / (v2.pos.Z - v0.pos.Z);
+			const GSOut v0a = v0.InterpolatedTo(v1, alpha0);
+			const GSOut v0b = v0.InterpolatedTo(v2, alpha1);
+			ProcessTriangle(Triangle<GSOut>(v0b, v1, v0a));
+			ProcessTriangle(Triangle<GSOut>(v0b, v2, v1));
+		};
+		if (triangle.v0.pos.Z < 0.0f) {
+			if (triangle.v1.pos.Z < 0.0f) {
+				ClipCaseOne(triangle.v0, triangle.v1, triangle.v2);
+			}
+			else if (triangle.v2.pos.Z < 0.0f) {
+				ClipCaseOne(triangle.v0, triangle.v2, triangle.v1);
+			}
+			else {
+				ClipCaseTwo(triangle.v0, triangle.v1, triangle.v2);
+			}
+		}
+		else if (triangle.v1.pos.Z < 0.0f) {
+			if (triangle.v2.pos.Z < 0.0f) {
+				ClipCaseOne(triangle.v1, triangle.v2, triangle.v0);
+			}
+			else {
+				ClipCaseTwo(triangle.v1, triangle.v0, triangle.v2);
+			}
+		}
+		else if (triangle.v2.pos.Z < 0.0f) {
+			ClipCaseTwo(triangle.v2, triangle.v0, triangle.v1);
+		}
+		else {
+			ProcessTriangle(triangle);
 		}
 	}
 	void ProcessTriangle(Triangle<GSOut>& triangle)
@@ -109,22 +184,20 @@ private:
 	void DrawFlatTriangle(const GSOut& p0, const GSOut& p1, const GSOut& p2, const GSOut& dv0, const GSOut& dv1, GSOut edge1)
 	{
 		GSOut edge0 = p0;
-		const int yStart = (int)ceil(p0.pos.Y - 0.5f);
-		const int yEnd = (int)ceil(p2.pos.Y - 0.5f);
+		const int yStart = std::max((int)ceil(p0.pos.Y - 0.5f), 0);
+		const int yEnd = std::min((int)ceil(p2.pos.Y - 0.5f), Graphics::ScreenHeight);
 		edge0 += dv0 * (float(yStart) + 0.5f - p0.pos.Y);
 		edge1 += dv1 * (float(yStart) + 0.5f - p0.pos.Y);
 		for (int y = yStart; y < yEnd; ++y, edge0 += dv0, edge1 += dv1) {
-			const int xStart = (int)ceil(edge0.pos.X - 0.5f);
-			const int xEnd = (int)ceil(edge1.pos.X - 0.5f);
+			const int xStart = std::max((int)ceil(edge0.pos.X - 0.5f), 0);
+			const int xEnd = std::min((int)ceil(edge1.pos.X - 0.5f), Graphics::ScreenWidth);
 			GSOut dvl = (edge1 - edge0) / (edge1.pos.X - edge0.pos.X);
 			GSOut ipos = edge0 + dvl * (float(xStart) + 0.5f - edge0.pos.X);
 			for (int x = xStart; x < xEnd; ++x, ipos += dvl) {
-				if (gfx.ScreenRect().ContainsPoint(iVector2D{ x,y })) {
-					if (zBuffer.TestAndSet(x, y, ipos.pos.Z)) {
-						const float zCorrection = 1.0f / ipos.pos.W;
-						const GSOut pCorrectionVtx = ipos * zCorrection;
-						gfx.PutPixel(x, y, Effect.PixelShader(pCorrectionVtx));
-					}
+				if (zBuffer.TestAndSet(x, y, ipos.pos.Z)) {
+					const float zCorrection = 1.0f / ipos.pos.W;
+					const GSOut pCorrectionVtx = ipos * zCorrection;
+					gfx.PutPixel(x, y, Effect.PixelShader(pCorrectionVtx));
 				}
 			}
 		}

@@ -403,6 +403,19 @@ public:
 			(type)0,			(type)0,			(type)1,			(type)0
 		};
 	}
+	static constexpr Matrix3Dplus FOVProjection(type fov, type aspect, type n, type f)
+	{
+		const type fov_radians = fov * type(M_PI / 180.0);
+		const type w = (type)1.0 / (type)tan(fov_radians / 2.0);
+		const type h = w / aspect;
+		const type Q = f / (f - n);
+		return Matrix3Dplus{
+			w,			(type)0,	(type)0,	(type)0,
+			(type)0,	h,			(type)0,	(type)0,
+			(type)0,	(type)0,	Q,			-Q * n,
+			(type)0,	(type)0,	(type)1,	(type)0
+		};
+	}
 };
 using fMatrix3Dplus = Matrix3Dplus<float>;
 using dMatrix3Dplus = Matrix3Dplus<double>;
