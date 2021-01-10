@@ -1,6 +1,7 @@
 #pragma once
 #include "Effect3D.h"
 #include "PixelShaders.h"
+#include "Camera3D.h"
 #include "Math.h"
 
 namespace VertexShaders
@@ -9,6 +10,8 @@ namespace VertexShaders
 	class Pos2Color
 	{
 	private:
+		fMatrix3Dplus ObjectTransformation = fMatrix3Dplus::Identity();
+		fMatrix3Dplus CameraTransformation = fMatrix3Dplus::Identity();
 		fMatrix3Dplus WorldTransformation = fMatrix3Dplus::Identity();
 		fMatrix3Dplus Projection = fMatrix3Dplus::Projection(2, 2, 1, 100);
 		fMatrix3Dplus ScreenTransformation = Projection * WorldTransformation;
@@ -17,11 +20,13 @@ namespace VertexShaders
 		typedef typename dVertex VertexIn;
 		typedef typename vbpsVERTEX VertexOut;
 	public:
-		Pos2Color(const fMatrix3Dplus& w_transform, const fMatrix3Dplus& proj)
+		Pos2Color(const fMatrix3Dplus& o_transform, const fMatrix3Dplus& proj, const fMatrix3Dplus c_transform = fMatrix3Dplus::Identity())
 			:
-			WorldTransformation(w_transform),
+			CameraTransformation(c_transform),
+			ObjectTransformation(o_transform),
+			WorldTransformation(CameraTransformation * ObjectTransformation),
 			Projection(proj),
-			ScreenTransformation(Projection* WorldTransformation)
+			ScreenTransformation(Projection * WorldTransformation)
 		{}
 		VertexOut operator ()(VertexIn vtx_in)
 		{
@@ -34,9 +39,16 @@ namespace VertexShaders
 			Projection = projection;
 			ScreenTransformation = Projection * WorldTransformation;
 		}
-		void SetWorldTransformationMatrix(const fMatrix3Dplus& w_transform)
+		void SetObjectTransformationMatrix(const fMatrix3Dplus& o_transform)
 		{
-			WorldTransformation = w_transform;
+			ObjectTransformation = o_transform;
+			WorldTransformation = CameraTransformation * ObjectTransformation;
+			ScreenTransformation = Projection * WorldTransformation;
+		}
+		void SetCameraTransformation(const fMatrix3Dplus& c_transform)
+		{
+			CameraTransformation = c_transform;
+			WorldTransformation = CameraTransformation * ObjectTransformation;
 			ScreenTransformation = Projection * WorldTransformation;
 		}
 		const fMatrix3Dplus& GetProjectionMatrix() const
@@ -50,6 +62,8 @@ namespace VertexShaders
 	class SineWave
 	{
 	private:
+		fMatrix3Dplus ObjectTransformation = fMatrix3Dplus::Identity();
+		fMatrix3Dplus CameraTransformation = fMatrix3Dplus::Identity();
 		fMatrix3Dplus WorldTransformation = fMatrix3Dplus::Identity();
 		fMatrix3Dplus Projection = fMatrix3Dplus::Projection(2, 2, 1, 100);
 		fMatrix3Dplus ScreenTransformation = Projection * WorldTransformation;
@@ -63,9 +77,11 @@ namespace VertexShaders
 		typedef typename vertex VertexIn;
 		typedef typename vertex VertexOut;
 	public:
-		SineWave(const fMatrix3Dplus& w_transform, const fMatrix3Dplus& proj, float ampl, float hz, float wv)
+		SineWave(const fMatrix3Dplus& o_transform, const fMatrix3Dplus& proj, float ampl, float hz, float wv, const fMatrix3Dplus& c_transform = fMatrix3Dplus::Identity())
 			:
-			WorldTransformation(w_transform),
+			ObjectTransformation(o_transform),
+			CameraTransformation(c_transform),
+			WorldTransformation(CameraTransformation * ObjectTransformation),
 			Projection(proj),
 			ScreenTransformation(Projection * WorldTransformation),
 			amplitude(ampl),
@@ -90,9 +106,16 @@ namespace VertexShaders
 			Projection = projection;
 			ScreenTransformation = Projection * WorldTransformation;
 		}
-		void SetWorldTransformationMatrix(const fMatrix3Dplus& w_transform)
+		void SetObjectTransformationMatrix(const fMatrix3Dplus& o_transform)
 		{
-			WorldTransformation = w_transform;
+			ObjectTransformation = o_transform;
+			WorldTransformation = CameraTransformation * ObjectTransformation;
+			ScreenTransformation = Projection * WorldTransformation;
+		}
+		void SetCameraTransformation(const fMatrix3Dplus& c_transform)
+		{
+			CameraTransformation = c_transform;
+			WorldTransformation = CameraTransformation * ObjectTransformation;
 			ScreenTransformation = Projection * WorldTransformation;
 		}
 		const fMatrix3Dplus& GetProjectionMatrix() const
@@ -112,6 +135,8 @@ namespace VertexShaders
 	class SineWave_PPS
 	{
 	private:
+		fMatrix3Dplus ObjectTransformation = fMatrix3Dplus::Identity();
+		fMatrix3Dplus CameraTransformation = fMatrix3Dplus::Identity();
 		fMatrix3Dplus WorldTransformation = fMatrix3Dplus::Identity();
 		fMatrix3Dplus Projection = fMatrix3Dplus::Projection(2, 2, 1, 100);
 		fMatrix3Dplus ScreenTransformation = Projection * WorldTransformation;
@@ -125,9 +150,11 @@ namespace VertexShaders
 		typedef typename vertex VertexIn;
 		typedef typename vertex VertexOut;
 	public:
-		SineWave_PPS(const fMatrix3Dplus& w_transform, const fMatrix3Dplus& proj, float ampl, float hz, float wv)
+		SineWave_PPS(const fMatrix3Dplus& o_transform, const fMatrix3Dplus& proj, float ampl, float hz, float wv, const fMatrix3Dplus& c_transform = fMatrix3Dplus::Identity())
 			:
-			WorldTransformation(w_transform),
+			ObjectTransformation(o_transform),
+			CameraTransformation(c_transform),
+			WorldTransformation(CameraTransformation * ObjectTransformation),
 			Projection(proj),
 			ScreenTransformation(Projection * WorldTransformation),
 			amplitude(ampl),
@@ -153,9 +180,16 @@ namespace VertexShaders
 			Projection = projection;
 			ScreenTransformation = Projection * WorldTransformation;
 		}
-		void SetWorldTransformationMatrix(const fMatrix3Dplus& w_transform)
+		void SetObjectTransformationMatrix(const fMatrix3Dplus& o_transform)
 		{
-			WorldTransformation = w_transform;
+			ObjectTransformation = o_transform;
+			WorldTransformation = CameraTransformation * ObjectTransformation;
+			ScreenTransformation = Projection * WorldTransformation;
+		}
+		void SetCameraTransformation(const fMatrix3Dplus& c_transform)
+		{
+			CameraTransformation = c_transform;
+			WorldTransformation = CameraTransformation * ObjectTransformation;
 			ScreenTransformation = Projection * WorldTransformation;
 		}
 		const fMatrix3Dplus& GetProjectionMatrix() const

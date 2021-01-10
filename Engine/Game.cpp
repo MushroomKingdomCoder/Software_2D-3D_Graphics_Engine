@@ -48,7 +48,14 @@ void Game::UpdateModel()
 	const float time = Clock.GetEllapsed();
 	//effect.VertexShader.UpdateTime(time);
 	zBuffer.Clear();
-	// Object Controls
+	UpdateObjects(time);
+	UpdateLights(time);
+	UpdateCamera(time);
+}
+
+void Game::UpdateObjects(const float time)
+{
+	// Object0 Controls
 	if (wnd.kbd.KeyIsPressed('Q')) {
 		Object0.RotateX(d_rot * time);
 	}
@@ -73,7 +80,6 @@ void Game::UpdateModel()
 	if (wnd.kbd.KeyIsPressed(VK_NUMPAD2)) {
 		Object0.Move({ 0,0,-0.5f * time });
 	}
-	// ! experimental !
 	if (wnd.kbd.KeyIsPressed(VK_NUMPAD8)) {
 		Object0.Move({ 0,0.5f * time,0 });
 	}
@@ -86,8 +92,11 @@ void Game::UpdateModel()
 	if (wnd.kbd.KeyIsPressed(VK_NUMPAD6)) {
 		Object0.Move({ 0.5f * time,0,0 });
 	}
-	effect0.VertexShader.SetWorldTransformationMatrix(Object0.GetTransformationMatrix());
+	effect0.VertexShader.SetObjectTransformationMatrix(Object0.GetTransformationMatrix());
+}
 
+void Game::UpdateLights(const float time)
+{
 	// Directional Lighting Controls
 	//if (wnd.kbd.KeyIsPressed('1')) {
 	//	light.RotateLightX(angle_wrap(d_rot * time));
@@ -98,7 +107,7 @@ void Game::UpdateModel()
 	//if (wnd.kbd.KeyIsPressed('3')) {
 	//	light.RotateLightZ(angle_wrap(d_rot * time));
 	//}
-
+	
 	// Point Lighting Controls
 	if (wnd.kbd.KeyIsPressed('T')) {
 		Light.Move({ 0,0.5f * time,0 });
@@ -118,8 +127,47 @@ void Game::UpdateModel()
 	if (wnd.kbd.KeyIsPressed('Y')) {
 		Light.Move({ 0,0,0.5f * time });
 	}
-	light.SetPosition(Light.GetPosition());
-	effectL.VertexShader.SetWorldTransformationMatrix(Light.GetTransformationMatrix());
+	light.SetPosition(Camera.GetCameraTransformationMatrix() * Light.GetPosition());
+	effectL.VertexShader.SetObjectTransformationMatrix(Light.GetTransformationMatrix());
+}
+
+void Game::UpdateCamera(const float time)
+{
+	if (wnd.mouse.LeftIsPressed() && MouseIsEngaged == false) {
+		start_pos = wnd.mouse.GetPos();
+		MouseIsEngaged = true;
+	}
+	if (MouseIsEngaged) {
+		cur_pos = wnd.mouse.GetPos();
+		const iVector2D delta_pos = cur_pos - start_pos;
+		Camera.RotateX(delta_pos.Y * vTrack * time * float(M_PI / 180.0f) * cam_rotation_spd);
+		Camera.RotateY(delta_pos.X * hTrack * time * float(M_PI / 180.0f) * cam_rotation_spd);
+		start_pos = cur_pos;
+		if (!wnd.mouse.LeftIsPressed()) {
+			MouseIsEngaged = false;
+		}
+	}
+	if (wnd.kbd.KeyIsPressed('I')) {
+		Camera.Move(fVector3D(0, 1, 0) * time * cam_pan_spd);
+	}
+	if (wnd.kbd.KeyIsPressed('J')) {
+		Camera.Move(fVector3D(-1, 0, 0) * time * cam_pan_spd);
+	}
+	if (wnd.kbd.KeyIsPressed('K')) {
+		Camera.Move(fVector3D(0, -1, 0) * time * cam_pan_spd);
+	}
+	if (wnd.kbd.KeyIsPressed('L')) {
+		Camera.Move(fVector3D(1, 0, 0) * time * cam_pan_spd);
+	}
+	if (wnd.kbd.KeyIsPressed('U')) {
+		Camera.Move(fVector3D(0, 0, 1) * time * cam_pan_spd);
+	}
+	if (wnd.kbd.KeyIsPressed('O')) {
+		Camera.Move(fVector3D(0, 0, -1) * time * cam_pan_spd);
+	}
+	effect0.VertexShader.SetCameraTransformation(Camera.GetCameraTransformationMatrix());
+	effect1.VertexShader.SetCameraTransformation(Camera.GetCameraTransformationMatrix());
+	effectL.VertexShader.SetCameraTransformation(Camera.GetCameraTransformationMatrix());
 }
 
 void Game::ComposeFrame()

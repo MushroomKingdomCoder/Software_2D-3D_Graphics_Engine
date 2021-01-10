@@ -41,6 +41,7 @@
 #include "Lighting.h"
 #include "Effect3D.h"
 #include "Pipeline3D.h"
+#include "Camera3D.h"
 #include "ZBuffer.h"
 #include "Camera.h"
 #include "Math.h"
@@ -56,6 +57,9 @@ public:
 private:
 	void ComposeFrame();
 	void UpdateModel();
+	void UpdateObjects(const float time);
+	void UpdateLights(const float time);
+	void UpdateCamera(const float time);
 	/********************************/
 	/*  User Functions              */
 	/********************************/
@@ -66,13 +70,23 @@ private:
 	/*  User Variables              */
 	/********************************/
 	static constexpr float aspect_ratio = 1.7777777777f;
-	static constexpr float hFOV = 150.0f;
-	static constexpr float vFOV = hFOV * aspect_ratio;
+	static constexpr float hFOV = 100.0f;
+	static constexpr float vFOV = hFOV / aspect_ratio;
+	static constexpr float hTrack = hFOV / Graphics::ScreenWidth;
+	static constexpr float vTrack = vFOV / Graphics::ScreenHeight;
+	static constexpr float cam_rotation_spd = 100.0f;
+	static constexpr float cam_pan_spd = 1.0f;
+	// Camera
+	bool MouseIsEngaged = false;
+	iVector2D start_pos;
+	iVector2D cur_pos;
+	// *******
 	const fMatrix3Dplus Projection = fMatrix3Dplus::HFOVProjection(hFOV, aspect_ratio, 0.5f, 25);
 	Timer Clock;
 	ZBuffer zBuffer;
 	NDCBuffer ndc;
 	PointLight light;
+	Camera3D Camera;
 
 	// Object 0
 	tObject3D Object0 = tObject3D::MakeSkinnedSphere( 1, 15, 15, { 0,0,6 }).AddNormals();
@@ -88,6 +102,7 @@ private:
 	mObject3D Light = mObject3D::MakeSphere(0.05f, 1, { 0,0,3 });
 	mEFFECT_ONLY effectL{ {Colors::White},{Light.GetTransformationMatrix(), Projection},{} };
 	PIPE_mONLY pipe3dL;
+
 	// control vars
 	static constexpr float d_rot = M_PI;
 };

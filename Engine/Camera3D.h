@@ -53,25 +53,9 @@ public:
 			fMatrix3Dplus::RotationZ(rot_z) *
 			fMatrix3Dplus::Identity();
 	}
-	const fMatrix3Dplus& GetOrientationMatrix() const
-	{
-		return orientation;
-	}
-	const fMatrix3Dplus GetInverseOrientationMatrix() const
-	{
-		return !orientation;
-	}
 	void Move(const fVector3D& translation)
 	{
-		position += orientation * translation;
-	}
-	const fVector3D& GetPosition() const
-	{
-		return position;
-	}
-	const fVector3D GetInverseTranslation() const
-	{
-		return -position;
+		position += translation;
 	}
 	const fMatrix3Dplus GetCameraTransformationMatrix() const
 	{
@@ -80,6 +64,7 @@ public:
 			!orientation * fMatrix3Dplus::Identity();
 	}
 };
+
 
 
 
