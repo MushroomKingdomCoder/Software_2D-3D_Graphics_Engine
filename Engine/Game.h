@@ -65,7 +65,10 @@ private:
 	/********************************/
 	/*  User Variables              */
 	/********************************/
-	const fMatrix3Dplus Projection = fMatrix3Dplus::Projection(2, 1.125f, 0.5f, 25);
+	static constexpr float aspect_ratio = 1.7777777777f;
+	static constexpr float hFOV = 150.0f;
+	static constexpr float vFOV = hFOV * aspect_ratio;
+	const fMatrix3Dplus Projection = fMatrix3Dplus::HFOVProjection(hFOV, aspect_ratio, 0.5f, 25);
 	Timer Clock;
 	ZBuffer zBuffer;
 	NDCBuffer ndc;

@@ -213,6 +213,16 @@ public:
 	{
 		return *this = mtx * *this;
 	}
+	Matrix3D operator !() const
+	{
+		Matrix3D mat_inv;
+		for (int j = 0; j < 3; ++j) {
+			for (int k = 0; k < 3; ++k) {
+				mat_inv.Cell[j][k] = Cell[k][j];
+			}
+		}
+		return mat_inv;
+	}
 	static constexpr Matrix3D Identity()
 	{
 		return Scale(type(1));
@@ -311,6 +321,16 @@ public:
 	{
 		return *this = mtx * *this;
 	}
+	Matrix3Dplus operator !() const
+	{
+		Matrix3Dplus mat_inv;
+		for (int j = 0; j < 4; ++j) {
+			for (int k = 0; k < 4; ++k) {
+				mat_inv.Cell[j][k] = Cell[k][j];
+			}
+		}
+		return mat_inv;
+	}
 	static constexpr Matrix3Dplus Identity()
 	{
 		return Scale(type(1));
@@ -403,11 +423,11 @@ public:
 			(type)0,			(type)0,			(type)1,			(type)0
 		};
 	}
-	static constexpr Matrix3Dplus FOVProjection(type fov, type aspect, type n, type f)
+	static constexpr Matrix3Dplus HFOVProjection(type hfov, type aspect, type n, type f)
 	{
-		const type fov_radians = fov * type(M_PI / 180.0);
-		const type w = (type)1.0 / (type)tan(fov_radians / 2.0);
-		const type h = w / aspect;
+		const type hfov_radians = hfov * type(M_PI / 180.0);
+		const type w = (type)1.0 / (type)tan(hfov_radians / 2.0);
+		const type h = w * aspect;
 		const type Q = f / (f - n);
 		return Matrix3Dplus{
 			w,			(type)0,	(type)0,	(type)0,
