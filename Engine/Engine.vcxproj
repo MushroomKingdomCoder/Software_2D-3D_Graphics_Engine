@@ -259,7 +259,25 @@
     <Image Include="%40Ascii Font - (12x8)(8x8).bmp" />
     <Image Include="%40link90x90.bmp" />
     <Image Include="Chili.ico" />
+    <Image Include="die.bmp" />
+    <Image Include="fire0.bmp" />
+    <Image Include="fire1.bmp" />
+    <Image Include="floor0.bmp" />
+    <Image Include="floor1.bmp" />
+    <Image Include="floor2.bmp" />
+    <Image Include="glass0.bmp" />
+    <Image Include="gold0.bmp" />
     <Image Include="oot.bmp" />
+    <Image Include="pokeball0.bmp" />
+    <Image Include="pokeball1.bmp" />
+    <Image Include="USflag0.bmp" />
+    <Image Include="USflag1.bmp" />
+    <Image Include="wall0.bmp" />
+    <Image Include="wall1.bmp" />
+    <Image Include="wall2.bmp" />
+    <Image Include="wall3.bmp" />
+    <Image Include="wall4.bmp" />
+    <Image Include="wall5.bmp" />
     <Image Include="wood.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

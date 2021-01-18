@@ -207,6 +207,60 @@
     <Image Include="wood.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="floor0.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="floor1.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="floor2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="glass0.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="gold0.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="pokeball0.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="pokeball1.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="USflag0.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="USflag1.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="wall0.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="wall1.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="wall2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="wall3.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="wall4.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="wall5.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="die.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="fire0.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="fire1.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc">

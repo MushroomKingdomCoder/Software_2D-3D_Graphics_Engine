@@ -71,7 +71,7 @@ public:
 	{
 		return !(*this == color);
 	}
-	Color operator -()
+	Color operator -() const
 	{
 		return Color(
 			255 - GetR(),

@@ -81,22 +81,39 @@ private:
 	iVector2D start_pos;
 	iVector2D cur_pos;
 	// *******
-	const fMatrix3Dplus Projection = fMatrix3Dplus::HFOVProjection(hFOV, aspect_ratio, 0.5f, 25);
+	const fMatrix3Dplus Projection = fMatrix3Dplus::HFOVProjection(hFOV, aspect_ratio, 0.5f, 50);
 	Timer Clock;
 	ZBuffer zBuffer;
 	NDCBuffer ndc;
-	PointLight light;
+	PointLight p_light;
+	DirectionalLight d_light;
+	const std::vector<Light*> lights = { &p_light, &d_light };
 	Camera3D Camera;
 
 	// Object 0
 	tObject3D Object0 = tObject3D::MakeSkinnedSphere( 1, 15, 15, { 0,0,6 }).AddNormals();
-	pptEFFECT_ONLY effect0{ {"pokeball0.bmp",light},{Object0.GetTransformationMatrix(), Projection},{} };
+	pptEFFECT_ONLY effect0{ {"pokeball0.bmp",lights},{Object0.GetTransformationMatrix(), Projection},{} };
 	PIPE_pptONLY pipe3d0;
 
 	// Object 1
-	tObject3D Object1 = tObject3D::MakeSkinnedCube(2, { -4,0.25f,4 }).AddNormals();
-	pptEFFECT_ONLY effect1{ {"wood.bmp",light},{Object1.GetTransformationMatrix(), Projection}, {} };
+	tObject3D Object1 = tObject3D::MakeSkinnedCube(2, { -4,0.25f,4 });
+	pptEFFECT_ONLY effect1{ {"wood.bmp",lights},{Object1.GetTransformationMatrix(), Projection},{} };
 	PIPE_pptONLY pipe3d1;
+
+	// Object 2
+	//tObject3D Object2 = tObject3D::MakeTeselatedSkinnedPlane({ 20,8 }, 2.5f, 1, { 5,-4,4 });
+	//PPT_SW_EFFECT effect2{ {"USflag1.bmp",lights},{Object2.GetTransformationMatrix(), Projection, 0.05f, 5, 10},{} };
+	//PIPE_PPT_SW pipe3d2;
+
+	// Floor
+	//tObject3D Floor = tObject3D::MakeSkinnedPlane(20, 20, { 0,-9.99f,0 });
+	//pptEFFECT_ONLY effectF{ {"floor0.bmp",lights},{Floor.GetTransformationMatrix(), Projection},{} };
+	//PIPE_pptONLY pipe3dF;
+
+	// Room
+	tObject3D Room = tObject3D::MakeHollowTexturedCube(20, { 0,0,0 });
+	pptEFFECT_ONLY effectR{ {"wall1.bmp",lights},{Room.GetTransformationMatrix(), Projection},{} };
+	PIPE_pptONLY pipe3dR;
 	
 	// graphical point-light object
 	mObject3D Light = mObject3D::MakeSphere(0.05f, 1, { 0,0,3 });

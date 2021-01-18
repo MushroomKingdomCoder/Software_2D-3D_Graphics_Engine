@@ -25,8 +25,8 @@ template <typename type>
 class Vector2D
 {
 public:
-	type X;
-	type Y;
+	type X = (type)0.0;
+	type Y = (type)1.0;
 public:
 	Vector2D() = default;
 	Vector2D(const type x, const type y)
@@ -247,9 +247,9 @@ template <typename type>
 class Vector3D
 {
 public:
-	type X;
-	type Y;
-	type Z = type(1);
+	type X = (type)0.0;
+	type Y = (type)0.0;
+	type Z = (type)1.0;
 
 public:
 	Vector3D() = default;
@@ -429,11 +429,12 @@ template <typename type>
 class Vector4D
 {
 public:
-	type X;
-	type Y;
-	type Z;
-	type W = (type)1;
+	type X = (type)0.0;
+	type Y = (type)0.0;
+	type Z = (type)0.0;
+	type W = (type)1.0;
 public:
+	Vector4D() = default;
 	Vector4D(type x, type y, type z, type w = (type)1.0)
 		:
 		X(x),

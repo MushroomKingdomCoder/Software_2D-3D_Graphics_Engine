@@ -191,8 +191,8 @@ private:
 		for (int y = yStart; y < yEnd; ++y, edge0 += dv0, edge1 += dv1) {
 			const int xStart = std::max((int)ceil(edge0.pos.X - 0.5f), 0);
 			const int xEnd = std::min((int)ceil(edge1.pos.X - 0.5f), Graphics::ScreenWidth);
-			GSOut dvl = (edge1 - edge0) / (edge1.pos.X - edge0.pos.X);
-			GSOut ipos = edge0 + dvl * (float(xStart) + 0.5f - edge0.pos.X);
+			const GSOut dvl = (edge1 - edge0) / (edge1.pos.X - edge0.pos.X);
+			GSOut ipos = edge0 + (dvl * (float(xStart) + 0.5f - edge0.pos.X));
 			for (int x = xStart; x < xEnd; ++x, ipos += dvl) {
 				if (zBuffer.TestAndSet(x, y, ipos.pos.Z)) {
 					const float zCorrection = 1.0f / ipos.pos.W;

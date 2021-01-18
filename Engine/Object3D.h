@@ -119,94 +119,174 @@ public:
 		return fMatrix3Dplus::Translation(Position) * RotationMatrix();
 	}
 public:
-	static Object3D MakeCube(float size, fVector3D pos = { 0,0,0 }) {
+	static constexpr Object3D MakeCube(float size, fVector3D pos = { 0,0,0 }) {
 		const float s = size / 2.0f;
 		return mObject3D(
 			TriangleIndexer<mpsVERTEX>{
 			std::vector<mpsVERTEX>{
-				{-s, -s, s}, { s,-s,s }, { s,s,s }, { -s,s,s },
-				{ -s,-s,-s }, { s,-s,-s }, { s,s,-s }, { -s,s,-s } },
-				std::vector<Triangle<size_t>>{
-					{1, 2, 0}, { 3,0,2 },
-					{ 0,3,4 }, { 7,4,3 },
-					{ 0,4,1 }, { 5,1,4 },
-					{ 1,5,2 }, { 6,2,5 },
-					{ 5,4,6 }, { 7,6,4 },
-					{ 2,6,3 }, { 7,3,6 } }
+				{ {-s,s,s},{0,0,1} },	{ {s,s,s},{0,0,1} },	{ {-s,-s,s},{0,0,1} },	{ {s,-s,s},{0,0,1} },
+				{ {-s,s,-s},{-1,0,0} },	{ {-s,s,s},{-1,0,0} },	{ {-s,-s,-s},{-1,0,0} },{ {-s,-s,s},{-1,0,0} },
+				{ {-s,-s,s},{0,-1,0} },	{ {s,-s,s},{0,-1,0} },	{ {-s,-s,-s},{0,-1,0} },{ {s,-s,-s},{0,-1,0} },
+				{ {s,s,s},{1,0,0} },	{ {s,s,-s},{1,0,0} },	{ {s,-s,s},{1,0,0} },	{ {s,-s,-s},{1,0,0} },
+				{ {s,s,-s},{0,0,-1} },	{ {-s,s,-s},{0,0,-1} },	{ {s,-s,-s},{0,0,-1} },	{ {-s,-s,-s},{0,0,-1} },
+				{ {-s,s,-s},{0,1,0} },	{ {s,s,-s},{0,1,0} },	{ {-s,s,s},{0,1,0} },	{ {s,s,s},{0,1,0} } },
+			std::vector<Triangle<size_t>>{
+				{ 0,2,1 }, { 3,1,2 },
+				{ 5,4,7 }, { 6,7,4 },
+				{ 8,10,9 }, { 11,9,10 },
+				{ 14,15,12 }, { 13,12,15 },
+				{ 19,17,18 }, { 16,18,17 },
+				{ 20,22,21 }, { 23,21,22 }}
 		}, pos);
 	}
-	static Object3D MakeTexturedCube(float size, fVector3D pos = { 0,0,0 })
+	static constexpr Object3D MakeTexturedCube(float size, fVector3D pos = { 0,0,0 })
 	{
 		const float s = size / 2.0f;
 		return tObject3D(
 			TriangleIndexer<tpsVERTEX>{
 			std::vector<tpsVERTEX>{
-			{-s,s,s,0,0},	{s,s,s,1,0},	{-s,-s,s,0,1},	{s,-s,s,1,1},
-			{-s,s,-s,0,0},	{-s,s,s,1,0},	{-s,-s,-s,0,1},	{-s,-s,s,1,1},
-			{-s,-s,s,0,0},	{s,-s,s,1,0},	{-s,-s,-s,0,1},	{s,-s,-s,1,1},
-			{s,s,s,0,0},	{s,s,-s,1,0},	{s,-s,s,0,1},	{s,-s,-s,1,1},
-			{s,s,-s,0,0},	{-s,s,-s,1,0},	{s,-s,-s,0,1},	{-s,-s,-s,1,1},
-			{-s,s,-s,0,0},	{s,s,-s,1,0},	{-s,s,s,0,1},	{s,s,s,1,1} },
+				{ {-s,s,s},{0,0},{0,0,1} },		{ {s,s,s},{1,0},{0,0,1} },		{ {-s,-s,s},{0,1},{0,0,1} },	{ {s,-s,s},{1,1},{0,0,1} },
+				{ {-s,s,-s},{0,0},{-1,0,0} },	{ {-s,s,s},{1,0},{-1,0,0} },	{ {-s,-s,-s},{0,1},{-1,0,0} },	{ {-s,-s,s},{1,1},{-1,0,0} },
+				{ {-s,-s,s},{0,0},{0,-1,0} },	{ {s,-s,s},{1,0},{0,-1,0} },	{ {-s,-s,-s},{0,1},{0,-1,0} },	{ {s,-s,-s},{1,1},{0,-1,0} },
+				{ {s,s,s},{0,0},{1,0,0} },		{ {s,s,-s},{1,0},{1,0,0} },		{ {s,-s,s},{0,1},{1,0,0} },		{ {s,-s,-s},{1,1},{1,0,0} },
+				{ {s,s,-s},{0,0},{0,0,-1} },	{ {-s,s,-s},{1,0},{0,0,-1} },	{ {s,-s,-s},{0,1},{0,0,-1} },	{ {-s,-s,-s},{1,1},{0,0,-1} },
+				{ {-s,s,-s},{0,0},{0,1,0} },	{ {s,s,-s},{1,0},{0,1,0} },		{ {-s,s,s},{0,1},{0,1,0} },		{ {s,s,s},{1,1},{0,1,0} }},
 			std::vector<Triangle<size_t>>{
-			{0,2,1},	{3,1,2},
-			{5,4,7},	{6,7,4},
-			{8,10,9},	{11,9,10},
-			{14,15,12},	{13,12,15},
-			{19,17,18},	{16,18,17},
-			{20,22,21},	{23,21,22} } },
-			pos);
+				{0,2,1},	{3,1,2},
+				{5,4,7},	{6,7,4},
+				{8,10,9},	{11,9,10},
+				{14,15,12},	{13,12,15},
+				{19,17,18},	{16,18,17},
+				{20,22,21},	{23,21,22} 
+			} }, pos);
 	}
-	static Object3D MakeSkinnedCube(float size, fVector3D pos = { 0,0,0 })
+	static constexpr Object3D MakeSkinnedCube(float size, fVector3D pos = { 0,0,0 })
 	{
 		const float s = size / 2.0f;
 		return tObject3D(
 			TriangleIndexer<tpsVERTEX>{
 			std::vector<tpsVERTEX>{
-								{-s,s,s,0.25f,0.0f},	{-s,s,-s,0.50f,0.0f},
-			{-s,s,s,0.0f,0.33f},{-s,-s,s,0.25f,0.33f},	{-s,-s,-s,0.50f,0.33f},	{-s,s,-s,0.75f,0.33f},	{-s,s,s,1.0f,0.33f},
-			{s,s,s,0.0f,0.66f},	{s,-s,s,0.25f,0.66f},	{s,-s,-s,0.50f,0.66f},	{s,s,-s,0.75f,0.66f},	{s,s,s,1.0f,0.66f},
-								{s,s,s,0.25f,1.0f},		{s,s,-s,0.50f,1.0f} },
+				{ {-s,s,s},{0,0.33f},{0,0,1} },			{ {s,s,s},{0,0.67f},{0,0,1} },			{ {-s,-s,s},{0.25f,0.33f},{0,0,1} },	{ {s,-s,s},{0.25f,0.67f},{0,0,1} },
+				{ {-s,s,-s},{0.5f,0},{-1,0,0} },		{ {-s,s,s},{0.25f,0},{-1,0,0} },		{ {-s,-s,-s},{0.5f,0.33f},{-1,0,0} },	{ {-s,-s,s},{0.25f,0.33f},{-1,0,0} },
+				{ {-s,-s,s},{0.25f,0.33f},{0,-1,0} },	{ {s,-s,s},{0.25f,0.67f},{0,-1,0} },	{ {-s,-s,-s},{0.5f,0.33f},{0,-1,0} },	{ {s,-s,-s},{0.5f,0.67f},{0,-1,0} },
+				{ {s,s,s},{0.25f,1},{1,0,0} },			{ {s,s,-s},{0.5f,1},{1,0,0} },			{ {s,-s,s},{0.25f,0.67f},{1,0,0} },		{ {s,-s,-s},{0.5f,0.67f},{1,0,0} },
+				{ {s,s,-s},{0.75f,0.67f},{0,0,-1} },	{ {-s,s,-s},{0.75f,0.33f},{0,0,-1} },	{ {s,-s,-s},{0.5f,0.67f},{0,0,-1} },	{ {-s,-s,-s},{0.5f,0.33f},{0,0,-1} },
+				{ {-s,s,-s},{0.75,0.33f},{0,1,0} },		{ {s,s,-s},{0.75f,0.67f},{0,1,0} },		{ {-s,s,s},{1,0.33f},{0,1,0} },			{ {s,s,s},{1,0.67f},{0,1,0} },},
 			std::vector<Triangle<size_t>>{
-									{0,1,3},	{4,3,1},
-			{2,3,7},	{8,7,3},	{3,4,8},	{9,8,4},	{4,5,9},	{10,9,5},	{5,6,10},	{10,9,5},	{5,6,10},	{11,10,6},
-									{8,9,12},	{13,12,9} } },
-			pos);
+				{ 0,2,1 },		{ 3,1,2 },
+				{ 5,4,7 },		{ 6,7,4 },
+				{ 8,10,9 },		{ 11,9,10 },
+				{ 14,15,12 },	{ 13,12,15 },
+				{ 19,17,18 },	{ 16,18,17 },
+				{ 20,22,21 },	{ 23,21,22 }
+			} }, pos);
 	}
-	static Object3D MakeWrappingCube(float size, fVector3D pos = { 0,0,0 })
-	{
-
-		const float s = size / 2.0f;
-		return tObject3D(
-			TriangleIndexer<tpsVERTEX>{
-			std::vector<tpsVERTEX>{
-							{-s,s,s,1,0},	{-s,s,-s,2,0},
-			{-s,s,s,0,1},	{-s,-s,s,1,1},	{-s,-s,-s,2,1},	{-s,s,-s,3,1},	{-s,s,s,4,1},
-			{s,s,s,0,2},	{s,-s,s,1,2},	{s,-s,-s,2,2},	{s,s,-s,3,2},	{s,s,s,4,2},
-							{s,s,s,1,3},	{s,s,-s,2,3} },
-			std::vector<Triangle<size_t>>{
-									{0,1,3},	{4,3,1},
-			{2,3,7},	{8,7,3},	{3,4,8},	{9,8,4},	{4,5,9},	{10,9,5},	{5,6,10},	{10,9,5},	{5,6,10},	{11,10,6},
-									{8,9,12},	{13,12,9} } },
-			pos);
-	}
-	static Object3D MakeBlendingCube(float size, std::vector<Color> colors, fVector3D pos = { 0,0,0 })
+	static constexpr Object3D MakeHollowCube(float size, fVector3D pos = { 0,0,0 })
 	{
 		const float s = size / 2.0f;
-		return vbObject3D(
-		TriangleIndexer<vbpsVERTEX>{
-		std::vector<vbpsVERTEX>{
-		{-s,-s,s,colors[0]},	{s,-s,s,colors[1]},		{s,s,s,colors[2]},		{-s,s,s,colors[3]},
-		{-s,-s,-s,colors[4]},	{s,-s,-s,colors[5]},	{s,s,-s,colors[6]},		{-s,s,-s,colors[7]} },
-		std::vector<Triangle<size_t>>{
-		{1,2,0},	{3,0,2},
-		{0,3,4},	{7,4,3},
-		{0,4,1},	{5,1,4},
-		{1,5,2},	{6,2,5},
-		{5,4,6},	{7,6,4},
-		{2,6,3},	{7,3,6} } 
+		return mObject3D(
+			TriangleIndexer<mpsVERTEX>{
+			std::vector<mpsVERTEX>{
+				{ {-s,s,s},{0,0,1} },	{ {s,s,s},{0,0,1} },	{ {-s,-s,s},{0,0,1} },	{ {s,-s,s},{0,0,1} },
+				{ {-s,s,-s},{-1,0,0} },	{ {-s,s,s},{-1,0,0} },	{ {-s,-s,-s},{-1,0,0} },{ {-s,-s,s},{-1,0,0} },
+				{ {-s,-s,s},{0,-1,0} },	{ {s,-s,s},{0,-1,0} },	{ {-s,-s,-s},{0,-1,0} },{ {s,-s,-s},{0,-1,0} },
+				{ {s,s,s},{1,0,0} },	{ {s,s,-s},{1,0,0} },	{ {s,-s,s},{1,0,0} },	{ {s,-s,-s},{1,0,0} },
+				{ {s,s,-s},{0,0,-1} },	{ {-s,s,-s},{0,0,-1} },	{ {s,-s,-s},{0,0,-1} },	{ {-s,-s,-s},{0,0,-1} },
+				{ {-s,s,-s},{0,1,0} },	{ {s,s,-s},{0,1,0} },	{ {-s,s,s},{0,1,0} },	{ {s,s,s},{0,1,0} },
+					// duplicates
+				{ {-s,s,s},{0,0,-1} },	{ {s,s,s},{0,0,-1} },	{ {-s,-s,s},{0,0,-1} },	{ {s,-s,s},{0,0,-1} },
+				{ {-s,s,-s},{1,0,0} },	{ {-s,s,s},{1,0,0} },	{ {-s,-s,-s},{1,0,0} },	{ {-s,-s,s},{1,0,0} },
+				{ {-s,-s,s},{0,1,0} },	{ {s,-s,s},{0,1,0} },	{ {-s,-s,-s},{0,1,0} },	{ {s,-s,-s},{0,1,0} },
+				{ {s,s,s},{-1,0,0} },	{ {s,s,-s},{-1,0,0} },	{ {s,-s,s},{-1,0,0} },	{ {s,-s,-s},{-1,0,0} },
+				{ {s,s,-s},{0,0,1} },	{ {-s,s,-s},{0,0,1} },	{ {s,-s,-s},{0,0,1} },	{ {-s,-s,-s},{0,0,1} },
+				{ {-s,s,-s},{0,-1,0} },	{ {s,s,-s},{0,-1,0} },	{ {-s,s,s},{0,-1,0} },	{ {s,s,s},{0,-1,0} } },
+			std::vector<Triangle<size_t>>{
+				{ 0,2,1 }, { 3,1,2 },
+				{ 5,4,7 }, { 6,7,4 },
+				{ 8,10,9 }, { 11,9,10 },
+				{ 14,15,12 }, { 13,12,15 },
+				{ 19,17,18 }, { 16,18,17 },
+				{ 20,22,21 }, { 23,21,22 },
+					// duplicates
+				{ 24,25,26 }, { 27,26,25 },
+				{ 29,31,28 }, { 30,28,31 },
+				{ 32,33,34 }, { 35,34,33 },
+				{ 38,36,39 }, { 37,39,36 },
+				{ 43,42,41 }, { 40,41,42 },
+				{ 44,45,46 }, { 47,46,45 } }
 		}, pos);
 	}
-	static Object3D MakeTeselatedPlane(const iVector2D teselations, const float width, const float depth, fVector3D pos = { 0,0,0 })
+	static constexpr Object3D MakeHollowTexturedCube(float size, fVector3D pos = { 0,0,0 })
+	{
+		const float s = size / 2.0f;
+		return tObject3D(
+			TriangleIndexer<tpsVERTEX>{
+			std::vector<tpsVERTEX>{
+				{ {-s,s,s},{0,0},{0,0,1} },		{ {s,s,s},{1,0},{0,0,1} },		{ {-s,-s,s},{0,1},{0,0,1} },	{ {s,-s,s},{1,1},{0,0,1} },
+				{ {-s,s,-s},{0,0},{-1,0,0} },	{ {-s,s,s},{1,0},{-1,0,0} },	{ {-s,-s,-s},{0,1},{-1,0,0} },	{ {-s,-s,s},{1,1},{-1,0,0} },
+				{ {-s,-s,s},{0,0},{0,-1,0} },	{ {s,-s,s},{1,0},{0,-1,0} },	{ {-s,-s,-s},{0,1},{0,-1,0} },	{ {s,-s,-s},{1,1},{0,-1,0} },
+				{ {s,s,s},{0,0},{1,0,0} },		{ {s,s,-s},{1,0},{1,0,0} },		{ {s,-s,s},{0,1},{1,0,0} },		{ {s,-s,-s},{1,1},{1,0,0} },
+				{ {s,s,-s},{0,0},{0,0,-1} },	{ {-s,s,-s},{1,0},{0,0,-1} },	{ {s,-s,-s},{0,1},{0,0,-1} },	{ {-s,-s,-s},{1,1},{0,0,-1} },
+				{ {-s,s,-s},{0,0},{0,1,0} },	{ {s,s,-s},{1,0},{0,1,0} },		{ {-s,s,s},{0,1},{0,1,0} },		{ {s,s,s},{1,1},{0,1,0} },
+					// duplicates
+				{ {-s,s,s},{0,0},{0,0,-1} },	{ {s,s,s},{1,0},{0,0,-1} },		{ {-s,-s,s},{0,1},{0,0,-1} },	{ {s,-s,s},{1,1},{0,0,-1} },
+				{ {-s,s,-s},{0,0},{1,0,0} },	{ {-s,s,s},{1,0},{1,0,0} },		{ {-s,-s,-s},{0,1},{1,0,0} },	{ {-s,-s,s},{1,1},{1,0,0} },
+				{ {-s,-s,s},{0,0},{0,1,0} },	{ {s,-s,s},{1,0},{0,1,0} },		{ {-s,-s,-s},{0,1},{0,1,0} },	{ {s,-s,-s},{1,1},{0,1,0} },
+				{ {s,s,s},{0,0},{-1,0,0} },		{ {s,s,-s},{1,0},{-1,0,0} },	{ {s,-s,s},{0,1},{-1,0,0} },	{ {s,-s,-s},{1,1},{-1,0,0} },
+				{ {s,s,-s},{0,0},{0,0,1} },		{ {-s,s,-s},{1,0},{0,0,1} },	{ {s,-s,-s},{0,1},{0,0,1} },	{ {-s,-s,-s},{1,1},{0,0,1} },
+				{ {-s,s,-s},{0,0},{0,-1,0} },	{ {s,s,-s},{1,0},{0,-1,0} },	{ {-s,s,s},{0,1},{0,-1,0} },	{ {s,s,s},{1,1},{0,-1,0} } },
+			std::vector<Triangle<size_t>>{
+				{ 0,2,1 }, { 3,1,2 },
+				{ 5,4,7 }, { 6,7,4 },
+				{ 8,10,9 }, { 11,9,10 },
+				{ 14,15,12 }, { 13,12,15 },
+				{ 19,17,18 }, { 16,18,17 },
+				{ 20,22,21 }, { 23,21,22 },
+					// duplicates
+				{ 24,25,26 }, { 27,26,25 },
+				{ 29,31,28 }, { 30,28,31 },
+				{ 32,33,34 }, { 35,34,33 },
+				{ 38,36,39 }, { 37,39,36 },
+				{ 43,42,41 }, { 40,41,42 },
+				{ 44,45,46 }, { 47,46,45 }
+			} }, pos);
+	}
+	static constexpr Object3D MakeHollowSkinnedCube(float size, fVector3D pos = { 0,0,0 })
+	{
+		const float s = size / 2.0f;
+		return tObject3D(
+			TriangleIndexer<tpsVERTEX>{
+			std::vector<tpsVERTEX>{
+				{ {-s,s,s},{0,0.33f},{0,0,1} },			{ {s,s,s},{0,0.67f},{0,0,1} },			{ {-s,-s,s},{0.25f,0.33f},{0,0,1} },	{ {s,-s,s},{0.25f,0.67f},{0,0,1} },
+				{ {-s,s,-s},{0.5f,0},{-1,0,0} },		{ {-s,s,s},{0.25f,0},{-1,0,0} },		{ {-s,-s,-s},{0.5f,0.33f},{-1,0,0} },	{ {-s,-s,s},{0.25f,0.33f},{-1,0,0} },
+				{ {-s,-s,s},{0.25f,0.33f},{0,-1,0} },	{ {s,-s,s},{0.25f,0.67f},{0,-1,0} },	{ {-s,-s,-s},{0.5f,0.33f},{0,-1,0} },	{ {s,-s,-s},{0.5f,0.67f},{0,-1,0} },
+				{ {s,s,s},{0.25f,1},{1,0,0} },			{ {s,s,-s},{0.5f,1},{1,0,0} },			{ {s,-s,s},{0.25f,0.67f},{1,0,0} },		{ {s,-s,-s},{0.5f,0.67f},{1,0,0} },
+				{ {s,s,-s},{0.75f,0.67f},{0,0,-1} },	{ {-s,s,-s},{0.75f,0.33f},{0,0,-1} },	{ {s,-s,-s},{0.5f,0.67f},{0,0,-1} },	{ {-s,-s,-s},{0.5f,0.33f},{0,0,-1} },
+				{ {-s,s,-s},{0.75,0.33f},{0,1,0} },		{ {s,s,-s},{0.75f,0.67f},{0,1,0} },		{ {-s,s,s},{1,0.33f},{0,1,0} },			{ {s,s,s},{1,0.67f},{0,1,0} },
+					// duplicates
+				{ {-s,s,s},{0,0.33f},{0,0,-1} },		{ {s,s,s},{0,0.67f},{0,0,-1} },			{ {-s,-s,s},{0.25f,0.33f},{0,0,-1} },	{ {s,-s,s},{0.25f,0.67f},{0,0,-1} },
+				{ {-s,s,-s},{0.5f,0},{1,0,0} },			{ {-s,s,s},{0.25f,0},{1,0,0} },			{ {-s,-s,-s},{0.5f,0.33f},{1,0,0} },	{ {-s,-s,s},{0.25f,0.33f},{1,0,0} },
+				{ {-s,-s,s},{0.25f,0.33f},{0,1,0} },	{ {s,-s,s},{0.25f,0.67f},{0,1,0} },		{ {-s,-s,-s},{0.5f,0.33f},{0,1,0} },	{ {s,-s,-s},{0.5f,0.67f},{0,1,0} },
+				{ {s,s,s},{0.25f,1},{-1,0,0} },			{ {s,s,-s},{0.5f,1},{-1,0,0} },			{ {s,-s,s},{0.25f,0.67f},{-1,0,0} },	{ {s,-s,-s},{0.5f,0.67f},{-1,0,0} },
+				{ {s,s,-s},{0.75f,0.67f},{0,0,1} },		{ {-s,s,-s},{0.75f,0.33f},{0,0,1} },	{ {s,-s,-s},{0.5f,0.67f},{0,0,1} },		{ {-s,-s,-s},{0.5f,0.33f},{0,0,1} },
+				{ {-s,s,-s},{0.75,0.33f},{0,-1,0} },	{ {s,s,-s},{0.75f,0.67f},{0,-1,0} },	{ {-s,s,s},{1,0.33f},{0,-1,0} },		{ {s,s,s},{1,0.67f},{0,-1,0} } },
+			std::vector<Triangle<size_t>>{
+				{ 0,2,1 }, { 3,1,2 },
+				{ 5,4,7 }, { 6,7,4 },
+				{ 8,10,9 }, { 11,9,10 },
+				{ 14,15,12 }, { 13,12,15 },
+				{ 19,17,18 }, { 16,18,17 },
+				{ 20,22,21 }, { 23,21,22 },
+					// duplicates
+				{ 24,25,26 }, { 27,26,25 },
+				{ 29,31,28 }, { 30,28,31 },
+				{ 32,33,34 }, { 35,34,33 },
+				{ 38,36,39 }, { 37,39,36 },
+				{ 43,42,41 }, { 40,41,42 },
+				{ 44,45,46 }, { 47,46,45 }
+			} }, pos);
+	}
+	static constexpr Object3D MakeTeselatedPlane(const iVector2D teselations, const float width, const float depth, fVector3D pos = { 0,0,0 })
 	{
 		std::vector<mpsVERTEX> vtxes;
 		std::vector<Triangle<size_t>> triangles;
@@ -231,10 +311,11 @@ public:
 		vtxes.emplace_back(mpsVERTEX(cur_w, 0, cur_d));
 
 		// underside
-		for (auto v : vtxes) {
-			vtxes.emplace_back(v);
-		}
 		const unsigned int vStart = teselations.X * teselations.Y;
+		for (size_t i = 0u; i < vStart; ++i) {
+			vtxes.emplace_back();
+			vtxes.back() = vtxes.at(i);
+		}
 		for (int y = 0; y < teselations.Y - 1; ++y, cur_d += delta_d) {
 			for (int x = 0; x < teselations.X - 1; ++x, cur_w += delta_w) {
 				const int cur_vtx = vStart + (y * teselations.X + x);
@@ -251,7 +332,7 @@ public:
 			TriangleIndexer<mpsVERTEX>{
 			vtxes, triangles}, pos);
 	}
-	static Object3D MakeTeselatedSkinnedPlane(const iVector2D teselations, const float width, const float depth, fVector3D pos = { 0,0,0 })
+	static constexpr Object3D MakeTeselatedSkinnedPlane(const iVector2D teselations, const float width, const float depth, fVector3D pos = { 0,0,0 })
 	{
 		std::vector<tpsVERTEX> vtxes;
 		std::vector<Triangle<size_t>> triangles;
@@ -262,24 +343,26 @@ public:
 		for (int y = 0; y < teselations.Y - 1; ++y, cur_d += delta_d) {
 			float cur_w = 0.0f;
 			for (int x = 0; x < teselations.X - 1; ++x, cur_w += delta_w) {
-				vtxes.emplace_back(tpsVERTEX(cur_w, 0, cur_d, cur_w / width, 1.0f - (cur_d / depth)));
+				vtxes.emplace_back(tpsVERTEX({ cur_w, 0, cur_d }, { cur_w / width, 1.0f - (cur_d / depth) }, { 0,1,0 }));
 				const int cur_vtx = y * teselations.X + x;
 				triangles.emplace_back(cur_vtx + 1, cur_vtx + teselations.X + 1, cur_vtx);
 				triangles.emplace_back(cur_vtx + teselations.X, cur_vtx, cur_vtx + teselations.X + 1);
 			} cur_w += delta_w;
-			vtxes.emplace_back(tpsVERTEX(cur_w, 0, cur_d, cur_w / width, 1.0f - (cur_d / depth)));
+			vtxes.emplace_back(tpsVERTEX({ cur_w, 0, cur_d }, { cur_w / width, 1.0f - (cur_d / depth) }, { 0,1,0 }));
 		} cur_d += delta_d;
 		float cur_w = 0.0f;
 		for (int x = 0; x < teselations.X - 1; ++x, cur_w += delta_w) {
-			vtxes.emplace_back(tpsVERTEX(cur_w, 0, cur_d, cur_w / width, 1.0f - (cur_d / depth)));
+			vtxes.emplace_back(tpsVERTEX({ cur_w, 0, cur_d }, { cur_w / width, 1.0f - (cur_d / depth) }, { 0,1,0 }));
 		} cur_w += delta_w;
-		vtxes.emplace_back(tpsVERTEX(cur_w, 0, cur_d, cur_w / width, 1.0f - (cur_d / depth)));
+		vtxes.emplace_back(tpsVERTEX({ cur_w, 0, cur_d }, { cur_w / width, 1.0f - (cur_d / depth) }, { 0,1,0 }));
 
 		// underside
-		for (auto v : vtxes) {
-			vtxes.emplace_back(v);
-		}
 		const unsigned int vStart = teselations.X * teselations.Y;
+		for (size_t i = 0; i < vStart; ++i) {
+			vtxes.emplace_back();
+			const tpsVERTEX v = vtxes.at(i);
+			vtxes.back() = tpsVERTEX(v.pos, v.tpos, -v.normal);
+		}
 		for (int y = 0; y < teselations.Y - 1; ++y, cur_d += delta_d) {
 			for (int x = 0; x < teselations.X - 1; ++x, cur_w += delta_w) {
 				const int cur_vtx = vStart + (y * teselations.X + x);
@@ -296,7 +379,15 @@ public:
 			TriangleIndexer<tpsVERTEX>{
 			vtxes, triangles}, pos);
 	}
-	static Object3D MakeSphere(float radius, unsigned int depth, fVector3D pos = { 0,0,0 })
+	static constexpr Object3D MakePlane(const float width, const float depth, fVector3D pos = { 0,0,0 })
+	{
+		return MakeTeselatedPlane({ 2,2 }, width, depth, pos);
+	}
+	static constexpr Object3D MakeSkinnedPlane(const float width, const float depth, fVector3D pos = { 0,0,0 })
+	{
+		return MakeTeselatedSkinnedPlane({ 2,2 }, width, depth, pos);
+	}
+	static constexpr Object3D MakeSphere(float radius, unsigned int depth, fVector3D pos = { 0,0,0 })
 	{
 		std::vector<dVertex> vertexes;
 		std::vector<Triangle<size_t>> triangles;
@@ -307,7 +398,7 @@ public:
 		}
 		return mObject3D(TriangleIndexer<mpsVERTEX>(vertexes, triangles), pos);
 	}
-	static Object3D MakeSkinnedSphere(float radius, unsigned int latDiv, unsigned int longDiv, fVector3D pos = { 0,0,0 })
+	static constexpr Object3D MakeSkinnedSphere(float radius, unsigned int latDiv, unsigned int longDiv, fVector3D pos = { 0,0,0 })
 	{
 		const fVector3D base = { 0.0f,0.0f,radius };
 		const float lattitudeAngle = (float)M_PI / latDiv;
@@ -329,7 +420,7 @@ public:
 		}
 		return tObject3D(TriangleIndexer<tpsVERTEX>(vertices, triangles), pos);
 	}
-	static Object3D MakeNonIcosphere(float radius, unsigned int latDiv, unsigned int longDiv, fVector3D pos = { 0,0,0 })
+	static constexpr Object3D MakeNonIcosphere(float radius, unsigned int latDiv, unsigned int longDiv, fVector3D pos = { 0,0,0 })
 	{
 		const fVector3D base = { 0.0f,0.0f,radius };
 		const float lattitudeAngle = (float)M_PI / latDiv;
@@ -363,33 +454,12 @@ public:
 		triangles.emplace_back(Triangle<size_t>(calcIdx(latDiv - 2, 0), calcIdx(latDiv - 2, longDiv - 1), iSouthPole));
 		return mObject3D(TriangleIndexer<mpsVERTEX>(vertices, triangles), pos);
 	}
-	public:
-		static inline Object3D GenerateModelWithNormals(Object3D obj)
-		{
-			Object3D<vertex> Object = obj;
-			TriangleIndexer<vertex>& t_model = Object.GetTriangleModel();
-			for (vertex& v : t_model.Verticies) {
-				std::vector<Triangle<vertex>> vtriangles;
-				for (const auto& t : t_model.Triangles) {
-					const vertex& v0 = t_model.Verticies[t.v0];
-					const vertex& v1 = t_model.Verticies[t.v1];
-					const vertex& v2 = t_model.Verticies[t.v2];
-					if (v0 == v || v1 == v || v2 == v) {
-						vtriangles.emplace_back(v0, v1, v2);
-					}
-				}
-				fVector3D total_faces_unnormal = { 0,0,0 };
-				for (const Triangle<vertex>& vt : vtriangles) {
-					total_faces_unnormal += fVector3D((vt.v1.pos - vt.v0.pos) % (vt.v2.pos - vt.v0.pos));
-				}
-				v.normal = total_faces_unnormal.Normalized();
-			}
-			return Object;
-		}
 };
 typedef Object3D<tpsVERTEX> tObject3D;
 typedef Object3D<vbpsVERTEX> vbObject3D;
 typedef Object3D<mpsVERTEX> mObject3D;
+
+
 
 
 

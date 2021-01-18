@@ -10,11 +10,10 @@ namespace VertexShaders
 	class Pos2Color
 	{
 	private:
-		fMatrix3Dplus ObjectTransformation = fMatrix3Dplus::Identity();
-		fMatrix3Dplus CameraTransformation = fMatrix3Dplus::Identity();
-		fMatrix3Dplus WorldTransformation = fMatrix3Dplus::Identity();
-		fMatrix3Dplus Projection = fMatrix3Dplus::Projection(2, 2, 1, 100);
-		fMatrix3Dplus ScreenTransformation = Projection * WorldTransformation;
+		fMatrix3Dplus ObjectTransformation;
+		fMatrix3Dplus CameraTransformation;
+		fMatrix3Dplus Projection;
+		fMatrix3Dplus ScreenTransformation;
 
 	public:
 		typedef typename dVertex VertexIn;
@@ -22,34 +21,31 @@ namespace VertexShaders
 	public:
 		Pos2Color(const fMatrix3Dplus& o_transform, const fMatrix3Dplus& proj, const fMatrix3Dplus c_transform = fMatrix3Dplus::Identity())
 			:
-			CameraTransformation(c_transform),
 			ObjectTransformation(o_transform),
-			WorldTransformation(CameraTransformation * ObjectTransformation),
+			CameraTransformation(c_transform),
 			Projection(proj),
-			ScreenTransformation(Projection * WorldTransformation)
+			ScreenTransformation(Projection * CameraTransformation * ObjectTransformation)
 		{}
 		VertexOut operator ()(VertexIn vtx_in)
 		{
 			vtx_in.pos = ScreenTransformation * vtx_in.pos;
-			vtx_in.normal = WorldTransformation * fVector4D(vtx_in.normal, 0.0f);
+			vtx_in.normal = ObjectTransformation * fVector4D(vtx_in.normal, 0.0f);
 			return VertexOut(vtx_in.pos, vec3_abs(fVector3D(vtx_in.pos)) * 255.0f, vtx_in.normal);
 		}
 		void SetProjectionMatrix(const fMatrix3Dplus& projection)
 		{
 			Projection = projection;
-			ScreenTransformation = Projection * WorldTransformation;
+			ScreenTransformation = Projection * CameraTransformation * ObjectTransformation;
 		}
 		void SetObjectTransformationMatrix(const fMatrix3Dplus& o_transform)
 		{
 			ObjectTransformation = o_transform;
-			WorldTransformation = CameraTransformation * ObjectTransformation;
-			ScreenTransformation = Projection * WorldTransformation;
+			ScreenTransformation = Projection * CameraTransformation * ObjectTransformation;
 		}
 		void SetCameraTransformation(const fMatrix3Dplus& c_transform)
 		{
 			CameraTransformation = c_transform;
-			WorldTransformation = CameraTransformation * ObjectTransformation;
-			ScreenTransformation = Projection * WorldTransformation;
+			ScreenTransformation = Projection * CameraTransformation * ObjectTransformation;
 		}
 		const fMatrix3Dplus& GetProjectionMatrix() const
 		{
@@ -62,11 +58,10 @@ namespace VertexShaders
 	class SineWave
 	{
 	private:
-		fMatrix3Dplus ObjectTransformation = fMatrix3Dplus::Identity();
-		fMatrix3Dplus CameraTransformation = fMatrix3Dplus::Identity();
-		fMatrix3Dplus WorldTransformation = fMatrix3Dplus::Identity();
-		fMatrix3Dplus Projection = fMatrix3Dplus::Projection(2, 2, 1, 100);
-		fMatrix3Dplus ScreenTransformation = Projection * WorldTransformation;
+		fMatrix3Dplus ObjectTransformation;
+		fMatrix3Dplus CameraTransformation;
+		fMatrix3Dplus Projection;
+		fMatrix3Dplus ScreenTransformation;
 	private:
 		float amplitude;
 		float time;
@@ -81,9 +76,8 @@ namespace VertexShaders
 			:
 			ObjectTransformation(o_transform),
 			CameraTransformation(c_transform),
-			WorldTransformation(CameraTransformation * ObjectTransformation),
 			Projection(proj),
-			ScreenTransformation(Projection * WorldTransformation),
+			ScreenTransformation(Projection * CameraTransformation * ObjectTransformation),
 			amplitude(ampl),
 			hz(hz),
 			wavelength(wv)
@@ -98,25 +92,23 @@ namespace VertexShaders
 			vtx_in.pos.Y += y_stretch;
 			vtx_in.normal.Y += y_stretch;
 			vtx_in.pos = ScreenTransformation * vtx_in.pos;
-			vtx_in.normal = WorldTransformation * fVector4D(vtx_in.normal, 0.0f);
+			vtx_in.normal = ObjectTransformation * fVector4D(vtx_in.normal, 0.0f);
 			return vtx_in;
 		}
 		void SetProjectionMatrix(const fMatrix3Dplus& projection)
 		{
 			Projection = projection;
-			ScreenTransformation = Projection * WorldTransformation;
+			ScreenTransformation = Projection * CameraTransformation * ObjectTransformation;
 		}
 		void SetObjectTransformationMatrix(const fMatrix3Dplus& o_transform)
 		{
 			ObjectTransformation = o_transform;
-			WorldTransformation = CameraTransformation * ObjectTransformation;
-			ScreenTransformation = Projection * WorldTransformation;
+			ScreenTransformation = Projection * CameraTransformation * ObjectTransformation;
 		}
 		void SetCameraTransformation(const fMatrix3Dplus& c_transform)
 		{
 			CameraTransformation = c_transform;
-			WorldTransformation = CameraTransformation * ObjectTransformation;
-			ScreenTransformation = Projection * WorldTransformation;
+			ScreenTransformation = Projection * CameraTransformation * ObjectTransformation;
 		}
 		const fMatrix3Dplus& GetProjectionMatrix() const
 		{
@@ -135,11 +127,10 @@ namespace VertexShaders
 	class SineWave_PPS
 	{
 	private:
-		fMatrix3Dplus ObjectTransformation = fMatrix3Dplus::Identity();
-		fMatrix3Dplus CameraTransformation = fMatrix3Dplus::Identity();
-		fMatrix3Dplus WorldTransformation = fMatrix3Dplus::Identity();
-		fMatrix3Dplus Projection = fMatrix3Dplus::Projection(2, 2, 1, 100);
-		fMatrix3Dplus ScreenTransformation = Projection * WorldTransformation;
+		fMatrix3Dplus ObjectTransformation;
+		fMatrix3Dplus CameraTransformation;
+		fMatrix3Dplus Projection;
+		fMatrix3Dplus ScreenTransformation;
 	private:
 		float amplitude;
 		float time;
@@ -154,12 +145,12 @@ namespace VertexShaders
 			:
 			ObjectTransformation(o_transform),
 			CameraTransformation(c_transform),
-			WorldTransformation(CameraTransformation * ObjectTransformation),
 			Projection(proj),
-			ScreenTransformation(Projection * WorldTransformation),
+			ScreenTransformation(Projection * CameraTransformation * ObjectTransformation),
 			amplitude(ampl),
 			hz(hz),
-			wavelength(wv)
+			wavelength(wv),
+			time(0.0f)
 		{}
 		void UpdateTime(const float seconds)
 		{
@@ -170,27 +161,25 @@ namespace VertexShaders
 			const float y_stretch = amplitude * sin(hz * time + vtx_in.pos.X * wavelength);
 			vtx_in.pos.Y += y_stretch;
 			vtx_in.normal.Y += y_stretch;
-			vtx_in.World_Pos = WorldTransformation * vtx_in.pos;
+			vtx_in.World_Pos = ObjectTransformation * vtx_in.pos;
 			vtx_in.pos = ScreenTransformation * vtx_in.pos;
-			vtx_in.normal = WorldTransformation * fVector4D(vtx_in.normal, 0.0f);
+			vtx_in.normal = ObjectTransformation * fVector4D(vtx_in.normal, 0.0f);
 			return vtx_in;
 		}
 		void SetProjectionMatrix(const fMatrix3Dplus& projection)
 		{
 			Projection = projection;
-			ScreenTransformation = Projection * WorldTransformation;
+			ScreenTransformation = Projection * CameraTransformation * ObjectTransformation;
 		}
 		void SetObjectTransformationMatrix(const fMatrix3Dplus& o_transform)
 		{
 			ObjectTransformation = o_transform;
-			WorldTransformation = CameraTransformation * ObjectTransformation;
-			ScreenTransformation = Projection * WorldTransformation;
+			ScreenTransformation = Projection * CameraTransformation * ObjectTransformation;
 		}
 		void SetCameraTransformation(const fMatrix3Dplus& c_transform)
 		{
 			CameraTransformation = c_transform;
-			WorldTransformation = CameraTransformation * ObjectTransformation;
-			ScreenTransformation = Projection * WorldTransformation;
+			ScreenTransformation = Projection * CameraTransformation * ObjectTransformation;
 		}
 		const fMatrix3Dplus& GetProjectionMatrix() const
 		{

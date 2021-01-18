@@ -55,13 +55,14 @@ public:
 	}
 	void Move(const fVector3D& translation)
 	{
-		position += translation;
+		position += orientation * translation;
 	}
 	const fMatrix3Dplus GetCameraTransformationMatrix() const
 	{
 		return 
+			!orientation * 
 			fMatrix3Dplus::Translation(-position) * 
-			!orientation * fMatrix3Dplus::Identity();
+			fMatrix3Dplus::Identity();
 	}
 };
 

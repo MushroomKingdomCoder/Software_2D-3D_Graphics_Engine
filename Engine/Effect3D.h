@@ -100,11 +100,10 @@ namespace EffectDefaults
 	class VertexShader
 	{
 	private:
-		fMatrix3Dplus ObjectTransformation = fMatrix3Dplus::Identity();
-		fMatrix3Dplus CameraTransformation = fMatrix3Dplus::Identity();
-		fMatrix3Dplus WorldTransformation = fMatrix3Dplus::Identity();
-		fMatrix3Dplus Projection = fMatrix3Dplus::Projection(2, 2, 1, 100);
-		fMatrix3Dplus ScreenTransformation = Projection * WorldTransformation;
+		fMatrix3Dplus ObjectTransformation;
+		fMatrix3Dplus CameraTransformation;
+		fMatrix3Dplus Projection;
+		fMatrix3Dplus ScreenTransformation;
 
 	public:
 		typedef typename vertex VertexIn;
@@ -114,32 +113,29 @@ namespace EffectDefaults
 			:
 			ObjectTransformation(o_transform),
 			CameraTransformation(c_transform),
-			WorldTransformation(CameraTransformation * ObjectTransformation),
 			Projection(proj),
-			ScreenTransformation(Projection * WorldTransformation)
+			ScreenTransformation(Projection * CameraTransformation * ObjectTransformation)
 		{}
 		VertexOut operator ()(VertexIn vtx_in)
 		{
 			vtx_in.pos = ScreenTransformation * vtx_in.pos;
-			vtx_in.normal = WorldTransformation * fVector4D(vtx_in.normal, 0.0f); 
+			vtx_in.normal = ObjectTransformation * fVector4D(vtx_in.normal, 0.0f); 
 			return vtx_in;
 		}
 		void SetProjectionMatrix(const fMatrix3Dplus& projection)
 		{
 			Projection = projection;
-			ScreenTransformation = Projection * WorldTransformation;
+			ScreenTransformation = Projection * CameraTransformation * ObjectTransformation;
 		}
 		void SetObjectTransformationMatrix(const fMatrix3Dplus& o_transform)
 		{
 			ObjectTransformation = o_transform;
-			WorldTransformation = CameraTransformation * ObjectTransformation;
-			ScreenTransformation = Projection * WorldTransformation;
+			ScreenTransformation = Projection * CameraTransformation * ObjectTransformation;
 		}
 		void SetCameraTransformation(const fMatrix3Dplus& c_transform)
 		{
 			CameraTransformation = c_transform;
-			WorldTransformation = CameraTransformation * ObjectTransformation;
-			ScreenTransformation = Projection * WorldTransformation;
+			ScreenTransformation = Projection * CameraTransformation * ObjectTransformation;
 		}
 		const fMatrix3Dplus& GetProjectionMatrix() const
 		{
@@ -152,11 +148,10 @@ namespace EffectDefaults
 	class VertexShader_PPS
 	{
 	private:
-		fMatrix3Dplus ObjectTransformation = fMatrix3Dplus::Identity();
-		fMatrix3Dplus CameraTransformation = fMatrix3Dplus::Identity();
-		fMatrix3Dplus WorldTransformation = fMatrix3Dplus::Identity();
-		fMatrix3Dplus Projection = fMatrix3Dplus::Projection(2, 2, 1, 100);
-		fMatrix3Dplus ScreenTransformation = Projection * WorldTransformation;
+		fMatrix3Dplus ObjectTransformation;
+		fMatrix3Dplus CameraTransformation;
+		fMatrix3Dplus Projection;
+		fMatrix3Dplus ScreenTransformation;
 
 	public:
 		typedef typename vertex VertexIn;
@@ -166,33 +161,30 @@ namespace EffectDefaults
 			:
 			ObjectTransformation(o_transform),
 			CameraTransformation(c_transform),
-			WorldTransformation(CameraTransformation * WorldTransformation),
 			Projection(proj),
-			ScreenTransformation(Projection * WorldTransformation)
+			ScreenTransformation(Projection * CameraTransformation * ObjectTransformation)
 		{}
 		VertexOut operator ()(VertexIn vtx_in)
 		{
-			vtx_in.World_Pos = WorldTransformation * vtx_in.pos;
+			vtx_in.World_Pos = ObjectTransformation * vtx_in.pos;
 			vtx_in.pos = ScreenTransformation * vtx_in.pos;
-			vtx_in.normal = WorldTransformation * fVector4D(vtx_in.normal, 0.0f);
+			vtx_in.normal = ObjectTransformation * fVector4D(vtx_in.normal, 0.0f);
 			return vtx_in;
 		}
 		void SetProjectionMatrix(const fMatrix3Dplus& projection)
 		{
 			Projection = projection;
-			ScreenTransformation = Projection * WorldTransformation;
+			ScreenTransformation = Projection * CameraTransformation * ObjectTransformation;
 		}
 		void SetObjectTransformationMatrix(const fMatrix3Dplus& o_transform)
 		{
 			ObjectTransformation = o_transform;
-			WorldTransformation = CameraTransformation * ObjectTransformation;
-			ScreenTransformation = Projection * WorldTransformation;
+			ScreenTransformation = Projection * CameraTransformation * ObjectTransformation;
 		}
 		void SetCameraTransformation(const fMatrix3Dplus& c_transform)
 		{
 			CameraTransformation = c_transform;
-			WorldTransformation = CameraTransformation * ObjectTransformation;
-			ScreenTransformation = Projection * WorldTransformation;
+			ScreenTransformation = Projection * CameraTransformation * ObjectTransformation;
 		}
 		const fMatrix3Dplus& GetProjectionMatrix() const
 		{

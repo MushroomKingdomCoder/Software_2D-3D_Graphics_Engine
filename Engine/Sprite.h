@@ -20,8 +20,8 @@ public:
 	Sprite(const std::string& bmpfile);
 	Sprite& operator =(const Sprite& s) = default;
 	Sprite& operator =(Sprite&& s) = default;
-	void PutPixel(int x, int y, Color c);
-	Color GetPixel(int x, int y) const;
+	void PutPixel(unsigned int x, unsigned int y, Color c);
+	Color GetPixel(unsigned int x, unsigned int y) const;
 	int getWidth() const;
 	int getHeight() const;
 	iCRect getRect() const;

@@ -708,26 +708,31 @@ namespace PixelShaders
 			}
 		};
 	private:
-		Light& light;
+		const std::vector<Light*>& lights;
 	public:
 		Texture_PPL() = delete;
-		Texture_PPL(std::string file, Light& light, bool isN = false)
+		Texture_PPL(std::string file, const std::vector<Light*>& lights, bool isN = false)
 			:
 			texture(file),
 			twidth(texture.getWidth()),
 			theight(texture.getHeight()),
 			isNegative(isN),
-			light(light)
+			lights(lights)
 		{}
 		Color operator ()(const Vertex& vtx)
 		{
 			Color color = texture.GetPixel(int(vtx.tpos.X * twidth) % twidth, int(vtx.tpos.Y * texture.getHeight()) % theight);
 			fVector3D vcolor = { (float)color.GetR(),(float)color.GetG(),(float)color.GetB() };
+			fVector3D total_light = { 0,0,0 };
+			for (const auto& l : lights) {
+				total_light += l->Illuminate(vtx);
+			}
+			const Color final_color = vcolor.GetHadamardProduct(total_light.Saturated());
 			if (!isNegative) {
-				return light.Illuminate(vtx, vcolor);
+				return final_color;
 			}
 			else {
-				return -light.Illuminate(vtx, vcolor);
+				return -final_color;
 			}
 		}
 	};
@@ -736,7 +741,7 @@ namespace PixelShaders
 	class Monochrome_PPL
 	{
 	private:
-		Color color;
+		fVector3D color;
 
 	public:
 		class Vertex
@@ -808,16 +813,21 @@ namespace PixelShaders
 			}
 		};
 	private:
-		Light& light;
+		const std::vector<Light*>& lights;
 	public:
-		Monochrome_PPL(Color color, Light& light)
+		Monochrome_PPL(Color color, const std::vector<Light*>& lights)
 			:
-			color(color),
-			light(light)
+			color(fVector3D(color.GetR(), color.GetG(), color.GetB())),
+			lights(lights)
 		{}
 		Color operator ()(const Vertex& vtx)
 		{
-			return light.Illuminate(vtx, fVector3D( color.GetR(),color.GetG(),color.GetB() ));
+			fVector3D total_light = { 0,0,0 };
+			for (const auto& l : lights) {
+				total_light += l->Illuminate(vtx);
+			}
+			const Color final_color = color.GetHadamardProduct(total_light.Saturated());
+			return final_color;
 		}
 	};
 }

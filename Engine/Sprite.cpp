@@ -69,15 +69,15 @@ Sprite::Sprite(const std::string& bmpfile)
 	}
 }
 
-void Sprite::PutPixel(int x, int y, Color c)
+void Sprite::PutPixel(unsigned int x, unsigned int y, Color c)
 {
 	int pxl = y * Width + x;
 	Image[pxl] = c;
 }
 
-Color Sprite::GetPixel(int x, int y) const
+Color Sprite::GetPixel(unsigned int x, unsigned int y) const
 {
-	int pxl = y * Width + x;
+	unsigned int pxl = y * Width + x;
 	return Image[pxl];
 }
 
